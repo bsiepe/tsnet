@@ -19,12 +19,12 @@ ess_gvar <- function(fitobj,
   p <- fitobj$p
 
   ## Get samples
-  beta <- fitobj$fit$beta[,,(burnin+1):(iterations+burnin)]
-  pcor <- fitobj$fit$pcors[,,(burnin+1):(iterations+burnin)]
+  beta <- fitobj$fit$beta[,,(burnin+1):(it+burnin)]
+  pcor <- fitobj$fit$pcors[,,(burnin+1):(it+burnin)]
 
   # Transform to mcmc objects
-  mcmc_beta <- coda::as.mcmc(t(matrix(beta, p*p, iterations)))
-  mcmc_pcor <- coda::as.mcmc(t(matrix(pcor, p*p, iterations)))
+  mcmc_beta <- coda::as.mcmc(t(matrix(beta, p*p, it)))
+  mcmc_pcor <- coda::as.mcmc(t(matrix(pcor, p*p, it)))
 
   # correct variable names
   # column after column

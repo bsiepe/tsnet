@@ -2,13 +2,20 @@ Package: tsnet
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Author: person("Björn S.", "Siepe", 
+  email = "bjoernsiepe@gmail.com", 
+  role = c("aut", "cre"),
+  comment = c(ORCID = "0000-0002-9558-4648"))
+Maintainer: Björn S. Siepe <bjoernsiepe@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/bsiepe/tsnet
 BugReports: https://github.com/bsiepe/tsnet/issues
 RoxygenNote: 7.2.3
+Imports:
+    coda,
+    ggplot2,
+    BGGM (>= 2.0.0)
