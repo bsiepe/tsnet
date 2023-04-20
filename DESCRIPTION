@@ -18,4 +18,7 @@ RoxygenNote: 7.2.3
 Imports:
     coda,
     ggplot2,
-    BGGM (>= 2.0.0)
+    BGGM (>= 2.0.0),
+    dplyr,
+    ggdist,
+    tidyr
