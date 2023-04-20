@@ -31,8 +31,8 @@ ess_gvar <- function(fitobj,
   cnames <- colnames(fitobj$Y)
   cnames_lag <- paste0(colnames(fitobj$Y), ".l1")
 
-  beta_names <- c(sapply(cnames, paste, cnames_lag, sep = "--"))
-  pcor_names <- c(sapply(cnames, paste, cnames, sep = "--"))
+  beta_names <- c(vapply(cnames, paste, cnames_lag, sep = "--"))
+  pcor_names <- c(vapply(cnames, paste, cnames, sep = "--"))
 
   ## Calculate ESS
   ess_beta <- coda::effectiveSize(mcmc_beta)
