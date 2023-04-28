@@ -14,5 +14,4 @@ test_that("post_distance_within calculates distances correctly for empirical mod
   # Check if the calculated distances are numeric
   expect_true(all(is.na(result$beta) | is.numeric(result$beta)))
   expect_true(all(is.na(result$pcor) | is.numeric(result$pcor)))
-
 })

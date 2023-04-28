@@ -5,8 +5,8 @@ test_that("ess_gvar calculates effective sample sizes correctly", {
   fitobj <- BGGM::var_estimate(data1)
   burn <- 50
   it <- fitobj$iter
-  beta <- fitobj$fit$beta[,,(burn+1):(it+burn)]
-  pcor <- fitobj$fit$pcors[,,(burn+1):(it+burn)]
+  beta <- fitobj$fit$beta[, , (burn + 1):(it + burn)]
+  pcor <- fitobj$fit$pcors[, , (burn + 1):(it + burn)]
 
   # Transform to mcmc objects
   expected_ess_beta <- coda::effectiveSize(coda::as.mcmc(t(matrix(beta, fitobj$p * fitobj$p, it))))

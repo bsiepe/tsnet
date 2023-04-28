@@ -19,17 +19,19 @@
 
 posterior_plot <- function(fitobj,
                            mat = beta,
-                           cis = c(0.8, 0.9, 0.95)){   # credible intervals for plotting
+                           cis = c(0.8, 0.9, 0.95)) { # credible intervals for plotting
   # Input Checks
-  if(!inherits(fitobj, "var_estimate")){
-    stop("Please provide a var_estimate object as input for fit_a.")}
+  if (!inherits(fitobj, "var_estimate")) {
+    stop("Please provide a var_estimate object as input for fit_a.")
+  }
 
   if (!is.numeric(cis) || any(cis <= 0) || any(cis >= 1)) {
     stop("cis must be a numeric vector with values between 0 and 1 (exclusive)")
   }
 
-  if(length(grep("_", colnames(fitobj$Y))) > 0) {
-    stop("Column names must not contain an underscore. Please rename.")}
+  if (length(grep("_", colnames(fitobj$Y))) > 0) {
+    stop("Column names must not contain an underscore. Please rename.")
+  }
 
 
   # Obtain samples
@@ -40,8 +42,8 @@ posterior_plot <- function(fitobj,
   beta_cols <- grep(".l1", colnames(samps), value = TRUE)
   pcor_cols <- grep("--", colnames(samps), value = TRUE)
 
-  beta_samps <- as.data.frame(samps[,beta_cols])
-  pcor_samps <- as.data.frame(samps[,pcor_cols])
+  beta_samps <- as.data.frame(samps[, beta_cols])
+  pcor_samps <- as.data.frame(samps[, pcor_cols])
 
   # Pivot longer
   beta <- beta_samps |>
@@ -49,49 +51,58 @@ posterior_plot <- function(fitobj,
     dplyr::mutate(iteration = dplyr::row_number()) |>
     tidyr::pivot_longer(cols = !.data$iteration, names_to = "edge", values_to = "value") |>
     # split edge description into nodes
-    tidyr::separate_wider_delim(cols = .data$edge, delim = "_",
-                                names = c("dv" ,"iv"))
+    tidyr::separate_wider_delim(
+      cols = .data$edge, delim = "_",
+      names = c("dv", "iv")
+    )
 
   pcor <- pcor_samps |>
     as.data.frame() |>
     dplyr::mutate(iteration = dplyr::row_number()) |>
-    tidyr::pivot_longer(cols = !.data$iteration,names_to = "edge", values_to = "value") |>
+    tidyr::pivot_longer(cols = !.data$iteration, names_to = "edge", values_to = "value") |>
     # split edge description into nodes
-    tidyr::separate_wider_delim(cols = .data$edge, delim = "--",
-                                names = c("dv" ,"iv"))
+    tidyr::separate_wider_delim(
+      cols = .data$edge, delim = "--",
+      names = c("dv", "iv")
+    )
 
 
 
   # Create matrix layout
-  if(mat == beta){
+  if (mat == beta) {
     # Start plotting
     beta_plot <- beta |>
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup() |>
-      ggplot(aes(x = .data$value))+
+      ggplot(aes(x = .data$value)) +
       # ggdist::stat_halfeye(aes(fill = after_stat(level)), .width = cis)+
       ggdist::stat_slab(aes(fill = after_stat(.data$level), alpha = abs(.data$mean_value)), .width = c(cis, 1)) +
       ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)), size = 1) +
-      scale_alpha(guide = "none")+
-      facet_grid(iv~dv,
-                 switch = "y")+
-      ggdist::theme_ggdist()+
-      geom_vline(xintercept = 0, linetype = "dashed")+
-      theme(axis.text.y = element_blank(),
-            axis.ticks.y = element_blank())+
+      scale_alpha(guide = "none") +
+      facet_grid(iv ~ dv,
+        switch = "y"
+      ) +
+      ggdist::theme_ggdist() +
+      geom_vline(xintercept = 0, linetype = "dashed") +
+      theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+      ) +
       scale_fill_brewer() +
-      labs(y = "",
-           fill = "CI")+
+      labs(
+        y = "",
+        fill = "CI"
+      ) +
       ylim(-0.1, 1)
 
 
     print(beta_plot)
   }
 
-  if(mat == pcor){
+  if (mat == pcor) {
     # make symmetric by splitting
-    pcor_tmp1<- pcor |>
+    pcor_tmp1 <- pcor |>
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup()
@@ -108,25 +119,27 @@ posterior_plot <- function(fitobj,
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup() |>
-      ggplot(aes(x = .data$value))+
+      ggplot(aes(x = .data$value)) +
       ggdist::stat_slab(aes(fill = after_stat(.data$level), alpha = abs(.data$mean_value)), .width = c(cis, 1)) +
       ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)), size = 1) +
-      facet_grid(iv~dv,
-                 switch = "y")+
-      ggdist::theme_ggdist()+
-      scale_alpha(guide = "none")+
-      geom_vline(xintercept = 0, linetype = "dashed")+
-      theme(axis.text.y = element_blank(),
-            axis.ticks.y = element_blank())+
+      facet_grid(iv ~ dv,
+        switch = "y"
+      ) +
+      ggdist::theme_ggdist() +
+      scale_alpha(guide = "none") +
+      geom_vline(xintercept = 0, linetype = "dashed") +
+      theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+      ) +
       scale_fill_brewer() +
-      labs(y = "",
-           fill = "CI",
-           alpha = "")+
+      labs(
+        y = "",
+        fill = "CI",
+        alpha = ""
+      ) +
       ylim(-0.1, 1)
 
     print(pcor_plot)
   }
-
-
-
 }

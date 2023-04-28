@@ -8,5 +8,3 @@ test_that("posterior_plot throws an error for invalid cis values", {
   cis <- c(0, 0.9, 0.95)
   expect_error(posterior_plot(fitobj, cis = cis))
 })
-
-

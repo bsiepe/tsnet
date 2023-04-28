@@ -14,7 +14,4 @@ test_that("compare_gvar works for var_estimate objects", {
   fit2 <- BGGM::var_estimate(data2)
 
   expect_silent(compare_gvar(fit1, fit2))
-
 })
-
-

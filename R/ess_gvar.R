@@ -15,10 +15,9 @@
 #' @export
 
 ess_gvar <- function(fitobj,
-                    burnin = 50){
-
+                     burnin = 50) {
   # Input checks
-  if(!inherits(fitobj, "var_estimate")){
+  if (!inherits(fitobj, "var_estimate")) {
     stop("Please provide a var_estimate object as input for fitobj.")
   }
 
@@ -28,12 +27,12 @@ ess_gvar <- function(fitobj,
   p <- fitobj$p
 
   ## Get samples
-  beta <- fitobj$fit$beta[,,(burnin+1):(it+burnin)]
-  pcor <- fitobj$fit$pcors[,,(burnin+1):(it+burnin)]
+  beta <- fitobj$fit$beta[, , (burnin + 1):(it + burnin)]
+  pcor <- fitobj$fit$pcors[, , (burnin + 1):(it + burnin)]
 
   # Transform to mcmc objects
-  mcmc_beta <- coda::as.mcmc(t(matrix(beta, p*p, it)))
-  mcmc_pcor <- coda::as.mcmc(t(matrix(pcor, p*p, it)))
+  mcmc_beta <- coda::as.mcmc(t(matrix(beta, p * p, it)))
+  mcmc_pcor <- coda::as.mcmc(t(matrix(pcor, p * p, it)))
 
   # correct variable names
   # column after column
@@ -56,5 +55,4 @@ ess_gvar <- function(fitobj,
     ess_pcor = ess_pcor
   )
   return(l_out)
-
 }

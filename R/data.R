@@ -19,6 +19,5 @@
 #' data(ts_data)
 #' head(ts_data)
 #'
-#'
 #' @keywords dataset
 "ts_data"
