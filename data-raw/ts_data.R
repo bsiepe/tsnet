@@ -18,6 +18,6 @@ dat1$id <- rep("ID1", 250)
 dat2$id <- rep("ID2", 250)
 
 # Combine
-ts_data <- rbind(dat1, dat2)
+ts_data <- as.data.frame(rbind(dat1, dat2))
 
 usethis::use_data(ts_data, overwrite = TRUE)

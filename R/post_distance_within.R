@@ -5,7 +5,7 @@
 #' The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
 #' Used within [compare_gvar()].
 #'
-#' @param post An object which contains either posterior samples or posterior predictive draws.
+#' @param fit A BGGM var_estimate fit object.
 #' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
 #' @param pred A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
 #' @param draws An integer specifying the number of random pairs of models that should be compared.
@@ -16,7 +16,7 @@
 #' @export post_distance_within
 #'
 
-post_distance_within <- function(post,
+post_distance_within <- function(fitobj,
                                  comp,
                                  pred,         # posterior predictive?
                                  draws = 1000){
@@ -40,7 +40,7 @@ post_distance_within <- function(post,
     )
 
     # Obtain number of models
-    n_mod <- length(post$fit)
+    n_mod <- length(fitobj$fit)
 
   }
 
@@ -62,7 +62,7 @@ post_distance_within <- function(post,
     )
 
     # Obtain number of posterior samples
-    n_mod <- dim(post$fit$beta)[3]
+    n_mod <- dim(fitobj$fit$beta)[3]
 
   }
 
@@ -97,7 +97,7 @@ post_distance_within <- function(post,
     ## Check if estimation worked
     # Should be unneccessary if non-converged attempts were deleted
     if(isTRUE(pred)){
-      if(!is.list(post$fit[[mod_one]]) | !is.list(post$fit[[mod_two]])){
+      if(!is.list(fitobj$fit[[mod_one]]) | !is.list(fitobj$fit[[mod_two]])){
         beta_distance <- NA
         pcor_distance <- NA
         stop("Not a list.")
@@ -106,13 +106,13 @@ post_distance_within <- function(post,
       }
       # if both elements are lists
       else{
-        beta_distance <- distance_fn_beta(post, post, mod_one, mod_two)
-        pcor_distance <- distance_fn_pcor(post, post, mod_one, mod_two)
+        beta_distance <- distance_fn_beta(fitobj, fitobj, mod_one, mod_two)
+        pcor_distance <- distance_fn_pcor(fitobj, fitobj, mod_one, mod_two)
       }
     }
 
     if(isFALSE(pred)){
-      if(!is.list(post) | !is.list(post)){
+      if(!is.list(fitobj) | !is.list(fitobj)){
         beta_distance <- NA
         pcor_distance <- NA
 
@@ -121,8 +121,8 @@ post_distance_within <- function(post,
       }
       # if both elements are lists
       else{
-        beta_distance <- distance_fn_beta(post, post, mod_one, mod_two)
-        pcor_distance <- distance_fn_pcor(post, post, mod_one, mod_two)
+        beta_distance <- distance_fn_beta(fitobj, fitobj, mod_one, mod_two)
+        pcor_distance <- distance_fn_pcor(fitobj, fitobj, mod_one, mod_two)
 
       }
     }
@@ -136,9 +136,9 @@ post_distance_within <- function(post,
 
 
   } # end for loop
-  out <- do.call(rbind, dist_out)
-  out <- as.data.frame(out)
+  out <- do.call(rbind.data.frame, dist_out)
 
 
   return(out)
 }
+

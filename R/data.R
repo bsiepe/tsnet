@@ -19,7 +19,6 @@
 #' data(ts_data)
 #' head(ts_data)
 #'
-#' @seealso
-#' \code{\link{graphicalVARsim}} function from the graphicalVAR package.
 #'
 #' @keywords dataset
+"ts_data"

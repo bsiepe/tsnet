@@ -4,16 +4,16 @@
 \alias{post_distance_within}
 \title{Calculates distances between pairs of posterior samples using the posterior samples or posterior predictive draws}
 \usage{
-post_distance_within(post, comp, pred, draws = 1000)
+post_distance_within(fitobj, comp, pred, draws = 1000)
 }
 \arguments{
-\item{post}{An object which contains either posterior samples or posterior predictive draws.}
-
 \item{comp}{A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).}
 
 \item{pred}{A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).}
 
 \item{draws}{An integer specifying the number of random pairs of models that should be compared.}
+
+\item{fit}{A BGGM var_estimate fit object.}
 }
 \value{
 A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
