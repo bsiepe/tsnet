@@ -1,8 +1,10 @@
 #' Compute Effective Sample Sizes for MCMC Samples of BGGM GVAR models
 #'
-#' This function computes the effective sample sizes (ESS) of MCMC samples of VAR and partial correlation coefficients (pcor) based on the provided MCMC fit object.
+#' This function computes the effective sample size (ESS) of MCMC samples
+#' of temporal and contemporaneous network parameters
+#' based on the provided var_estimate fit object.
 #'
-#' @param fitobj A list containing a BGGM fit object.
+#' @param fitobj A BGGM var_estimate fit object.
 #' @param burnin An integer indicating the number of burn-in iterations to discard. Default is 50.
 #'
 #' @return A list with two elements: ess_beta and ess_pcor. ess_beta contains the ESS of MCMC samples of VAR, and ess_pcor contains the ESS of MCMC samples of partial correlation coefficients.
@@ -14,6 +16,13 @@
 
 ess_gvar <- function(fitobj,
                     burnin = 50){
+
+  # Input checks
+  if(!inherits(fitobj, "var_estimate")){
+    stop("Please provide a var_estimate object as input for fitobj.")
+  }
+
+
   # Input Information
   it <- fitobj$iter
   p <- fitobj$p

@@ -1,33 +1,36 @@
-#' Compare Variance Components between Two Models
+#' Compare two BGGM gVAR models
 #'
 #' @description
-#' Computes the empirical distance between two models based on the variance components
-#' and compares them using reference distributions. Returns the p-value for the comparison
-#' based on a decision rule specified by the user.
+#' Computes the empirical distance between two models based on their point estimates
+#' and compares them using reference distributions created from their
+#' posterior distributions. Returns the p-value for the comparison
+#' based on a decision rule specified by the user. Details are availabel in
+#' TODO ADD REFERENCE TO PREPRINT.
 #' @param fit_a
-#' Fitted model object for Model A
+#' Fitted model object for Model A.
 #' @param fit_b
-#' Fitted model object for Model B
+#' Fitted model object for Model B.
 #' @param cutoff
-#' The percentage level of the test (default: 5\%)
+#' The percentage level of the test (default: 5\%) as integer.
 #' @param dec_rule
 #' The decision rule to be used. Currently only supports default "OR".
 #' @param n_draws
-#' The number of draws to use for reference distributions (default: 1000)
+#' The number of draws to use for reference distributions (default: 1000).
 #' @param comp
-#' The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob")
+#' The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob").
+#' The use of the Frobenius norm is recommended.
 #' @param return_all
 #' Logical indicating whether to return all distributions (default: FALSE)
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
-#'   \item{sig_beta}{The decision on whether there is a significant difference between the variance components for Model A and Model B (based on the beta parameter)}
-#'   \item{sig_pcor}{The decision on whether there is a significant difference between the variance components for Model A and Model B (based on the partial correlation parameter)}
-#'   \item{res_beta}{The null distribution for the variance components (based on the beta parameter) for both models}
-#'   \item{res_pcor}{The null distribution for the variance components (based on the partial correlation parameter) for both models}
-#'   \item{emp_beta}{The empirical distance between the two models (based on the beta parameter)}
-#'   \item{emp_pcor}{The empirical distance between the two models (based on the partial correlation parameter)}
-#'   \item{larger_beta}{The number of times the null hypothesis (based on the beta parameter) was rejected across all draws}
-#'   \item{larger_pcor}{The number of times the null hypothesis (based on the partial correlation parameter) was rejected across all draws}
+#'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
+#'   \item{sig_pcor}{Binary decision on whether there is a significant difference between the contemporaneous networks of A and B}
+#'   \item{res_beta}{The null distribution for the temporal networks for both models}
+#'   \item{res_pcor}{The null distribution for the contemporaneous networks for both models}
+#'   \item{emp_beta}{The empirical distance between the two temporal networks}
+#'   \item{emp_pcor}{The empirical distance between the two contemporaneous networks}
+#'   \item{larger_beta}{The number of reference distances larger than the empirical distance for the temporal network}
+#'   \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
 #'    }
 #' @importFrom dplyr group_by summarize pull
 #' @export
@@ -43,6 +46,40 @@ compare_gvar <- function(fit_a,
 
   # Store arguments
   args <- list(match.call)
+
+  # Input checks.
+  if(!inherits(fit_a, "var_estimate")){
+    stop("Please provide a var_estimate object as input for fit_a.")
+  }
+  if(!inherits(fit_b, "var_estimate")){
+    stop("Please provide a var_estimate object as input for fit_b.")
+  }
+  # Check cutoff
+  if (cutoff < 0 || cutoff > 100) {
+    stop("Error: 'cutoff' must be between 0 and 100.")
+  }
+  if (cutoff < 1) {
+    warning("Error: 'cutoff' is less than 1, which means that the alpha level is < 0.01.
+            Make sure you specified the correct input.")
+  }
+  # Check dec_rule
+  valid_dec_rules <- c("OR")
+  if (!dec_rule %in% valid_dec_rules) {
+    stop("Error: 'dec_rule' can only be 'OR'.")
+  }
+
+  # Check comp
+  valid_comps <- c("frob", "l1", "maxdiff")
+  if (!comp %in% valid_comps) {
+    stop("Error: 'comp' can only be 'frob', 'l1', or 'maxdiff'.")
+  }
+
+  # Check n_draws
+  if (n_draws < 1000) {
+    warning("Warning: 'n_draws' below 1000 has not been tested yet.")
+  }
+
+
 
   ## Helper function for computing distance metrics
   compute_metric <- function(a, b, metric) {

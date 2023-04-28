@@ -4,15 +4,17 @@
 \alias{posterior_plot}
 \title{posterior_plot}
 \usage{
-posterior_plot(object, mat = beta, cis = c(0.8, 0.9, 0.95))
+posterior_plot(fitobj, mat = beta, cis = c(0.8, 0.9, 0.95))
 }
 \arguments{
-\item{object}{An object of class 'bggm'.}
+\item{fitobj}{A 'var_estimate' fit object.}
 
-\item{mat}{A matrix to use for plotting. Default is beta.}
+\item{mat}{A matrix to use for plotting. Possibilities include beta (temporal network)
+and pcor (contemporaneous network). Default is beta (temporal network).}
 
 \item{cis}{A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).}
 }
 \description{
-Plots posterior distributions of betas and partial correlations (pcors).
+Plots posterior distributions of the parameters of the temporal and
+contemporaneous networks of a gVAR model.
 }

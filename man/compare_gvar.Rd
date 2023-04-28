@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_gvar.R
 \name{compare_gvar}
 \alias{compare_gvar}
-\title{Compare Variance Components between Two Models}
+\title{Compare two BGGM gVAR models}
 \usage{
 compare_gvar(
   fit_a,
@@ -15,35 +15,38 @@ compare_gvar(
 )
 }
 \arguments{
-\item{fit_a}{Fitted model object for Model A}
+\item{fit_a}{Fitted model object for Model A.}
 
-\item{fit_b}{Fitted model object for Model B}
+\item{fit_b}{Fitted model object for Model B.}
 
-\item{cutoff}{The percentage level of the test (default: 5\%)}
+\item{cutoff}{The percentage level of the test (default: 5\%) as integer.}
 
 \item{dec_rule}{The decision rule to be used. Currently only supports default "OR".}
 
-\item{n_draws}{The number of draws to use for reference distributions (default: 1000)}
+\item{n_draws}{The number of draws to use for reference distributions (default: 1000).}
 
-\item{comp}{The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob")}
+\item{comp}{The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob").
+The use of the Frobenius norm is recommended.}
 
 \item{return_all}{Logical indicating whether to return all distributions (default: FALSE)}
 }
 \value{
 A list containing the results of the comparison. The list includes:
  \itemize{
-  \item{sig_beta}{The decision on whether there is a significant difference between the variance components for Model A and Model B (based on the beta parameter)}
-  \item{sig_pcor}{The decision on whether there is a significant difference between the variance components for Model A and Model B (based on the partial correlation parameter)}
-  \item{res_beta}{The null distribution for the variance components (based on the beta parameter) for both models}
-  \item{res_pcor}{The null distribution for the variance components (based on the partial correlation parameter) for both models}
-  \item{emp_beta}{The empirical distance between the two models (based on the beta parameter)}
-  \item{emp_pcor}{The empirical distance between the two models (based on the partial correlation parameter)}
-  \item{larger_beta}{The number of times the null hypothesis (based on the beta parameter) was rejected across all draws}
-  \item{larger_pcor}{The number of times the null hypothesis (based on the partial correlation parameter) was rejected across all draws}
+  \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
+  \item{sig_pcor}{Binary decision on whether there is a significant difference between the contemporaneous networks of A and B}
+  \item{res_beta}{The null distribution for the temporal networks for both models}
+  \item{res_pcor}{The null distribution for the contemporaneous networks for both models}
+  \item{emp_beta}{The empirical distance between the two temporal networks}
+  \item{emp_pcor}{The empirical distance between the two contemporaneous networks}
+  \item{larger_beta}{The number of reference distances larger than the empirical distance for the temporal network}
+  \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
    }
 }
 \description{
-Computes the empirical distance between two models based on the variance components
-and compares them using reference distributions. Returns the p-value for the comparison
-based on a decision rule specified by the user.
+Computes the empirical distance between two models based on their point estimates
+and compares them using reference distributions created from their
+posterior distributions. Returns the p-value for the comparison
+based on a decision rule specified by the user. Details are availabel in
+TODO ADD REFERENCE TO PREPRINT.
 }

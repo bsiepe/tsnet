@@ -2,7 +2,7 @@
 % Please edit documentation in R/post_distance_within.R
 \name{post_distance_within}
 \alias{post_distance_within}
-\title{Calculates distances between pairs of fitted models using the posterior samples or posterior predictive draws}
+\title{Calculates distances between pairs of posterior samples using the posterior samples or posterior predictive draws}
 \usage{
 post_distance_within(post, comp, pred, draws = 1000)
 }
@@ -19,7 +19,8 @@ post_distance_within(post, comp, pred, draws = 1000)
 A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
 }
 \description{
-This function computes distances between a specified number of pairs of fitted models, which can be obtained either from posterior samples or posterior predictive draws.
-The distance between two models can be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
-The function allows for comparison of posterior samples or posterior predictive draws, and beta coefficients or partial correlations can be used as inputs.
+This function computes distances between posterior samples of a fitted gVAR model.
+Distances can be obtained either from posterior samples or posterior predictive draws.
+The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
+Used within [compare_gvar()].
 }

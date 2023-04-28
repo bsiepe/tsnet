@@ -7,7 +7,7 @@
 ess_gvar(fitobj, burnin = 50)
 }
 \arguments{
-\item{fitobj}{A list containing a BGGM fit object.}
+\item{fitobj}{A BGGM var_estimate fit object.}
 
 \item{burnin}{An integer indicating the number of burn-in iterations to discard. Default is 50.}
 }
@@ -15,5 +15,7 @@ ess_gvar(fitobj, burnin = 50)
 A list with two elements: ess_beta and ess_pcor. ess_beta contains the ESS of MCMC samples of VAR, and ess_pcor contains the ESS of MCMC samples of partial correlation coefficients.
 }
 \description{
-This function computes the effective sample sizes (ESS) of MCMC samples of VAR and partial correlation coefficients (pcor) based on the provided MCMC fit object.
+This function computes the effective sample size (ESS) of MCMC samples
+of temporal and contemporaneous network parameters
+based on the provided var_estimate fit object.
 }

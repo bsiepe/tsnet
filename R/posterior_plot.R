@@ -1,9 +1,11 @@
 #' posterior_plot
 #'
-#' Plots posterior distributions of betas and partial correlations (pcors).
+#' Plots posterior distributions of the parameters of the temporal and
+#' contemporaneous networks of a gVAR model.
 #'
-#' @param object An object of class 'bggm'.
-#' @param mat A matrix to use for plotting. Default is beta.
+#' @param fitobj A 'var_estimate' fit object.
+#' @param mat A matrix to use for plotting. Possibilities include beta (temporal network)
+#' and pcor (contemporaneous network). Default is beta (temporal network).
 #' @param cis A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).
 #'
 #' @import ggdist
@@ -15,16 +17,24 @@
 #' @importFrom tidyr separate_wider_delim pivot_longer
 #' @export
 
-posterior_plot <- function(object,
+posterior_plot <- function(fitobj,
                            mat = beta,
                            cis = c(0.8, 0.9, 0.95)){   # credible intervals for plotting
+  # Input Checks
+  if(!inherits(fitobj, "var_estimate")){
+    stop("Please provide a var_estimate object as input for fit_a.")}
+
+  if (!is.numeric(cis) || any(cis <= 0) || any(cis >= 1)) {
+    stop("cis must be a numeric vector with values between 0 and 1 (exclusive)")
+  }
+
+  if(length(grep("_", colnames(fitobj$Y))) > 0) {
+    stop("Column names must not contain an underscore. Please rename.")}
+
 
   # Obtain samples
-  samps <- BGGM::posterior_samples(object)
+  samps <- BGGM::posterior_samples(fitobj)
 
-  # throw a bug if one of the variable names contains an underscore
-  if(length(grep("_", colnames(object$Y))) > 0) {
-    stop("Column names must not contain an underscore. Please rename.")}
 
   # Split into betas and pcors
   beta_cols <- grep(".l1", colnames(samps), value = TRUE)
@@ -53,10 +63,8 @@ posterior_plot <- function(object,
 
 
   # Create matrix layout
-
   if(mat == beta){
     # Start plotting
-    # TODO add option for numerical value per plot
     beta_plot <- beta |>
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
@@ -82,8 +90,7 @@ posterior_plot <- function(object,
   }
 
   if(mat == pcor){
-    # has to be made symmetric, maybe reorder variable
-    # create duplicate plot
+    # make symmetric by splitting
     pcor_tmp1<- pcor |>
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
@@ -102,10 +109,8 @@ posterior_plot <- function(object,
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup() |>
       ggplot(aes(x = .data$value))+
-      # ggdist::stat_halfeye(aes(fill = after_stat(level)), .width = cis)+
       ggdist::stat_slab(aes(fill = after_stat(.data$level), alpha = abs(.data$mean_value)), .width = c(cis, 1)) +
       ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)), size = 1) +
-      # scale_alpha_manual(guide = "none")+
       facet_grid(iv~dv,
                  switch = "y")+
       ggdist::theme_ggdist()+

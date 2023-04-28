@@ -1,8 +1,9 @@
-#' Calculates distances between pairs of fitted models using the posterior samples or posterior predictive draws
+#' Calculates distances between pairs of posterior samples using the posterior samples or posterior predictive draws
 #'
-#' This function computes distances between a specified number of pairs of fitted models, which can be obtained either from posterior samples or posterior predictive draws.
-#' The distance between two models can be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
-#' The function allows for comparison of posterior samples or posterior predictive draws, and beta coefficients or partial correlations can be used as inputs.
+#' This function computes distances between posterior samples of a fitted gVAR model.
+#' Distances can be obtained either from posterior samples or posterior predictive draws.
+#' The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
+#' Used within [compare_gvar()].
 #'
 #' @param post An object which contains either posterior samples or posterior predictive draws.
 #' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
