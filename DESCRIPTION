@@ -20,7 +20,9 @@ Imports:
     BGGM (>= 2.0.0),
     dplyr,
     ggdist,
-    tidyr
+    tidyr,
+    ggokabeito,
+    cowplot
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

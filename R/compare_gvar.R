@@ -34,6 +34,9 @@
 #'   \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
 #'    }
 #' @importFrom dplyr group_by summarize pull
+#' @importFrom ggplot2 geom_density theme_classic scale_y_continuous
+#' @importFrom cowplot get_legend plot_grid
+#' @importFrom ggokabeito scale_fill_okabe_ito
 #' @export
 
 compare_gvar <- function(fit_a,
@@ -270,14 +273,14 @@ plot.compare_gvar <- function(x,
           axis.text.y = element_blank(),
           legend.position = "right")
 
-  leg <- get_legend(plt_beta)
+  leg <- cowplot::get_legend(plt_beta)
 
   # Plot
   plt_tmp <- cowplot::plot_grid(plt_beta + theme(legend.position = "none"),
                                 plt_pcor + theme(legend.position = "none"))
 
   # Add legend
-  plt <- plot_grid(plt_tmp, leg, rel_widths = c(3, .4))
+  plt <- cowplot::plot_grid(plt_tmp, leg, rel_widths = c(3, .4))
   plt
 
 }

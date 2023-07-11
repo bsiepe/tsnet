@@ -5,7 +5,7 @@
 #' The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
 #' Used within [compare_gvar()].
 #'
-#' @param fit A BGGM var_estimate fit object.
+#' @param fitobj A BGGM var_estimate fit object.
 #' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
 #' @param pred A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
 #' @param draws An integer specifying the number of random pairs of models that should be compared.
