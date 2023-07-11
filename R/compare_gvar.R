@@ -4,7 +4,7 @@
 #' Computes the empirical distance between two models based on their point estimates
 #' and compares them using reference distributions created from their
 #' posterior distributions. Returns the p-value for the comparison
-#' based on a decision rule specified by the user. Details are availabel in
+#' based on a decision rule specified by the user. Details are available in
 #' TODO ADD REFERENCE TO PREPRINT.
 #' @param fit_a
 #' Fitted model object for Model A.
@@ -203,86 +203,8 @@ compare_gvar <- function(fit_a,
   }
 
 
-  class(l_res) <- "compare_gvar"
+  class(l_res) <- c("compare_gvar", class(l_res))
   return(l_res)
-}
-
-# Plotting method
-plot.compare_gvar <- function(x,
-                              name_a = NULL,   # set name for a manually
-                              name_b = NULL,   # set name for b manually
-                              ...){
-
-  # Input check
-  if(is.null(x$null)){
-    stop("Reference distributions of compare_gvar must be saved using the
-         argument 'return_all'=TRUE ")
-  }
-
-  # sysfonts::font_add_google("News Cycle", "news")
-  # # use showtext
-  # showtext::showtext_auto()
-
-  # Exchange names
-  if(!is.null(name_a)){
-    name_a <- as.character(name_a)
-    x$res_beta$mod <- gsub("mod_a", name_a, x$res_beta$mod)
-    x$res_pcor$mod <- gsub("mod_a", name_a, x$res_pcor$mod)
-  }
-  if(!is.null(name_b)){
-    name_b <- as.character(name_b)
-    x$res_beta$mod <- gsub("mod_b", name_b, x$res_beta$mod)
-    x$res_pcor$mod <- gsub("mod_b", name_b, x$res_pcor$mod)
-  }
-
-
-
-  # Plotting
-  plt_beta <- ggplot(x$res_beta,
-                     aes(x = .data$null,
-                         fill = .data$mod))+
-    geom_density(alpha = .7)+
-    theme_classic()+
-    ggokabeito::scale_fill_okabe_ito()+
-    geom_vline(aes(xintercept = x$emp_beta),
-               col = "red", lty = 1, linewidth = .75)+
-    scale_y_continuous(expand = c(0,0))+
-    labs(title = "Temporal",
-         y = "",
-         x = "Norm Value")+
-    # theme_compare()+
-    theme(axis.ticks.y = element_blank(),
-          axis.text.y = element_blank(),
-          legend.position = "right")
-
-
-  plt_pcor <- ggplot(x$res_pcor,
-                     aes(x = .data$null,
-                         fill = .data$mod))+
-    geom_density(alpha = .7)+
-    theme_classic()+
-    ggokabeito::scale_fill_okabe_ito()+
-    geom_vline(aes(xintercept = x$emp_pcor),
-               col = "red", lty = 1, linewidth = .75)+
-    scale_y_continuous(expand = c(0,0))+
-    labs(title = "Contemporaneous",
-         y = "",
-         x = "Norm Value")+
-    # theme_compare()+
-    theme(axis.ticks.y = element_blank(),
-          axis.text.y = element_blank(),
-          legend.position = "right")
-
-  leg <- cowplot::get_legend(plt_beta)
-
-  # Plot
-  plt_tmp <- cowplot::plot_grid(plt_beta + theme(legend.position = "none"),
-                                plt_pcor + theme(legend.position = "none"))
-
-  # Add legend
-  plt <- cowplot::plot_grid(plt_tmp, leg, rel_widths = c(3, .4))
-  plt
-
 }
 
 

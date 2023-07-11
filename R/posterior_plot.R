@@ -3,9 +3,9 @@
 #' Plots posterior distributions of the parameters of the temporal and
 #' contemporaneous networks of a gVAR model.
 #'
-#' @param fitobj A 'var_estimate' fit object.
-#' @param mat A matrix to use for plotting. Possibilities include beta (temporal network)
-#' and pcor (contemporaneous network). Default is beta (temporal network).
+#' @param fitobj A 'var_estimate' fit object from the `BGGM` package.
+#' @param mat A matrix to use for plotting. Possibilities include "beta" (temporal network)
+#' and "pcor" (contemporaneous network). Default is "beta" (temporal network).
 #' @param cis A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).
 #'
 #' @import ggdist
@@ -18,7 +18,7 @@
 #' @export
 
 posterior_plot <- function(fitobj,
-                           mat = beta,
+                           mat = "beta",
                            cis = c(0.8, 0.9, 0.95)) { # credible intervals for plotting
   # Input Checks
   if (!inherits(fitobj, "var_estimate")) {
@@ -69,7 +69,7 @@ posterior_plot <- function(fitobj,
 
 
   # Create matrix layout
-  if (mat == beta) {
+  if (mat == "beta") {
     # Start plotting
     beta_plot <- beta |>
       dplyr::group_by(.data$dv, .data$iv) |>
@@ -100,7 +100,7 @@ posterior_plot <- function(fitobj,
     print(beta_plot)
   }
 
-  if (mat == pcor) {
+  if (mat == "pcor") {
     # make symmetric by splitting
     pcor_tmp1 <- pcor |>
       dplyr::group_by(.data$dv, .data$iv) |>

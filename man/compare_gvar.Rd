@@ -48,6 +48,6 @@ A list containing the results of the comparison. The list includes:
 Computes the empirical distance between two models based on their point estimates
 and compares them using reference distributions created from their
 posterior distributions. Returns the p-value for the comparison
-based on a decision rule specified by the user. Details are availabel in
+based on a decision rule specified by the user. Details are available in
 TODO ADD REFERENCE TO PREPRINT.
 }

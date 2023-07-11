@@ -23,21 +23,41 @@ devtools::install_github("bsiepe/tsnet")
 
 ## Getting Started
 
-This is a basic example which shows you how to solve a common problem:
+This is an example of how to use the package to compare two network
+models:
 
 ``` r
-library(tsnet)
-#> Registered S3 methods overwritten by 'BFpack':
-#>   method               from
-#>   get_estimates.lm     bain
-#>   get_estimates.t_test bain
-#> Registered S3 method overwritten by 'GGally':
-#>   method from   
-#>   +.gg   ggplot2
 library(BGGM)
+library(tsnet)
 
-# Load data
+
+# Load data of two individuals
 data <- BGGM::ifit
+data_1 <- subset(data, id == 1)
+data_3 <- subset(data, id == 3)
+
+# Estimate networks
+# (should perform detrending etc. in a real use case)
+net_1 <- BGGM::var_estimate(data_1[,-1],
+                            rho_sd = 0.25, 
+                            beta_sd = 0.5,
+                            iter = 50000)
+net_3 <- BGGM::var_estimate(data_3[,-1],
+                            rho_sd = 0.25, 
+                            beta_sd = 0.5,
+                            iter = 50000)
+
+# Plot individual temporal network estimates
+post_plot_1 <- tsnet::posterior_plot(net_1)
+post_plot_3 <- tsnet::posterior_plot(net_3)
+
+# Compare networks
+compare_13 <- tsnet::compare_gvar(net_1, 
+                    net_3,
+                    return_all = TRUE)
+
+# Plot test results
+test_plot_13 <- plot(compare_13)
 ```
 
 ## References

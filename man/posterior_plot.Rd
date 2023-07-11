@@ -4,13 +4,13 @@
 \alias{posterior_plot}
 \title{posterior_plot}
 \usage{
-posterior_plot(fitobj, mat = beta, cis = c(0.8, 0.9, 0.95))
+posterior_plot(fitobj, mat = "beta", cis = c(0.8, 0.9, 0.95))
 }
 \arguments{
-\item{fitobj}{A 'var_estimate' fit object.}
+\item{fitobj}{A 'var_estimate' fit object from the `BGGM` package.}
 
-\item{mat}{A matrix to use for plotting. Possibilities include beta (temporal network)
-and pcor (contemporaneous network). Default is beta (temporal network).}
+\item{mat}{A matrix to use for plotting. Possibilities include "beta" (temporal network)
+and "pcor" (contemporaneous network). Default is "beta" (temporal network).}
 
 \item{cis}{A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).}
 }
