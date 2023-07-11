@@ -28,6 +28,5 @@ The data have been standardized using the `scale` function to have zero mean and
 data(ts_data)
 head(ts_data)
 
-
 }
 \keyword{dataset}

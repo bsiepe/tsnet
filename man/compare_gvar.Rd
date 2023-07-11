@@ -28,7 +28,8 @@ compare_gvar(
 \item{comp}{The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob").
 The use of the Frobenius norm is recommended.}
 
-\item{return_all}{Logical indicating whether to return all distributions (default: FALSE)}
+\item{return_all}{Logical indicating whether to return all distributions (default: FALSE).
+Has to be set to TRUE for plotting the results.}
 }
 \value{
 A list containing the results of the comparison. The list includes:
