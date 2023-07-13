@@ -12,7 +12,7 @@
 #' @import tidyr
 #' @import dplyr
 #' @importFrom BGGM posterior_samples
-#' @importFrom ggplot2 aes facet_grid geom_vline labs scale_alpha scale_fill_brewer ylim theme element_blank ggplot after_stat
+#' @importFrom ggplot2 aes scale_x_continuous  facet_grid geom_vline labs scale_alpha scale_fill_brewer ylim theme element_blank ggplot after_stat
 #' @importFrom ggdist stat_pointinterval stat_slab
 #' @importFrom tidyr separate_wider_delim pivot_longer
 #' @export
@@ -90,14 +90,16 @@ posterior_plot <- function(fitobj,
         axis.ticks.y = element_blank()
       ) +
       scale_fill_brewer() +
+      scale_x_continuous(breaks = c(-1, 0, 1),
+                         minor_breaks = c(-0.5, 0.5))+
       labs(
         y = "",
         fill = "CI"
       ) +
       ylim(-0.1, 1)
 
+      return(beta_plot)
 
-    print(beta_plot)
   }
 
   if (mat == "pcor") {
@@ -127,6 +129,8 @@ posterior_plot <- function(fitobj,
       ) +
       ggdist::theme_ggdist() +
       scale_alpha(guide = "none") +
+      scale_x_continuous(breaks = c(-1, 0, 1),
+                         minor_breaks = c(-0.5, 0.5))+
       geom_vline(xintercept = 0, linetype = "dashed") +
       theme(
         axis.text.y = element_blank(),
@@ -140,6 +144,7 @@ posterior_plot <- function(fitobj,
       ) +
       ylim(-0.1, 1)
 
-    print(pcor_plot)
+      return(pcor_plot)
+
   }
 }

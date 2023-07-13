@@ -57,8 +57,9 @@ plot.compare_gvar <- function(x,
     ggplot2::scale_y_continuous(expand = c(0,0))+
     ggplot2::labs(title = "Temporal",
                   y = "",
-                  x = "Norm Value")+
-    # theme_compare()+
+                  x = "Norm Value",
+                  fill = "Model")+
+
     ggplot2::theme(axis.ticks.y = element_blank(),
                    axis.text.y = element_blank(),
                    legend.position = "right")
@@ -75,8 +76,8 @@ plot.compare_gvar <- function(x,
     ggplot2::scale_y_continuous(expand = c(0,0))+
     ggplot2::labs(title = "Contemporaneous",
                   y = "",
-                  x = "Norm Value")+
-    # theme_compare()+
+                  x = "Norm Value",
+                  fill = "Model")+
     ggplot2::theme(axis.ticks.y = element_blank(),
                    axis.text.y = element_blank(),
                    legend.position = "right")
