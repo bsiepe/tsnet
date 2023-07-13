@@ -16,12 +16,12 @@
 \item{...}{Additional arguments to be passed to the plotting functions.}
 }
 \description{
-This function is a plotting method for the class "compare_gvar". It generates a plot showing the density distributions of two variables along with their empirical values.
+This function is a plotting method for the class "compare_gvar". It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
 }
 \details{
 The function first checks if the reference distributions of compare_gvar are saved using the argument 'return_all' set to TRUE. If not, an error is thrown.
 
 The function then exchanges the names of variables A and B if the corresponding names are provided using the 'name_a' and 'name_b' arguments. This allows for customized labeling in the plot.
 
-The function generates two density plots using ggplot2, one for the variable beta and another for the variable pcor. The density distributions are filled with different colors based on the corresponding models (mod_a and mod_b). The empirical values of beta and pcor are indicated by red vertical lines.
+The function generates two density plots using ggplot2, one for the variable temporal network (beta) and another for the contemporaneous network (pcor). The density distributions are filled with different colors based on the corresponding models (mod_a and mod_b). The empirical distances between the networks are indicated by red vertical lines.
 }
