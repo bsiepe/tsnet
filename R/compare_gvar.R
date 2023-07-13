@@ -22,6 +22,9 @@
 #' @param return_all
 #' Logical indicating whether to return all distributions (default: FALSE).
 #' Has to be set to TRUE for plotting the results.
+#' @param sampling_method
+#' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
+#' Default: "sequential"
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
@@ -45,7 +48,8 @@ compare_gvar <- function(fit_a,
                          dec_rule = "OR",
                          n_draws = 1000,
                          comp = "frob",
-                         return_all = FALSE) {
+                         return_all = FALSE,
+                         sampling_method = "sequential") {
   # Store arguments
   args <- list(match.call)
 
@@ -103,12 +107,14 @@ compare_gvar <- function(fit_a,
   ref_a <- post_distance_within(fit_a,
     comp = comp,
     pred = FALSE,
-    draws = n_draws
+    draws = n_draws,
+    sampling_method = sampling_method
   )
   ref_b <- post_distance_within(fit_b,
     comp = comp,
     pred = FALSE,
-    draws = n_draws
+    draws = n_draws,
+    sampling_method = sampling_method
   )
 
   ## Empirical distance
