@@ -68,7 +68,7 @@ test_plot_13 <- plot(compare_13,
                      name_b = "Model B")
 ```
 
-![](man/figures/test_plot_13.png)
+![](man/figures/test_plot_example.png)
 
 ## References
 
