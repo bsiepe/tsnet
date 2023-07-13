@@ -9,6 +9,9 @@
 #' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
 #' @param pred A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
 #' @param draws An integer specifying the number of random pairs of models that should be compared.
+#' @param sampling_method
+#' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
+#' Default: "sequential"
 #'
 #' @return A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
 #'
@@ -19,7 +22,8 @@
 post_distance_within <- function(fitobj,
                                  comp,
                                  pred, # posterior predictive?
-                                 draws = 1000) {
+                                 draws = 1000,
+                                 sampling_method = "sequential") {
   # storage
   dist_out <- list()
 
@@ -96,13 +100,29 @@ post_distance_within <- function(fitobj,
   # "model" is still a residue from posterior predictive approach
   # Draw models spaced apart so that we don't have autocorrelation from sampling
   mod_pairs <- array(NA, dim = c(2, draws))
-  # draw from first half of samples
-  mod_pairs[1, 1:(draws)] <- seq(51, draws + 50, by = 1)
 
-  # draw from second half of samples
-  mod_pairs[2, 1:(draws)] <- seq((n_mod / 2) + 51, (n_mod / 2) + 50 + (draws), by = 1)
 
-  # mod_pairs <- replicate(draws, sample(1:n_mod, size = 2, replace = TRUE))
+  if(sampling_method == "sequential"){
+    # draw from first half of samples
+    mod_pairs[1, 1:(draws)] <- seq(51, draws + 50, by = 1)
+
+    # draw from second half of samples
+    mod_pairs[2, 1:(draws)] <- seq((n_mod / 2) + 51, (n_mod / 2) + 50 + (draws), by = 1)
+
+  }
+  if(sampling_method == "random"){
+    # Determine the valid range of values for drawing pairs
+    # Leave out middle 100 to keep certain distance between halves
+    valid_range <- setdiff(1:n_mod, ((n_mod/2 - 50):(n_mod/2 + 49)))
+
+    # Draw pairs randomly from the first half and second half
+    mod_pairs[1, 1:draws] <- sample(valid_range[1:(length(valid_range)/2)], draws)
+    mod_pairs[2, 1:draws] <- sample(valid_range[(length(valid_range)/2 + 1):length(valid_range)], draws)
+
+
+  }
+
+
 
   for (i in seq(draws)) {
     # storage
