@@ -62,6 +62,9 @@ compare_13 <- tsnet::compare_gvar(net_1,
                     net_3,
                     return_all = TRUE)
 
+# Print summary of results
+print(compare_13)
+
 # Plot test results
 test_plot_13 <- plot(compare_13,
                      name_a = "Model A",

@@ -29,6 +29,9 @@ plot.compare_gvar <- function(x,
     stop("Reference distributions of compare_gvar must be saved using the
          argument 'return_all'=TRUE ")
   }
+  if(!inherits(x, "compare_gvar")){
+    stop("This function only works with a result of the compare_gvar function.")
+  }
 
 
   # Exchange names
