@@ -49,16 +49,26 @@ net_3 <- BGGM::var_estimate(data_3[,-1],
 
 # Plot individual temporal network estimates
 post_plot_1 <- tsnet::posterior_plot(net_1)
-post_plot_3 <- tsnet::posterior_plot(net_3)
+```
 
+![](man/figures/post_plot_example.png)
+
+You can then compare these networks, summarize the results and plot the
+test results:
+
+``` r
 # Compare networks
 compare_13 <- tsnet::compare_gvar(net_1, 
                     net_3,
                     return_all = TRUE)
 
 # Plot test results
-test_plot_13 <- plot(compare_13)
+test_plot_13 <- plot(compare_13,
+                     name_a = "Model A",
+                     name_b = "Model B")
 ```
+
+![](man/figures/test_plot_13.png)
 
 ## References
 
