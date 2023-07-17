@@ -2,9 +2,10 @@
 #'
 #' This function computes the effective sample size (ESS) of MCMC samples
 #' of temporal and contemporaneous network parameters
-#' based on the provided var_estimate fit object.
+#' based on the provided `BGGM::var_estimate` fit object.
+#' It uses the default functionality of the `coda` package to compute ESS.
 #'
-#' @param fitobj A BGGM var_estimate fit object.
+#' @param fitobj A `BGGM` var_estimate fit object.
 #' @param burnin An integer indicating the number of burn-in iterations to discard. Default is 50.
 #'
 #' @return A list with two elements: ess_beta and ess_pcor. ess_beta contains the ESS of MCMC samples of VAR, and ess_pcor contains the ESS of MCMC samples of partial correlation coefficients.
