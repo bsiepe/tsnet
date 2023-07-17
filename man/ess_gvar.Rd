@@ -7,7 +7,7 @@
 ess_gvar(fitobj, burnin = 50)
 }
 \arguments{
-\item{fitobj}{A BGGM var_estimate fit object.}
+\item{fitobj}{A `BGGM` var_estimate fit object.}
 
 \item{burnin}{An integer indicating the number of burn-in iterations to discard. Default is 50.}
 }
@@ -17,5 +17,6 @@ A list with two elements: ess_beta and ess_pcor. ess_beta contains the ESS of MC
 \description{
 This function computes the effective sample size (ESS) of MCMC samples
 of temporal and contemporaneous network parameters
-based on the provided var_estimate fit object.
+based on the provided `BGGM::var_estimate` fit object.
+It uses the default functionality of the `coda` package to compute ESS.
 }

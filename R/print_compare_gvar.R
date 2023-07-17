@@ -1,6 +1,6 @@
 #' Print method for compare_gvar objects
 #'
-#' This function prints a summary of the Norm-Based Comparison Test for a compare_gvar object.
+#' This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
 #'
 #' @param x A compare_gvar object.
 #' @param ... Additional arguments to be passed to the print method. (currently not used)
