@@ -1,6 +1,6 @@
 #' Plot compare_gvar
 #'
-#' This function is a plotting method for the class produced by [compare_gvar()]. It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
+#' This function is a plotting method for the class produced by compare_gvar(). It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
 #'
 #' @param x An object of class "compare_gvar".
 #' @param name_a Optional. The name for model A. If provided, it replaces "mod_a" in the plot.
