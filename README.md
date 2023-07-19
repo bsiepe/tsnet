@@ -79,4 +79,4 @@ If you use the package, please cite the preprint that introduces the
 package and the test:
 
 Siepe, B.S. & Heck, D.W. (2023). Bayesian Estimation and Comparison of
-Idiographic Network Models.
+Idiographic Network Models. (<https://psyarxiv.com/uwfjc/>)

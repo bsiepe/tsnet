@@ -83,4 +83,4 @@ test_plot_13 <- plot(compare_13,
 ## References
 If you use the package, please cite the preprint that introduces the package and the test: 
 
-Siepe, B.S. & Heck, D.W. (2023). Bayesian Estimation and Comparison of Idiographic Network Models. 
+Siepe, B.S. & Heck, D.W. (2023). Bayesian Estimation and Comparison of Idiographic Network Models. (https://psyarxiv.com/uwfjc/)
