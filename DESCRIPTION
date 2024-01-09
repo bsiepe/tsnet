@@ -1,13 +1,18 @@
 Package: tsnet
 Type: Package
-Title: Comparing and Visualizing Networks based on Time Series Data
+Title: Fitting, Comparing, and Visualizing Networks based on Time Series Data
 Version: 0.1.0
-Author: person("Björn S.", "Siepe", 
+Authors@R: 
+  c(person("Björn S.", "Siepe", 
   email = "bjoernsiepe@gmail.com", 
-  role = c("aut", "cre"),
-  comment = c(ORCID = "0000-0002-9558-4648"))
+  role = c("aut", "cre", "cph"),
+  comment = c(ORCID = "0000-0002-9558-4648")),
+  person("Matthias", "Kloft",
+  email = "kloft@uni-marburg.de",
+  role = c("aut"),
+  comment = c(ORCID = "0000-0003-1845-6957")))
 Maintainer: Björn S. Siepe <bjoernsiepe@gmail.com>
-Description: This package contains functions to compare and visualize Bayesian gVAR network models. 
+Description: Fit, compare, and visualize Bayesian gVAR network models using BGGM or Stan as a backend. See also Siepe & Heck (2023) <doi:10.31234/osf.io/uwfjc>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -22,7 +27,8 @@ Imports:
     ggdist,
     tidyr,
     ggokabeito,
-    cowplot
+    cowplot,
+    stats
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
