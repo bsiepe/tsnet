@@ -6,6 +6,7 @@
 #' posterior distributions. Returns the p-value for the comparison
 #' based on a decision rule specified by the user. Details are available in
 #' TODO ADD REFERENCE TO PREPRINT.
+#' TODO Change description for new test.
 #' @param fit_a
 #' Fitted model object for Model A.
 #' @param fit_b
@@ -13,7 +14,7 @@
 #' @param cutoff
 #' The percentage level of the test (default: 5\%) as integer.
 #' @param dec_rule
-#' The decision rule to be used. Currently only supports default "OR".
+#' The decision rule to be used. Currently supports default "OR" (comparing against two reference distributions) and "COMB" (combining the reference distributions).
 #' @param n_draws
 #' The number of draws to use for reference distributions (default: 1000).
 #' @param comp
@@ -69,9 +70,9 @@ compare_gvar <- function(fit_a,
             Make sure you specified the correct input.")
   }
   # Check dec_rule
-  valid_dec_rules <- c("OR")
+  valid_dec_rules <- c("OR", "COMB")
   if (!dec_rule %in% valid_dec_rules) {
-    stop("Error: 'dec_rule' can only be 'OR'.")
+    stop("Error: 'dec_rule' can only be 'OR' or 'COMB'.")
   }
 
   # Check comp
@@ -103,6 +104,11 @@ compare_gvar <- function(fit_a,
     )
   }
 
+  ## Helper function to only use upper triangle of matrix
+  ut <- function(x) {
+    matrix(x[upper.tri(x, diag = FALSE)])
+  }
+
   ## Create reference distributions for both models
   ref_a <- post_distance_within(fit_a,
     comp = comp,
@@ -120,7 +126,7 @@ compare_gvar <- function(fit_a,
   ## Empirical distance
   # Compute empirical distance as test statistic
   emp_beta <- compute_metric(fit_a$beta_mu, fit_b$beta_mu, comp)
-  emp_pcor <- compute_metric(fit_a$pcor_mu, fit_b$pcor_mu, comp)
+  emp_pcor <- compute_metric(ut(fit_a$pcor_mu), ut(fit_b$pcor_mu), comp)
 
 
   ## Combine results
@@ -153,34 +159,64 @@ compare_gvar <- function(fit_a,
 
   ## Implement decision rule "OR"
   # Helper function
-  compute_stats <- function(data, var, cutoff, n_draws) {
-    sig_decision <- data |>
-      dplyr::group_by(.data$mod) |>
-      dplyr::summarize(
-        sum_larger =
-          sum(.data$null > .data$emp)
-      ) |>
-      dplyr::summarize(
-        sig_decision =
-          sum(.data$sum_larger < cutoff * (n_draws / 100))
-      ) |>
-      dplyr::pull(.data$sig_decision)
 
-    sum_larger <- data |>
-      dplyr::group_by(.data$mod) |>
-      dplyr::summarize(
-        sum_larger =
-          sum(.data$null > .data$emp)
-      )
-
-    return(list(sig_decision = sig_decision, sum_larger = sum_larger))
-  }
 
   if (dec_rule == "OR") {
+    compute_stats <- function(data, var, cutoff, n_draws) {
+      sig_decision <- data |>
+        dplyr::group_by(.data$mod) |>
+        dplyr::summarize(
+          sum_larger =
+            sum(.data$null > .data$emp)
+        ) |>
+        dplyr::summarize(
+          sig_decision =
+            sum(.data$sum_larger < cutoff * (n_draws / 100)) # TODO fix magical number
+        ) |>
+        dplyr::pull(.data$sig_decision)
+
+      sum_larger <- data |>
+        dplyr::group_by(.data$mod) |>
+        dplyr::summarize(
+          sum_larger =
+            sum(.data$null > .data$emp)
+        )
+
+      return(list(sig_decision = sig_decision, sum_larger = sum_larger))
+    }
     sig_beta <- compute_stats(res_beta, "null", cutoff, n_draws)$sig_decision
     larger_beta <- compute_stats(res_beta, "null", cutoff, n_draws)$sum_larger
     sig_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sig_decision
     larger_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sum_larger
+  }
+  else if(dec_rule == "comb") {
+    compute_stats <- function(data, var, cutoff, n_draws) {
+      sig_decision <- data |>
+        # dplyr::group_by(.data$mod) |>
+        dplyr::summarize(
+          sum_larger =
+            sum(.data$null > .data$emp)
+        ) |>
+        dplyr::summarize(
+          sig_decision =
+            sum(.data$sum_larger < cutoff * (n_draws / 100)) # TODO fix magical number
+        ) |>
+        dplyr::pull(.data$sig_decision)
+
+      sum_larger <- data |>
+        # dplyr::group_by(.data$mod) |>
+        dplyr::summarize(
+          sum_larger =
+            sum(.data$null > .data$emp)
+        )
+
+      return(list(sig_decision = sig_decision, sum_larger = sum_larger))
+    }
+    sig_beta <- compute_stats(res_beta, "null", cutoff, n_draws)$sig_decision
+    larger_beta <- compute_stats(res_beta, "null", cutoff, n_draws)$sum_larger
+    sig_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sig_decision
+    larger_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sum_larger
+
   }
 
   if (!return_all) {
