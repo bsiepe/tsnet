@@ -4,6 +4,7 @@
 #'
 #' @param fitobj A fit object containing the beta and pcor samples.
 #' @param burnin An integer specifying the number of initial samples to discard as burn-in. Default is 500.
+#' @param remove_ar A logical value specifying whether to remove the autoregressive effects for centrality calculation. Default is TRUE.
 #'
 #' @return A list containing the following centrality measures:
 #' \itemize{
@@ -22,13 +23,24 @@
 #'
 #' @export
 get_centrality <- function(fitobj,
-                           burnin = 500) {
+                           burnin = 500,
+                           remove_ar = TRUE) {
   #--- BGGM
   # Obtain samples
   beta_samps <- abs(fitobj$fit$beta[, , -c(1:burnin)])
   pcor_samps <- abs(fitobj$fit$pcors[, , -c(1:burnin)])
 
   cnames <- colnames(fitobj$Y)
+
+  if(isTRUE(remove_ar)){
+    # Function to set the diagonal elements of a matrix to zero
+    diag_zero <- function(mat) {
+      diag(mat) <- 0
+      return(mat)
+    }
+    beta_samps <- array(apply(beta_samps, MARGIN = 3, FUN = diag_zero),
+                        dim = dim(beta_samps))
+  }
 
   #--- Centrality measures
   # In-strength
