@@ -4,12 +4,14 @@
 \alias{get_centrality}
 \title{Compute Centrality Measures}
 \usage{
-get_centrality(fitobj, burnin = 500)
+get_centrality(fitobj, burnin = 500, remove_ar = TRUE)
 }
 \arguments{
 \item{fitobj}{A fit object containing the beta and pcor samples.}
 
 \item{burnin}{An integer specifying the number of initial samples to discard as burn-in. Default is 500.}
+
+\item{remove_ar}{A logical value specifying whether to remove the autoregressive effects for centrality calculation. Default is TRUE.}
 }
 \value{
 A list containing the following centrality measures:

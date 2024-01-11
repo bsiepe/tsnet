@@ -44,11 +44,11 @@ get_centrality <- function(fitobj,
 
   #--- Centrality measures
   # In-strength
-  instrength <- t(apply(beta_samps, MARGIN = 3, FUN = rowSums))
+  instrength <- t(apply(beta_samps, MARGIN = 3, FUN = colSums))
   colnames(instrength) <- cnames
 
   # Out-strength
-  outstrength <- t(apply(beta_samps, MARGIN = 3, FUN = colSums))
+  outstrength <- t(apply(beta_samps, MARGIN = 3, FUN = rowSums))
   colnames(outstrength) <- cnames
 
   # Contemporaneous strength
@@ -106,9 +106,9 @@ plot_centrality <- function(obj,
     return(df)
   }
 
-  instrength <- create_centrality_df(obj$instrength, "instrength")
-  outstrength <- create_centrality_df(obj$outstrength, "outstrength")
-  strength <- create_centrality_df(obj$strength, "strength")
+  instrength <- create_centrality_df(obj$instrength, "Instrength")
+  outstrength <- create_centrality_df(obj$outstrength, "Outstrength")
+  strength <- create_centrality_df(obj$strength, "Strength")
 
 
   df_centrality <- cbind(
