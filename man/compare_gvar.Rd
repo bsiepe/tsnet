@@ -22,7 +22,7 @@ compare_gvar(
 
 \item{cutoff}{The percentage level of the test (default: 5\%) as integer.}
 
-\item{dec_rule}{The decision rule to be used. Currently only supports default "OR".}
+\item{dec_rule}{The decision rule to be used. Currently supports default "OR" (comparing against two reference distributions) and "COMB" (combining the reference distributions).}
 
 \item{n_draws}{The number of draws to use for reference distributions (default: 1000).}
 
@@ -54,4 +54,5 @@ and compares them using reference distributions created from their
 posterior distributions. Returns the p-value for the comparison
 based on a decision rule specified by the user. Details are available in
 TODO ADD REFERENCE TO PREPRINT.
+TODO Change description for new test.
 }

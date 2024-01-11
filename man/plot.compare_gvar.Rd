@@ -16,7 +16,7 @@
 \item{...}{Additional arguments to be passed to the plotting functions.}
 }
 \description{
-This function is a plotting method for the class produced by [compare_gvar()]. It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
+This function is a plotting method for the class produced by compare_gvar(). It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
 }
 \details{
 The function first checks if the full reference distributions of compare_gvar are saved using the argument 'return_all' set to TRUE. If not, an error is thrown.
