@@ -49,11 +49,18 @@ posterior_plot <- function(fitobj,
   beta_samps <- as.data.frame(samps[, beta_cols])
   pcor_samps <- as.data.frame(samps[, pcor_cols])
 
+  # Get order of variables for plotting
+  beta_order <- rownames(fitobj$beta_mu)
+  pcor_order <- colnames(fitobj$beta_mu)
+
+
   # Pivot longer
   beta <- beta_samps |>
     as.data.frame() |>
     dplyr::mutate(iteration = dplyr::row_number()) |>
-    tidyr::pivot_longer(cols = !.data$iteration, names_to = "edge", values_to = "value") |>
+    tidyr::pivot_longer(cols = !.data$iteration,
+                        names_to = "edge",
+                        values_to = "value") |>
     # split edge description into nodes
     tidyr::separate_wider_delim(
       cols = .data$edge, delim = "_",
@@ -63,7 +70,9 @@ posterior_plot <- function(fitobj,
   pcor <- pcor_samps |>
     as.data.frame() |>
     dplyr::mutate(iteration = dplyr::row_number()) |>
-    tidyr::pivot_longer(cols = !.data$iteration, names_to = "edge", values_to = "value") |>
+    tidyr::pivot_longer(cols = !.data$iteration,
+                        names_to = "edge",
+                        values_to = "value") |>
     # split edge description into nodes
     tidyr::separate_wider_delim(
       cols = .data$edge, delim = "--",
@@ -79,9 +88,13 @@ posterior_plot <- function(fitobj,
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup() |>
+      dplyr::mutate(dv = factor(.data$dv, levels = pcor_order),
+                    iv = factor(.data$iv, levels = beta_order)) |>
       ggplot(aes(x = .data$value)) +
       # ggdist::stat_halfeye(aes(fill = after_stat(level)), .width = cis)+
-      ggdist::stat_slab(aes(fill = after_stat(.data$level), alpha = abs(.data$mean_value)), .width = c(cis, 1)) +
+      ggdist::stat_slab(aes(fill = after_stat(.data$level),
+                            alpha = abs(.data$mean_value)),
+                        .width = c(cis, 1)) +
       ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)), size = 1) +
       scale_alpha(guide = "none") +
       facet_grid(iv ~ dv,
@@ -125,9 +138,14 @@ posterior_plot <- function(fitobj,
       dplyr::group_by(.data$dv, .data$iv) |>
       dplyr::mutate(mean_value = mean(.data$value, na.rm = TRUE)) |>
       dplyr::ungroup() |>
+      dplyr::mutate(dv = factor(.data$dv, levels = pcor_order),
+                    iv = factor(.data$iv, levels = pcor_order)) |>
       ggplot(aes(x = .data$value)) +
-      ggdist::stat_slab(aes(fill = after_stat(.data$level), alpha = abs(.data$mean_value)), .width = c(cis, 1)) +
-      ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)), size = 1) +
+      ggdist::stat_slab(aes(fill = after_stat(.data$level),
+                            alpha = abs(.data$mean_value)),
+                        .width = c(cis, 1)) +
+      ggdist::stat_pointinterval(aes(alpha = abs(.data$mean_value)),
+                                 size = 1) +
       facet_grid(iv ~ dv,
         switch = "y"
       ) +
