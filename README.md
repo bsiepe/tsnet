@@ -6,6 +6,10 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+Please note that this package is currently undergoing major changes as
+part of a manuscript revision. Please get in contact if you currently
+wish to use the package.
+
 The goal of tsnet is to include helpful functions for dynamic network
 modelling in psychology and surrounding fields. Currently, the core of
 the package is the comparison of Bayesian gVAR models as estimated in
