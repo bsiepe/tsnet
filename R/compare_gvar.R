@@ -14,7 +14,7 @@
 #' @param cutoff
 #' The percentage level of the test (default: 5\%) as integer.
 #' @param dec_rule
-#' The decision rule to be used. Currently supports default "OR" (comparing against two reference distributions) and "COMB" (combining the reference distributions).
+#' The decision rule to be used. Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).
 #' @param n_draws
 #' The number of draws to use for reference distributions (default: 1000).
 #' @param comp
@@ -36,23 +36,35 @@
 #'   \item{emp_pcor}{The empirical distance between the two contemporaneous networks}
 #'   \item{larger_beta}{The number of reference distances larger than the empirical distance for the temporal network}
 #'   \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
+#'   \item{arguments}{The arguments used in the function call}
 #'    }
 #' @importFrom dplyr group_by summarize pull
-#' @importFrom ggplot2 geom_density theme_classic scale_y_continuous
-#' @importFrom cowplot get_legend plot_grid
-#' @importFrom ggokabeito scale_fill_okabe_ito
 #' @export
 
 compare_gvar <- function(fit_a,
                          fit_b,
                          cutoff = 5,
-                         dec_rule = "OR",
+                         dec_rule = "or",
                          n_draws = 1000,
                          comp = "frob",
                          return_all = FALSE,
                          sampling_method = "sequential") {
+
+  # browser()
   # Store arguments
-  args <- list(match.call)
+  mc <- match.call()
+
+  # Get formal arguments and their defaults
+  fl <- formals()
+
+  # Identify the missing arguments
+  missing_args <- setdiff(names(fl), names(mc))
+
+  # update with missing arguments
+  missing_args <- Map(function(arg, default)
+    if (!is.null(default)) mc[[arg]] <- default, missing_args, fl[missing_args])
+
+  all_args <- c(as.list(mc), missing_args)
 
   # Input checks.
   if (!inherits(fit_a, "var_estimate")) {
@@ -66,13 +78,13 @@ compare_gvar <- function(fit_a,
     stop("Error: 'cutoff' must be between 0 and 100.")
   }
   if (cutoff < 1) {
-    warning("Error: 'cutoff' is less than 1, which means that the alpha level is < 0.01.
+    warning("Warning: 'cutoff' is less than 1, which means that the alpha level is < 0.01.
             Make sure you specified the correct input.")
   }
   # Check dec_rule
-  valid_dec_rules <- c("OR", "COMB")
+  valid_dec_rules <- c("or", "comb")
   if (!dec_rule %in% valid_dec_rules) {
-    stop("Error: 'dec_rule' can only be 'OR' or 'COMB'.")
+    stop("Error: 'dec_rule' can only be 'or' or 'comb'.")
   }
 
   # Check comp
@@ -157,11 +169,9 @@ compare_gvar <- function(fit_a,
     comp = rep(comp, n_draws * 2)
   )
 
-  ## Implement decision rule "OR"
+  ## Implement decision rule "or"
   # Helper function
-
-
-  if (dec_rule == "OR") {
+  if (dec_rule == "or") {
     compute_stats <- function(data, var, cutoff, n_draws) {
       sig_decision <- data |>
         dplyr::group_by(.data$mod) |>
@@ -171,7 +181,7 @@ compare_gvar <- function(fit_a,
         ) |>
         dplyr::summarize(
           sig_decision =
-            sum(.data$sum_larger < cutoff * (n_draws / 100)) # TODO fix magical number
+            sum(.data$sum_larger < cutoff * (n_draws / 100))
         ) |>
         dplyr::pull(.data$sig_decision)
 
@@ -189,6 +199,7 @@ compare_gvar <- function(fit_a,
     sig_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sig_decision
     larger_pcor <- compute_stats(res_pcor, "null", cutoff, n_draws)$sum_larger
   }
+  ## Decision rule "comb"
   else if(dec_rule == "comb") {
     compute_stats <- function(data, var, cutoff, n_draws) {
       sig_decision <- data |>
@@ -199,7 +210,7 @@ compare_gvar <- function(fit_a,
         ) |>
         dplyr::summarize(
           sig_decision =
-            sum(.data$sum_larger < cutoff * (n_draws / 100)) # TODO fix magical number
+            sum(.data$sum_larger < cutoff * (n_draws / 100))
         ) |>
         dplyr::pull(.data$sig_decision)
 
@@ -227,7 +238,7 @@ compare_gvar <- function(fit_a,
       emp_pcor = emp_pcor,
       larger_beta = larger_beta,
       larger_pcor = larger_pcor,
-      args = args
+      arguments = all_args
     )
   }
   if (isTRUE(return_all)) {
@@ -240,7 +251,7 @@ compare_gvar <- function(fit_a,
       emp_pcor = emp_pcor,
       larger_beta = larger_beta,
       larger_pcor = larger_pcor,
-      args = args
+      arguments = all_args
     )
   }
 
