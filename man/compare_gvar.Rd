@@ -8,7 +8,7 @@ compare_gvar(
   fit_a,
   fit_b,
   cutoff = 5,
-  dec_rule = "OR",
+  dec_rule = "or",
   n_draws = 1000,
   comp = "frob",
   return_all = FALSE,
@@ -22,7 +22,7 @@ compare_gvar(
 
 \item{cutoff}{The percentage level of the test (default: 5\%) as integer.}
 
-\item{dec_rule}{The decision rule to be used. Currently supports default "OR" (comparing against two reference distributions) and "COMB" (combining the reference distributions).}
+\item{dec_rule}{The decision rule to be used. Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).}
 
 \item{n_draws}{The number of draws to use for reference distributions (default: 1000).}
 
@@ -46,6 +46,7 @@ A list containing the results of the comparison. The list includes:
   \item{emp_pcor}{The empirical distance between the two contemporaneous networks}
   \item{larger_beta}{The number of reference distances larger than the empirical distance for the temporal network}
   \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
+  \item{arguments}{The arguments used in the function call}
    }
 }
 \description{

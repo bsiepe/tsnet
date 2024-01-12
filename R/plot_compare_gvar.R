@@ -15,8 +15,9 @@
 #' The function generates two density plots using ggplot2, one for the variable temporal network (beta) and another for the contemporaneous network (pcor). The density distributions are filled with different colors based on the corresponding models (mod_a and mod_b). The empirical distances between the networks are indicated by red vertical lines.
 #'
 #' @import ggplot2
-#' @import ggokabeito
-#' @import cowplot
+#' @importFrom ggokabeito scale_fill_okabe_ito palette_okabe_ito
+#' @importFrom cowplot plot_grid get_legend
+#' @importFrom ggdist theme_ggdist
 #'
 #' @export
 plot.compare_gvar <- function(x,
@@ -46,53 +47,101 @@ plot.compare_gvar <- function(x,
     x$res_pcor$mod <- gsub("mod_b", name_b, x$res_pcor$mod)
   }
 
+  # Check test type
+  if(x$arguments$dec_rule == "or"){
+    # Plotting
+    plt_beta <- ggplot2::ggplot(x$res_beta,
+                                aes(x = .data$null,
+                                    fill = .data$mod))+
+      ggplot2::geom_density(alpha = .7)+
+      ggdist::theme_ggdist() +
+      ggokabeito::scale_fill_okabe_ito(order = c(5, 1:8))+
+      ggplot2::geom_vline(aes(xintercept = x$emp_beta),
+                          col = "black", lty = 1, linewidth = .75)+
+      ggplot2::scale_y_continuous(expand = c(0,0))+
+      ggplot2::labs(title = "Temporal",
+                    y = "",
+                    x = "Norm Value",
+                    fill = "Model")+
+
+      ggplot2::theme(axis.ticks.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     legend.position = "right")
 
 
-  # Plotting
-  plt_beta <- ggplot2::ggplot(x$res_beta,
-                              aes(x = .data$null,
-                                  fill = .data$mod))+
-    ggplot2::geom_density(alpha = .7)+
-    ggplot2::theme_classic()+
-    ggokabeito::scale_fill_okabe_ito()+
-    ggplot2::geom_vline(aes(xintercept = x$emp_beta),
-                        col = "red", lty = 1, linewidth = .75)+
-    ggplot2::scale_y_continuous(expand = c(0,0))+
-    ggplot2::labs(title = "Temporal",
-                  y = "",
-                  x = "Norm Value",
-                  fill = "Model")+
+    plt_pcor <- ggplot2::ggplot(x$res_pcor,
+                                aes(x = .data$null,
+                                    fill = .data$mod))+
+      ggplot2::geom_density(alpha = .7)+
+      ggdist::theme_ggdist() +
+      ggokabeito::scale_fill_okabe_ito(order = c(5, 1:8))+
+      ggplot2::geom_vline(aes(xintercept = x$emp_pcor),
+                          col = "black", lty = 1, linewidth = .75)+
+      ggplot2::scale_y_continuous(expand = c(0,0))+
+      ggplot2::labs(title = "Contemporaneous",
+                    y = "",
+                    x = "Norm Value",
+                    fill = "Model")+
+      ggplot2::theme(axis.ticks.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     legend.position = "right")
 
-    ggplot2::theme(axis.ticks.y = element_blank(),
-                   axis.text.y = element_blank(),
-                   legend.position = "right")
+    leg <- cowplot::get_legend(plt_beta)
+
+    # Plot
+    plt_tmp <- cowplot::plot_grid(plt_beta + theme(legend.position = "none"),
+                                  plt_pcor + theme(legend.position = "none"))
+
+    # Add legend
+    plt <- cowplot::plot_grid(plt_tmp, leg, rel_widths = c(3, .4))
+  }
+  else if(x$arguments$dec_rule == "comb"){
+    # Plotting
+    plt_beta <- ggplot2::ggplot(x$res_beta,
+                                aes(x = .data$null))+
+      ggplot2::geom_density(alpha = .7,
+                            fill = ggokabeito::palette_okabe_ito()[5])+
+      ggdist::theme_ggdist() +
+      ggplot2::geom_vline(aes(xintercept = x$emp_beta),
+                          col = "black", lty = 1, linewidth = .75)+
+      ggplot2::scale_y_continuous(expand = c(0,0))+
+      ggplot2::labs(title = "Temporal",
+                    y = "",
+                    x = "Norm Value",
+                    fill = "Model")+
+
+      ggplot2::theme(axis.ticks.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     legend.position = "right")
 
 
-  plt_pcor <- ggplot2::ggplot(x$res_pcor,
-                              aes(x = .data$null,
-                                  fill = .data$mod))+
-    ggplot2::geom_density(alpha = .7)+
-    ggplot2::theme_classic()+
-    ggokabeito::scale_fill_okabe_ito()+
-    ggplot2::geom_vline(aes(xintercept = x$emp_pcor),
-                        col = "red", lty = 1, linewidth = .75)+
-    ggplot2::scale_y_continuous(expand = c(0,0))+
-    ggplot2::labs(title = "Contemporaneous",
-                  y = "",
-                  x = "Norm Value",
-                  fill = "Model")+
-    ggplot2::theme(axis.ticks.y = element_blank(),
-                   axis.text.y = element_blank(),
-                   legend.position = "right")
+    plt_pcor <- ggplot2::ggplot(x$res_pcor,
+                                aes(x = .data$null))+
+      ggplot2::geom_density(alpha = .7,
+                            fill = ggokabeito::palette_okabe_ito()[5])+
+      ggdist::theme_ggdist() +
+      ggplot2::geom_vline(aes(xintercept = x$emp_pcor),
+                          col = "black", lty = 1, linewidth = .75)+
+      ggplot2::scale_y_continuous(expand = c(0,0))+
+      ggplot2::labs(title = "Contemporaneous",
+                    y = "",
+                    x = "Norm Value",
+                    fill = "Model")+
+      ggplot2::theme(axis.ticks.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     legend.position = "right")
 
-  leg <- cowplot::get_legend(plt_beta)
 
-  # Plot
-  plt_tmp <- cowplot::plot_grid(plt_beta + theme(legend.position = "none"),
-                                plt_pcor + theme(legend.position = "none"))
+    # Plot
+    plt <- cowplot::plot_grid(plt_beta + theme(legend.position = "none"),
+                                  plt_pcor + theme(legend.position = "none"))
 
-  # Add legend
-  plt <- cowplot::plot_grid(plt_tmp, leg, rel_widths = c(3, .4))
+  }
+
+
+
+
+
   print(plt)
 
 }
