@@ -106,9 +106,9 @@ plot_centrality <- function(obj,
     return(df)
   }
 
-  instrength <- create_centrality_df(obj$instrength, "Instrength")
-  outstrength <- create_centrality_df(obj$outstrength, "Outstrength")
-  strength <- create_centrality_df(obj$strength, "Strength")
+  instrength <- create_centrality_df(obj$instrength, "Temporal\nInstrength")
+  outstrength <- create_centrality_df(obj$outstrength, "Temporal\nOutstrength")
+  strength <- create_centrality_df(obj$strength, "Contemporaneous\nStrength")
 
 
   df_centrality <- cbind(
