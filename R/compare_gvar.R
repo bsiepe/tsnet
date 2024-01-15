@@ -210,7 +210,7 @@ compare_gvar <- function(fit_a,
         ) |>
         dplyr::summarize(
           sig_decision =
-            sum(.data$sum_larger < cutoff * (n_draws / 100))
+            sum(.data$sum_larger < cutoff * (n_draws * 2 / 100))
         ) |>
         dplyr::pull(.data$sig_decision)
 
