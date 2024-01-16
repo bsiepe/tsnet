@@ -9,7 +9,7 @@ post_distance_within(
   comp,
   pred,
   draws = 1000,
-  sampling_method = "sequential"
+  sampling_method = "random"
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ post_distance_within(
 \item{draws}{An integer specifying the number of random pairs of models that should be compared.}
 
 \item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-Default: "sequential"}
+Default: "random"}
 }
 \value{
 A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.

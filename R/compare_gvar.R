@@ -25,7 +25,7 @@
 #' Has to be set to TRUE for plotting the results.
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-#' Default: "sequential"
+#' Default: "random"
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
@@ -48,9 +48,9 @@ compare_gvar <- function(fit_a,
                          n_draws = 1000,
                          comp = "frob",
                          return_all = FALSE,
-                         sampling_method = "sequential") {
+                         sampling_method = "random") {
 
-  # browser()
+
   # Store arguments
   mc <- match.call()
 
@@ -97,7 +97,6 @@ compare_gvar <- function(fit_a,
   if (n_draws < 1000) {
     warning("Warning: 'n_draws' below 1000 has not been tested yet.")
   }
-
 
 
   ## Helper function for computing distance metrics

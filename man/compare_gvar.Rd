@@ -12,7 +12,7 @@ compare_gvar(
   n_draws = 1000,
   comp = "frob",
   return_all = FALSE,
-  sampling_method = "sequential"
+  sampling_method = "random"
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ The use of the Frobenius norm is recommended.}
 Has to be set to TRUE for plotting the results.}
 
 \item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-Default: "sequential"}
+Default: "random"}
 }
 \value{
 A list containing the results of the comparison. The list includes:

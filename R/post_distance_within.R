@@ -11,7 +11,7 @@
 #' @param draws An integer specifying the number of random pairs of models that should be compared.
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-#' Default: "sequential"
+#' Default: "random"
 #'
 #' @return A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
 #'
@@ -23,10 +23,15 @@ post_distance_within <- function(fitobj,
                                  comp,
                                  pred, # posterior predictive?
                                  draws = 1000,
-                                 sampling_method = "sequential") {
+                                 sampling_method = "random") {
   # storage
   dist_out <- list()
 
+
+  # Helper function to only use upper triangle of matrix
+  ut <- function(x) {
+    matrix(x[upper.tri(x, diag = FALSE)])
+  }
 
   # for posterior predictive approach
   if (isTRUE(pred)) {
@@ -44,13 +49,13 @@ post_distance_within <- function(fitobj,
     )
     distance_fn_pcor <- switch(comp,
       frob = {
-        function(x, y, mod_one, mod_two) norm(x$fit[[mod_one]]$pcor_mu - y$fit[[mod_two]]$pcor_mu, type = "F")
+        function(x, y, mod_one, mod_two) norm(ut(x$fit[[mod_one]]$pcor_mu) - ut(y$fit[[mod_two]]$pcor_mu), type = "F")
       },
       maxdiff = {
-        function(x, y, mod_one, mod_two) max(abs((x$fit[[mod_one]]$pcor_mu - y$fit[[mod_two]]$pcor_mu)))
+        function(x, y, mod_one, mod_two) max(abs((ut(x$fit[[mod_one]]$pcor_mu) - ut(y$fit[[mod_two]]$pcor_mu))))
       },
       l1 = {
-        function(x, y, mod_one, mod_two) sum(abs((x$fit[[mod_one]]$pcor_mu - y$fit[[mod_two]]$pcor_mu)))
+        function(x, y, mod_one, mod_two) sum(abs((ut(x$fit[[mod_one]]$pcor_mu) - ut(y$fit[[mod_two]]$pcor_mu))))
       }
     )
 
@@ -77,13 +82,13 @@ post_distance_within <- function(fitobj,
     )
     distance_fn_pcor <- switch(comp,
       frob = {
-        function(x, y, mod_one, mod_two) norm(x$fit$pcors[, , mod_one] - y$fit$pcors[, , mod_two], type = "F")
+        function(x, y, mod_one, mod_two) norm(ut(x$fit$pcors[, , mod_one]) - ut(y$fit$pcors[, , mod_two]), type = "F")
       },
       maxdiff = {
-        function(x, y, mod_one, mod_two) max(abs((x$fit$pcors[, , mod_one] - y$fit$pcors[, , mod_two])))
+        function(x, y, mod_one, mod_two) max(abs((ut(x$fit$pcors[, , mod_one]) - ut(y$fit$pcors[, , mod_two]))))
       },
       l1 = {
-        function(x, y, mod_one, mod_two) sum(abs((x$fit$pcors[, , mod_one] - y$fit$pcors[, , mod_two])))
+        function(x, y, mod_one, mod_two) sum(abs((ut(x$fit$pcors[, , mod_one]) - ut(y$fit$pcors[, , mod_two]))))
       }
     )
 
