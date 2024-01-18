@@ -153,7 +153,7 @@ plot_centrality <- function(obj,
         xmax = .data$ub
       )) +
       ggdist::theme_ggdist() +
-      ggplot2::facet_grid(. ~ .data$centrality) +
+      ggplot2::facet_wrap(. ~ .data$centrality) +
       ggplot2::labs(
         x = "Centrality",
         y = "Variable"
@@ -196,7 +196,7 @@ plot_centrality <- function(obj,
       ) +
       ggplot2::scale_alpha(guide = "none") +
       ggdist::theme_ggdist() +
-      ggplot2::facet_grid(. ~ .data$centrality) +
+      ggplot2::facet_wrap(. ~ .data$centrality) +
       ggplot2::scale_fill_brewer() +
       ggplot2::labs(
         x = "Centrality",
@@ -207,3 +207,4 @@ plot_centrality <- function(obj,
     return(density_plot)
   }
 }
+
