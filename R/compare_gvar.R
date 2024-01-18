@@ -26,6 +26,7 @@
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 #' Default: "random"
+#' @param indices A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
@@ -48,7 +49,8 @@ compare_gvar <- function(fit_a,
                          n_draws = 1000,
                          comp = "frob",
                          return_all = FALSE,
-                         sampling_method = "random") {
+                         sampling_method = "random",
+                         indices = NULL) {
 
 
   # Store arguments
@@ -100,9 +102,13 @@ compare_gvar <- function(fit_a,
 
 
   ## Helper function for computing distance metrics
-  compute_metric <- function(a, b, metric) {
+  compute_metric <- function(a, b, metric, indices = NULL) {
     tryCatch(
       {
+        if (!is.null(indices)) {
+          a <- a[indices]
+          b <- b[indices]
+        }
         if (metric == "frob") {
           norm(a - b, type = "F")
         } else if (metric == "maxdiff") {
@@ -125,19 +131,33 @@ compare_gvar <- function(fit_a,
     comp = comp,
     pred = FALSE,
     draws = n_draws,
-    sampling_method = sampling_method
+    sampling_method = sampling_method,
+    indices = indices
   )
   ref_b <- post_distance_within(fit_b,
     comp = comp,
     pred = FALSE,
     draws = n_draws,
-    sampling_method = sampling_method
+    sampling_method = sampling_method,
+    indices = indices
   )
 
   ## Empirical distance
   # Compute empirical distance as test statistic
-  emp_beta <- compute_metric(fit_a$beta_mu, fit_b$beta_mu, comp)
-  emp_pcor <- compute_metric(ut(fit_a$pcor_mu), ut(fit_b$pcor_mu), comp)
+  emp_beta <- compute_metric(fit_a$beta_mu, fit_b$beta_mu,
+                             comp,
+                             indices)
+  if (is.null(indices)) {
+    emp_pcor <- compute_metric(ut(fit_a$pcor_mu),
+                               ut(fit_b$pcor_mu),
+                               comp,
+                               indices)
+  } else {
+    emp_pcor <- compute_metric(fit_a$pcor_mu,
+                               fit_b$pcor_mu,
+                               comp,
+                               indices)
+  }
 
 
   ## Combine results

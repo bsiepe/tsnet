@@ -12,7 +12,8 @@ compare_gvar(
   n_draws = 1000,
   comp = "frob",
   return_all = FALSE,
-  sampling_method = "random"
+  sampling_method = "random",
+  indices = NULL
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ Has to be set to TRUE for plotting the results.}
 
 \item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 Default: "random"}
+
+\item{indices}{A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
 }
 \value{
 A list containing the results of the comparison. The list includes:
