@@ -15,7 +15,6 @@
 #' @import ggdist
 #' @import tidyr
 #' @import dplyr
-#' @importFrom BGGM posterior_samples
 #' @importFrom ggplot2 aes scale_x_continuous  facet_grid geom_vline labs scale_alpha scale_fill_brewer ylim theme element_blank ggplot after_stat
 #' @importFrom ggdist stat_pointinterval stat_slab
 #' @importFrom tidyr separate_wider_delim pivot_longer
@@ -38,8 +37,8 @@ posterior_plot <- function(fitobj,
   }
 
 
-  # Obtain samples
-  samps <- BGGM::posterior_samples(fitobj)
+  # Obtain samples in matrix notation for BGGM
+  samps <- posterior_samples_bggm(fitobj)
 
 
   # Split into betas and pcors

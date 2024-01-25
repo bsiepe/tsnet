@@ -4,7 +4,7 @@
 \alias{ess_gvar}
 \title{Compute Effective Sample Sizes for MCMC Samples of BGGM GVAR models}
 \usage{
-ess_gvar(fitobj, burnin = 50)
+ess_gvar(fitobj, burnin = 500)
 }
 \arguments{
 \item{fitobj}{A `BGGM` var_estimate fit object.}
