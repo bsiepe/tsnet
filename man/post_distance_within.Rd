@@ -10,7 +10,8 @@ post_distance_within(
   pred,
   draws = 1000,
   sampling_method = "random",
-  indices = NULL
+  indices = NULL,
+  burnin = 500
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ post_distance_within(
 Default: "random"}
 
 \item{indices}{A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
+
+\item{burnin}{The number of burn-in iterations to discard (default: 500).}
 }
 \value{
 A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.

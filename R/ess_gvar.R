@@ -16,7 +16,7 @@
 #' @export
 
 ess_gvar <- function(fitobj,
-                     burnin = 50) {
+                     burnin = 500) {
   # Input checks
   if (!inherits(fitobj, "var_estimate")) {
     stop("Please provide a var_estimate object as input for fitobj.")

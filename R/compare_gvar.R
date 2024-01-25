@@ -27,6 +27,8 @@
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 #' Default: "random"
 #' @param indices A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
+#' @param burnin
+#' The number of burn-in iterations to discard (default: 500).
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
@@ -50,7 +52,8 @@ compare_gvar <- function(fit_a,
                          comp = "frob",
                          return_all = FALSE,
                          sampling_method = "random",
-                         indices = NULL) {
+                         indices = NULL,
+                         burnin = 500) {
 
 
   # Store arguments
@@ -132,14 +135,16 @@ compare_gvar <- function(fit_a,
     pred = FALSE,
     draws = n_draws,
     sampling_method = sampling_method,
-    indices = indices
+    indices = indices,
+    burnin = burnin
   )
   ref_b <- post_distance_within(fit_b,
     comp = comp,
     pred = FALSE,
     draws = n_draws,
     sampling_method = sampling_method,
-    indices = indices
+    indices = indices,
+    burnin = burnin
   )
 
   ## Empirical distance

@@ -12,8 +12,10 @@
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 #' Default: "random"
-#' @param indices A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
-#'
+#' @param indices
+#' A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
+#' @param burnin
+#' The number of burn-in iterations to discard (default: 500).
 #' @return A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
 #'
 #'
@@ -25,7 +27,8 @@ post_distance_within <- function(fitobj,
                                  pred, # posterior predictive?
                                  draws = 1000,
                                  sampling_method = "random",
-                                 indices = NULL) {
+                                 indices = NULL,
+                                 burnin = 500) {
   # storage
   dist_out <- list()
 
@@ -92,7 +95,9 @@ post_distance_within <- function(fitobj,
   if(sampling_method == "random"){
     # Determine the valid range of values for drawing pairs
     # Leave out middle 100 to keep certain distance between halves
-    valid_range <- setdiff(1:n_mod, ((n_mod/2 - 50):(n_mod/2 + 49)))
+    # take out burnin-in samples
+    valid_range <- setdiff((burnin+1):n_mod,
+                           ((n_mod/2 - 50 + (burnin/2)):(n_mod/2 + 49 + burnin/2)))
 
     # Draw pairs randomly from the first half and second half
     mod_pairs[1, 1:draws] <- sample(valid_range[1:(length(valid_range)/2)], draws)

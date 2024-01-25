@@ -13,7 +13,8 @@ compare_gvar(
   comp = "frob",
   return_all = FALSE,
   sampling_method = "random",
-  indices = NULL
+  indices = NULL,
+  burnin = 500
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ Has to be set to TRUE for plotting the results.}
 Default: "random"}
 
 \item{indices}{A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
+
+\item{burnin}{The number of burn-in iterations to discard (default: 500).}
 }
 \value{
 A list containing the results of the comparison. The list includes:
