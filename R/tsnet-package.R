@@ -2,7 +2,7 @@
 #'
 #' @description Time Series Network Analysis with R
 #'
-#' @docType _PACKAGE
+#' @docType package
 #' @name tsnet-package
 #' @aliases tsnet
 #' @useDynLib tsnet, .registration = TRUE
