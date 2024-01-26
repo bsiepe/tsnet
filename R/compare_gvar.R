@@ -5,7 +5,7 @@
 #' and compares them using reference distributions created from their
 #' posterior distributions. Returns the p-value for the comparison
 #' based on a decision rule specified by the user. Details are available in
-#' Siepe, B. S., & Heck, D. W. (2023). Bayesian Estimation and Comparison of Idiographic Network Models. doi:10.31234/osf.io/uwfjc
+#' Siepe & Heck (2023) <doi:10.31234/osf.io/uwfjc>.
 #'
 #' @param fit_a
 #' Fitted model object for Model A.
