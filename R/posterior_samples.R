@@ -87,5 +87,57 @@ posterior_samples_bggm <- function(fitobj,
 
 
 
+#' Convert Draws Matrix to List of Matrices
+#'
+#' This helper function transforms a matrix of draws into a list of matrices, 
+#' each representing a single iteration.
+#'
+#' @param draws_matrix A matrix of draws where each row represents an iteration.
+#' @return A list of matrices, each representing a single iteration.
+draws_matrix2list <- function(draws_matrix) {
+  iterations_list <-
+    lapply(
+      X = 1:nrow(draws_matrix),
+      FUN = function(X) {
+        matrix(draws_matrix[X,], ncol = sqrt(ncol(draws_matrix)), byrow = FALSE)
+      }
+    )
+  return(iterations_list)
+}
 
+#' Convert Draws Matrix to Array
+#'
+#' This helper function transforms a matrix of draws into a 3D array.
+#'
+#' @param draws_matrix A matrix of draws where each row represents an iteration.
+#' @return A 3D array where each slice represents an iteration.
+draws_matrix2array <- function(draws_matrix) {
+  array <-
+    array(t(draws_matrix),
+          dim = c(sqrt(ncol(draws_matrix)),
+                  sqrt(ncol(draws_matrix)),
+                  nrow(draws_matrix)))
 
+  return(array)
+}
+
+#' Convert Draws Array to Matrix
+#'
+#' This helper function transforms a 3D array of draws into a matrix. 
+#' It also allows for the removal of warmup samples.
+#'
+#' @param array_3d A 3D array of draws where each slice represents an iteration.
+#' @param warmup An integer specifying the number of initial samples to discard as warm-up. Default is 0.
+#' @return A matrix where each row represents an iteration.
+draws_array2matrix <- function(array_3d,
+                               warmup = 0) { # set to zero to keep everything
+  iterations_list <-
+    lapply(
+      X = (warmup+1):dim(array_3d)[3],
+      FUN = function(X) {
+        as.vector(array_3d[, , X])
+      }
+    )
+  matrix <- do.call(rbind, iterations_list)
+  return(matrix)
+}
