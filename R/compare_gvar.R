@@ -5,8 +5,8 @@
 #' and compares them using reference distributions created from their
 #' posterior distributions. Returns the p-value for the comparison
 #' based on a decision rule specified by the user. Details are available in
-#' TODO ADD REFERENCE TO PREPRINT.
-#' TODO Change description for new test.
+#' Siepe, B. S., & Heck, D. W. (2023). Bayesian Estimation and Comparison of Idiographic Network Models. doi:10.31234/osf.io/uwfjc
+#'
 #' @param fit_a
 #' Fitted model object for Model A.
 #' @param fit_b
@@ -71,13 +71,6 @@ compare_gvar <- function(fit_a,
 
   all_args <- c(as.list(mc), missing_args)
 
-  # Input checks.
-  if (!inherits(fit_a, "var_estimate")) {
-    stop("Please provide a var_estimate object as input for fit_a.")
-  }
-  if (!inherits(fit_b, "var_estimate")) {
-    stop("Please provide a var_estimate object as input for fit_b.")
-  }
   # Check cutoff
   if (cutoff < 0 || cutoff > 100) {
     stop("Error: 'cutoff' must be between 0 and 100.")
