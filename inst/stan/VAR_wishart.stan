@@ -56,8 +56,6 @@ model {
   //target+= student_t_lpdf(mu_Beta | 3,0,2);
   //target+= student_t_lpdf(sigma_Beta | 3,0,2);
 
-  // prior_Rho_marginal = 1/ (delta+1)
-  // delta = (1 / prior_Rho_marginal) -1
   target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, I);  // prior on precision matrix
   {
     for(t in 2:T){
