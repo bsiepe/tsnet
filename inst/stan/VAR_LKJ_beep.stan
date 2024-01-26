@@ -11,7 +11,7 @@ data {
   matrix[K,K] prior_Beta_scale;  // scales for priors on Beta matrix
   matrix[K,K] prior_Rho_loc;  // locations for priors on partial correlations
   matrix[K,K] prior_Rho_scale;   // scales for priors on partial correlations
-  int<lower=1> prior_Rho_marginal; // prior for partial corr: marginal beta parameter 
+  int<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
@@ -23,7 +23,7 @@ parameters {
   matrix[K,K] Beta_raw; //
   //real mu_Beta;
   //real<lower=0> sigma_Beta;
-  
+
   // Contemporaneous
   cholesky_factor_corr[K] L_Theta;
   vector[K] sigma_theta;
@@ -33,15 +33,15 @@ transformed parameters{
   // Non-centered parameterization for Beta matrix
   matrix[K,K] Beta = Beta_raw .* prior_Beta_scale + prior_Beta_loc;
   //matrix[K,K] Beta = Beta_raw * sigma_Beta + mu_Beta;
-  
+
   // Covariance matrix from cholesky corr matrix and SDs
-  matrix[K,K] Sigma = diag_pre_multiply(exp(sigma_theta), L_Theta) * 
-                      diag_pre_multiply(exp(sigma_theta), L_Theta)'; 
+  matrix[K,K] Sigma = diag_pre_multiply(exp(sigma_theta), L_Theta) *
+                      diag_pre_multiply(exp(sigma_theta), L_Theta)';
   // Partial correlation matrix
   matrix[K,K] Rho;
   {
     // Precision matrix
-    matrix[K,K] Theta = inverse_spd(Sigma); 
+    matrix[K,K] Theta = inverse_spd(Sigma);
     for(i in 1:K){
       for(j in 1:K){
         if(i != j){
@@ -59,17 +59,17 @@ model {
   target+=   std_normal_lpdf(to_vector(Beta_raw));    // prior on Beta
   //target+= student_t_lpdf(mu_Beta | 3,0,2);
   //target+= student_t_lpdf(sigma_Beta | 3,0,2);
-  
-  target+= lkj_corr_cholesky_lpdf(L_Theta | prior_Rho_marginal + 1 - K/2.0);
+
+  target+= lkj_corr_cholesky_lpdf(L_Theta | prior_delta + 1 - K/2.0);
   // marginal beta: alpha = beta = eta -1 + K/2
   // cholesky prior: eta = alpha +1 -K/2
-  target+= lkj_corr_cholesky_lpdf(L_Theta | prior_Rho_marginal + 1 - K/2.0);
+  target+= lkj_corr_cholesky_lpdf(L_Theta | prior_delta + 1 - K/2.0);
   target+=   student_t_lpdf(sigma_theta | 3,0,2);   // prior on sigma_theta
   // Priors on partial correlations
   for(i in 1:K){
     for(j in 1:K){
       if(i < j){
-        // Scaled beta prior on partial correlations 
+        // Scaled beta prior on partial correlations
         // (Rho[i,j] / 2 + 0.5 is a scaling to the unit interval)
         target+= beta_proportion_lpdf(
           Rho[i,j] / 2 + 0.5 | prior_Rho_loc[i,j], prior_Rho_scale[i,j]);

@@ -4,14 +4,14 @@
 data {
   int<lower=0> K; // number of predictors
   int<lower=0> T; // number of time points
-  //int<lower=0> N; // number of 
+  //int<lower=0> N; // number of
   array[T] vector[K] Y; // responses
   // Priors
   matrix[K,K] prior_Beta_loc; // locations for priors on Beta matrix
   matrix[K,K] prior_Beta_scale; // scales for priors on Beta matrix
   // matrix[K,K] prior_Rho_loc; // locations for priors on partial correlations
   // matrix[K,K] prior_Rho_scale; // scales for priors on partial correlations
-  int<lower=1> prior_Rho_marginal; // prior for partial corr: marginal beta parameter 
+  int<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
@@ -23,7 +23,7 @@ parameters {
   matrix[K,K] Beta_raw; //
   //real mu_Beta;
   //real<lower=0> sigma_Beta;
-  
+
   // Contemporaneous
   cov_matrix[K] Theta;
 }
@@ -34,7 +34,7 @@ transformed parameters{
   //matrix[K,K] Beta = Beta_raw * sigma_Beta + mu_Beta;
 
   matrix[K,K] Sigma = inverse_spd(Theta);
-  
+
   // Partial correlation matrix
   matrix[K,K] Rho;
   {
@@ -55,10 +55,10 @@ model {
   target+=   std_normal_lpdf(to_vector(Beta_raw));    // prior on Beta
   //target+= student_t_lpdf(mu_Beta | 3,0,2);
   //target+= student_t_lpdf(sigma_Beta | 3,0,2);
-  
+
   // prior_Rho_marginal = 1/ (delta+1)
   // delta = (1 / prior_Rho_marginal) -1
-  target+=   inv_wishart_lpdf(Theta | (1 / prior_Rho_marginal) -1 + K - 1, I);  // prior on precision matrix
+  target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, I);  // prior on precision matrix
   {
     for(t in 2:T){
       // BS: What about intercept?
