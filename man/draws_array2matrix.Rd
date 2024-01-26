@@ -15,6 +15,6 @@ draws_array2matrix(array_3d, warmup = 0)
 A matrix where each row represents an iteration.
 }
 \description{
-This helper function transforms a 3D array of draws into a matrix. 
+This helper function transforms a 3D array of draws into a matrix.
 It also allows for the removal of warmup samples.
 }

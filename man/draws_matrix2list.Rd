@@ -13,6 +13,6 @@ draws_matrix2list(draws_matrix)
 A list of matrices, each representing a single iteration.
 }
 \description{
-This helper function transforms a matrix of draws into a list of matrices, 
+This helper function transforms a matrix of draws into a list of matrices,
 each representing a single iteration.
 }
