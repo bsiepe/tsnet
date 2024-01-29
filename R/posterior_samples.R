@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' fit <- var_estimate (...) # TODO replace with actual fitting function
+#' fit <- var_estimate (...) # replace with actual fitting function
 #' posterior_samples <- posterior_samples_bggm(fit)
 #' }
 #'
@@ -144,76 +144,77 @@ draws_array2matrix <- function(array_3d,
 
 #' Convert Stan Fit to Array of Samples
 #'
-#' This function converts a Stan fit object into an array of samples for each parameter (Beta, Sigma, Rho).
-#' It supports both rstan and cmdstanr backends.
+#' This function converts a Stan fit object into an array of samples for each parameter (Beta, Sigma, Pcor).
+#' It supports rstan as a backend. The function allows to select which parameters should be returned.
 #'
-#' @param stan_fit A Stan fit object obtained from either rstan or cmdstanr.
+#' @param stan_fit A Stan fit object obtained from rstan.
+#' @param return_params A character vector specifying which parameters to return. Options are "beta", "sigma", and "pcor". Default is c("beta", "sigma", "pcor").
 #'
-#' @return A list containing three 3D arrays, each representing the posterior samples for the parameters Beta, Sigma, and Rho. Each slice of the array represents a single iteration.
+#' @return A list containing 3D arrays for the selected parameters. Each array represents the posterior samples for a parameter, and each slice of the array represents a single iteration.
 #'
 #' @examples
 #' \dontrun{
-#' samples <- stan_fit_convert(stan_fit)
+#' samples <- stan_fit_convert(stan_fit, return_params = c("beta", "pcor"))
 #' }
 #'
 #' @export
-stan_fit_convert <-
-  function(stan_fit) {
-    # check fitting backend
-    c <- class(stan_fit)
+stan_fit_convert <- function(stan_fit, 
+                             return_params = c("beta", "sigma", "pcor")) {
+  # check fitting backend
+  c <- class(stan_fit)
 
-    if (attr(c, "package") == "rstan") {
+  if (attr(c, "package") == "rstan") {
+    if ("beta" %in% return_params) {
       draws_beta <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Beta", permuted = FALSE))
+    }
+    if ("sigma" %in% return_params) {
       draws_sigma <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Sigma", permuted = FALSE))
-      draws_rho <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Rho", permuted = FALSE))
     }
-    else{
-      draws_beta <- posterior::as_draws_matrix(stan_fit$draws("Beta"))
-      draws_sigma <-
-        posterior::as_draws_matrix(stan_fit$draws("Sigma"))
-      draws_rho <- posterior::as_draws_matrix(stan_fit$draws("Rho"))
+    if ("pcor" %in% return_params) {
+      draws_pcor <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Rho", permuted = FALSE))
     }
-    # Convert to array of p x p matrices
-    nvar <- sqrt(ncol(draws_beta))
+  } else {
+    stop("Only rstan backend within `stan_gvar` is supported at the moment.")
+  }
 
-    # Beta
+  # Convert to array of p x p matrices
+  nvar <- sqrt(ncol(draws_beta))
+
+  return_list <- list()
+
+  if ("beta" %in% return_params) {
     split_beta <- split(draws_beta, seq(nrow(draws_beta)))
     beta_l <- lapply(split_beta, function(x) {
-      matrix(x,
-             nrow = nvar,
-             ncol = nvar,
-             byrow = TRUE)
+      matrix(x, 
+            nrow = nvar, 
+            ncol = nvar, 
+            byrow = TRUE)
     })
-    beta_array <-
-      array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
+    return_list$beta <- array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
+  }
 
-    # Sigma
+  if ("sigma" %in% return_params) {
     split_sigma <- split(draws_sigma, seq(nrow(draws_sigma)))
     sigma_l <- lapply(split_sigma, function(x) {
-      matrix(x,
-             nrow = nvar,
-             ncol = nvar,
-             byrow = TRUE)
+      matrix(x, 
+            nrow = nvar, 
+            ncol = nvar, 
+            byrow = TRUE)
     })
-    sigma_array <-
-      array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
-
-    # Rho
-    split_rho <- split(draws_rho, seq(nrow(draws_rho)))
-    rho_l <- lapply(split_rho, function(x) {
-      matrix(x,
-             nrow = nvar,
-             ncol = nvar,
-             byrow = TRUE)
-    })
-    rho_array <-
-      array(unlist(rho_l), dim = c(nvar, nvar, nrow(draws_rho)))
-
-    # Return
-    return(list(
-      beta = beta_array,
-      sigma = sigma_array,
-      rho = rho_array
-    ))
+    return_list$sigma <- array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
   }
+
+  if ("pcor" %in% return_params) {
+    split_pcor <- split(draws_pcor, seq(nrow(draws_pcor)))
+    pcor_l <- lapply(split_pcor, function(x) {
+      matrix(x, 
+            nrow = nvar, 
+            ncol = nvar, 
+            byrow = TRUE)
+    })
+    return_list$pcor <- array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
+  }
+
+  return(return_list)
+}
 
