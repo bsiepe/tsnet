@@ -74,7 +74,6 @@ generated quantities{
   {
     for(t in 2:T){
       if(beep[t] > first_beep){
-        // BS: What about intercept?
         vector[K] mu = Beta * Y[t-1,];
         log_lik[t-1] = multi_normal_lpdf(Y[t, ] | mu, Sigma);
       }

@@ -59,7 +59,6 @@ model {
   target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, I);  // prior on precision matrix
   {
     for(t in 2:T){
-      // BS: What about intercept?
       vector[K] mu = Beta * Y[t-1,];
        target += multi_normal_lpdf(Y[t,] | mu, Sigma);
     }
@@ -70,7 +69,6 @@ generated quantities{
   vector[T-1] log_lik;
   {
     for(t in 2:T){
-      // BS: What about intercept?
       vector[K] mu = Beta * Y[t-1,];
       log_lik[t-1] = multi_normal_lpdf(Y[t, ] | mu, Sigma);
     }
