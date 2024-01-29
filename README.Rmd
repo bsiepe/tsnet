@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 Please note that this package is currently undergoing major changes as part of a manuscript revision. Please get in contact if you currently wish to use the package.
 
-The goal of tsnet is to include helpful functions for dynamic network modelling in psychology and surrounding fields. Currently, the core of the package is the comparison of Bayesian gVAR models as estimated in the `BGGM` package. 
+The goal of `tsnet` is to include helpful functions for dynamic network modelling in psychology and surrounding fields. The package contains functionality to estimate Bayesian GVAR models in Stan, as well as a test for network comparison. Additionally, the package includes functions to plot posterior estimates and centrality indices. 
 
 ## Installation
 
@@ -32,9 +32,31 @@ devtools::install_github("bsiepe/tsnet")
 
 ## Getting Started
 
+### Estimating Network Models with Stan
+
+The package includes the `stan_gvar` function that can be used to estimate a GVAR model with Stan. We use `rstan` as a backend. More details are included in the package documentation and the associated preprint.
+
+```{r example-fit, eval = FALSE}
+library(tsnet)
+
+# Load example data
+data <- tsnet::ts_data
+
+# Estimate network
+fit_stan <- tsnet::stan_gvar(data[,-7],
+                 cov_prior = "IW",
+                 iter_warmup = 500,
+                 iter_sampling = 500,
+                 n_chains = 4)
+
+```
+
+
+### Comparing Network Models
+
 This is an example of how to use the package to compare two network models:
 
-```{r example, eval = FALSE}
+```{r example-test, eval = FALSE}
 library(BGGM)
 library(tsnet)
 
