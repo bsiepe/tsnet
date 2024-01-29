@@ -4,21 +4,23 @@
 \alias{stan_fit_convert}
 \title{Convert Stan Fit to Array of Samples}
 \usage{
-stan_fit_convert(stan_fit)
+stan_fit_convert(stan_fit, return_params = c("beta", "sigma", "pcor"))
 }
 \arguments{
-\item{stan_fit}{A Stan fit object obtained from either rstan or cmdstanr.}
+\item{stan_fit}{A Stan fit object obtained from rstan.}
+
+\item{return_params}{A character vector specifying which parameters to return. Options are "beta", "sigma", and "pcor". Default is c("beta", "sigma", "pcor").}
 }
 \value{
-A list containing three 3D arrays, each representing the posterior samples for the parameters Beta, Sigma, and Rho. Each slice of the array represents a single iteration.
+A list containing 3D arrays for the selected parameters. Each array represents the posterior samples for a parameter, and each slice of the array represents a single iteration.
 }
 \description{
-This function converts a Stan fit object into an array of samples for each parameter (Beta, Sigma, Rho).
-It supports both rstan and cmdstanr backends.
+This function converts a Stan fit object into an array of samples for each parameter (Beta, Sigma, Pcor).
+It supports rstan as a backend. The function allows to select which parameters should be returned.
 }
 \examples{
 \dontrun{
-samples <- stan_fit_convert(stan_fit)
+samples <- stan_fit_convert(stan_fit, return_params = c("beta", "pcor"))
 }
 
 }

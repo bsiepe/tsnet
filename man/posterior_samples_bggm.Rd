@@ -19,7 +19,7 @@ This function extracts the posterior samples of partial correlations and beta co
 }
 \examples{
 \dontrun{
-fit <- var_estimate (...) # TODO replace with actual fitting function
+fit <- var_estimate (...) # replace with actual fitting function
 posterior_samples <- posterior_samples_bggm(fit)
 }
 
