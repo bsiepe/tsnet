@@ -52,7 +52,8 @@ fit_stan <- tsnet::stan_gvar(data[,-7],
 ### Comparing Network Models
 
 This is an example of how to use the package to compare two network
-models:
+models. We use here BGGM to estimate the networks, but the `stan_gvar`
+function can be used as well.
 
 ``` r
 library(BGGM)
