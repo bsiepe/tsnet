@@ -158,7 +158,7 @@ draws_array2matrix <- function(array_3d,
 #' }
 #'
 #' @export
-stan_fit_convert <- function(stan_fit, 
+stan_fit_convert <- function(stan_fit,
                              return_params = c("beta", "sigma", "pcor")) {
   # check fitting backend
   c <- class(stan_fit)
@@ -181,40 +181,53 @@ stan_fit_convert <- function(stan_fit,
   nvar <- sqrt(ncol(draws_beta))
 
   return_list <- list()
+  return_list$fit <- list()
 
   if ("beta" %in% return_params) {
     split_beta <- split(draws_beta, seq(nrow(draws_beta)))
     beta_l <- lapply(split_beta, function(x) {
-      matrix(x, 
-            nrow = nvar, 
-            ncol = nvar, 
+      matrix(x,
+            nrow = nvar,
+            ncol = nvar,
             byrow = TRUE)
     })
-    return_list$beta <- array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
+    return_list$fit$beta <- array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
   }
 
   if ("sigma" %in% return_params) {
     split_sigma <- split(draws_sigma, seq(nrow(draws_sigma)))
     sigma_l <- lapply(split_sigma, function(x) {
-      matrix(x, 
-            nrow = nvar, 
-            ncol = nvar, 
+      matrix(x,
+            nrow = nvar,
+            ncol = nvar,
             byrow = TRUE)
     })
-    return_list$sigma <- array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
+    return_list$fit$sigma <- array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
   }
 
   if ("pcor" %in% return_params) {
     split_pcor <- split(draws_pcor, seq(nrow(draws_pcor)))
     pcor_l <- lapply(split_pcor, function(x) {
-      matrix(x, 
-            nrow = nvar, 
-            ncol = nvar, 
+      matrix(x,
+            nrow = nvar,
+            ncol = nvar,
             byrow = TRUE)
     })
-    return_list$pcor <- array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
+    return_list$fit$pcors <- array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
+  }
+
+  # Add means
+  if("beta" %in% return_params) {
+    return_list$beta_mu <- apply(return_list$fit$beta, c(1,2), mean)
+  }
+  if("sigma" %in% return_params) {
+    return_list$sigma_mu <- apply(return_list$fit$sigma, c(1,2), mean)
+  }
+  if("pcor" %in% return_params) {
+    return_list$pcor_mu <- apply(return_list$fit$pcors, c(1,2), mean)
   }
 
   return(return_list)
+
 }
 
