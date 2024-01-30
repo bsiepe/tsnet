@@ -91,10 +91,28 @@ compare_gvar <- function(fit_a,
     stop("Error: 'comp' can only be 'frob', 'l1', or 'maxdiff'.")
   }
 
-  # Check n_draws
-  if (n_draws < 1000) {
-    warning("Warning: 'n_draws' below 1000 has not been tested yet.")
+  # Check fit input
+  # fit_a and fit_b need to either be "var_estimate" or "stanfit"
+  if(!(inherits(fit_a, "var_estimate") || inherits(fit_a, "stanfit"))) {
+    stop("Error: 'fit_a' must be either a 'var_estimate' or 'stanfit' object.")
   }
+  if(!(inherits(fit_b, "var_estimate") || inherits(fit_b, "stanfit"))) {
+    stop("Error: 'fit_b' must be either a 'var_estimate' or 'stanfit' object.")
+  }
+
+
+
+  ## Input conversion
+  if(inherits(fit_a, "stanfit")) {
+    fit_a <- tsnet::stan_fit_convert(fit_a,
+                                     return_params = c("beta", "pcor"))
+  }
+  if(inherits(fit_b, "stanfit")) {
+    fit_b <- tsnet::stan_fit_convert(fit_b,
+                                     return_params = c("beta", "pcor"))
+  }
+
+
 
 
   ## Helper function for computing distance metrics
