@@ -11,7 +11,7 @@ data {
   matrix[K,K] prior_Beta_scale;  // scales for priors on Beta matrix
   matrix[K,K] prior_Rho_loc;  // locations for priors on partial correlations
   matrix[K,K] prior_Rho_scale;   // scales for priors on partial correlations
-  int<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
+  int<lower=1> prior_Eta; // prior for LKJ
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{

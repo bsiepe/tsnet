@@ -30,53 +30,53 @@ stan::math::profile_map profiles__;
 static constexpr std::array<const char*, 78> locations_array__ =
   {" (found before start of program)",
   " (in 'string', line 18, column 2 to column 23)",
-  " (in 'string', line 23, column 2 to column 34)",
-  " (in 'string', line 24, column 2 to column 24)",
-  " (in 'string', line 29, column 2 to column 67)",
-  " (in 'string', line 33, column 2 to line 34, column 68)",
-  " (in 'string', line 36, column 2 to column 18)",
-  " (in 'string', line 85, column 2 to column 22)",
-  " (in 'string', line 39, column 11 to column 12)",
-  " (in 'string', line 39, column 13 to column 14)",
-  " (in 'string', line 39, column 4 to column 43)",
-  " (in 'string', line 45, column 10 to column 23)",
-  " (in 'string', line 44, column 13 to line 46, column 9)",
-  " (in 'string', line 43, column 10 to column 65)",
-  " (in 'string', line 42, column 18 to line 44, column 9)",
-  " (in 'string', line 42, column 8 to line 46, column 9)",
-  " (in 'string', line 41, column 19 to line 47, column 7)",
-  " (in 'string', line 41, column 6 to line 47, column 7)",
-  " (in 'string', line 40, column 17 to line 48, column 5)",
-  " (in 'string', line 40, column 4 to line 48, column 5)",
-  " (in 'string', line 37, column 2 to line 49, column 3)",
-  " (in 'string', line 88, column 11 to column 12)",
-  " (in 'string', line 88, column 14 to column 15)",
-  " (in 'string', line 88, column 4 to column 75)",
-  " (in 'string', line 91, column 13 to column 14)",
-  " (in 'string', line 91, column 6 to column 36)",
-  " (in 'string', line 92, column 6 to column 73)",
-  " (in 'string', line 89, column 17 to line 93, column 5)",
-  " (in 'string', line 89, column 4 to line 93, column 5)",
-  " (in 'string', line 86, column 2 to line 94, column 3)",
-  " (in 'string', line 54, column 2 to column 50)",
-  " (in 'string', line 60, column 2 to column 76)",
-  " (in 'string', line 61, column 2 to column 49)",
-  " (in 'string', line 68, column 8 to line 69, column 73)",
-  " (in 'string', line 65, column 15 to line 70, column 9)",
-  " (in 'string', line 65, column 6 to line 70, column 9)",
-  " (in 'string', line 64, column 17 to line 71, column 7)",
-  " (in 'string', line 64, column 4 to line 71, column 7)",
-  " (in 'string', line 63, column 15 to line 72, column 5)",
-  " (in 'string', line 63, column 2 to line 72, column 5)",
-  " (in 'string', line 75, column 11 to column 12)",
-  " (in 'string', line 75, column 14 to column 15)",
-  " (in 'string', line 75, column 4 to column 75)",
-  " (in 'string', line 78, column 13 to column 14)",
-  " (in 'string', line 78, column 6 to column 36)",
-  " (in 'string', line 79, column 6 to column 67)",
-  " (in 'string', line 76, column 17 to line 80, column 5)",
-  " (in 'string', line 76, column 4 to line 80, column 5)",
-  " (in 'string', line 73, column 2 to line 81, column 3)",
+  " (in 'string', line 22, column 2 to column 34)",
+  " (in 'string', line 23, column 2 to column 24)",
+  " (in 'string', line 28, column 2 to column 67)",
+  " (in 'string', line 31, column 2 to line 32, column 68)",
+  " (in 'string', line 34, column 2 to column 18)",
+  " (in 'string', line 81, column 2 to column 22)",
+  " (in 'string', line 37, column 11 to column 12)",
+  " (in 'string', line 37, column 13 to column 14)",
+  " (in 'string', line 37, column 4 to column 43)",
+  " (in 'string', line 43, column 10 to column 23)",
+  " (in 'string', line 42, column 13 to line 44, column 9)",
+  " (in 'string', line 41, column 10 to column 65)",
+  " (in 'string', line 40, column 18 to line 42, column 9)",
+  " (in 'string', line 40, column 8 to line 44, column 9)",
+  " (in 'string', line 39, column 19 to line 45, column 7)",
+  " (in 'string', line 39, column 6 to line 45, column 7)",
+  " (in 'string', line 38, column 17 to line 46, column 5)",
+  " (in 'string', line 38, column 4 to line 46, column 5)",
+  " (in 'string', line 35, column 2 to line 47, column 3)",
+  " (in 'string', line 84, column 11 to column 12)",
+  " (in 'string', line 84, column 14 to column 15)",
+  " (in 'string', line 84, column 4 to column 75)",
+  " (in 'string', line 86, column 13 to column 14)",
+  " (in 'string', line 86, column 6 to column 36)",
+  " (in 'string', line 87, column 6 to column 73)",
+  " (in 'string', line 85, column 17 to line 88, column 5)",
+  " (in 'string', line 85, column 4 to line 88, column 5)",
+  " (in 'string', line 82, column 2 to line 89, column 3)",
+  " (in 'string', line 52, column 2 to column 50)",
+  " (in 'string', line 57, column 2 to column 69)",
+  " (in 'string', line 58, column 2 to column 49)",
+  " (in 'string', line 65, column 8 to line 66, column 73)",
+  " (in 'string', line 62, column 15 to line 67, column 9)",
+  " (in 'string', line 62, column 6 to line 67, column 9)",
+  " (in 'string', line 61, column 17 to line 68, column 7)",
+  " (in 'string', line 61, column 4 to line 68, column 7)",
+  " (in 'string', line 60, column 15 to line 69, column 5)",
+  " (in 'string', line 60, column 2 to line 69, column 5)",
+  " (in 'string', line 72, column 11 to column 12)",
+  " (in 'string', line 72, column 14 to column 15)",
+  " (in 'string', line 72, column 4 to column 75)",
+  " (in 'string', line 74, column 13 to column 14)",
+  " (in 'string', line 74, column 6 to column 36)",
+  " (in 'string', line 75, column 6 to column 67)",
+  " (in 'string', line 73, column 17 to line 76, column 5)",
+  " (in 'string', line 73, column 4 to line 76, column 5)",
+  " (in 'string', line 70, column 2 to line 77, column 3)",
   " (in 'string', line 5, column 2 to column 17)",
   " (in 'string', line 6, column 2 to column 17)",
   " (in 'string', line 7, column 8 to column 9)",
@@ -94,18 +94,18 @@ static constexpr std::array<const char*, 78> locations_array__ =
   " (in 'string', line 12, column 9 to column 10)",
   " (in 'string', line 12, column 11 to column 12)",
   " (in 'string', line 12, column 2 to column 30)",
-  " (in 'string', line 13, column 2 to column 34)",
+  " (in 'string', line 13, column 2 to column 27)",
   " (in 'string', line 18, column 9 to column 10)",
   " (in 'string', line 18, column 11 to column 12)",
-  " (in 'string', line 23, column 23 to column 24)",
-  " (in 'string', line 24, column 9 to column 10)",
-  " (in 'string', line 29, column 9 to column 10)",
-  " (in 'string', line 29, column 11 to column 12)",
-  " (in 'string', line 33, column 9 to column 10)",
-  " (in 'string', line 33, column 11 to column 12)",
-  " (in 'string', line 36, column 9 to column 10)",
-  " (in 'string', line 36, column 11 to column 12)",
-  " (in 'string', line 85, column 9 to column 12)"};
+  " (in 'string', line 22, column 23 to column 24)",
+  " (in 'string', line 23, column 9 to column 10)",
+  " (in 'string', line 28, column 9 to column 10)",
+  " (in 'string', line 28, column 11 to column 12)",
+  " (in 'string', line 31, column 9 to column 10)",
+  " (in 'string', line 31, column 11 to column 12)",
+  " (in 'string', line 34, column 9 to column 10)",
+  " (in 'string', line 34, column 11 to column 12)",
+  " (in 'string', line 81, column 9 to column 12)"};
 #include <stan_meta_header.hpp>
 class model_VAR_LKJ final : public model_base_crtp<model_VAR_LKJ> {
 private:
@@ -116,7 +116,7 @@ private:
   Eigen::Matrix<double,-1,-1> prior_Beta_scale_data__;
   Eigen::Matrix<double,-1,-1> prior_Rho_loc_data__;
   Eigen::Matrix<double,-1,-1> prior_Rho_scale_data__;
-  int prior_Rho_marginal;
+  int prior_delta;
   int log_lik_1dim__;
   Eigen::Map<Eigen::Matrix<double,-1,-1>> prior_Beta_loc{nullptr, 0, 0};
   Eigen::Map<Eigen::Matrix<double,-1,-1>> prior_Beta_scale{nullptr, 0, 0};
@@ -319,14 +319,14 @@ public:
         }
       }
       current_statement__ = 66;
-      context__.validate_dims("data initialization", "prior_Rho_marginal",
-        "int", std::vector<size_t>{});
-      prior_Rho_marginal = std::numeric_limits<int>::min();
+      context__.validate_dims("data initialization", "prior_delta", "int",
+        std::vector<size_t>{});
+      prior_delta = std::numeric_limits<int>::min();
       current_statement__ = 66;
-      prior_Rho_marginal = context__.vals_i("prior_Rho_marginal")[(1 - 1)];
+      prior_delta = context__.vals_i("prior_delta")[(1 - 1)];
       current_statement__ = 66;
-      stan::math::check_greater_or_equal(function__, "prior_Rho_marginal",
-        prior_Rho_marginal, 1);
+      stan::math::check_greater_or_equal(function__, "prior_delta",
+        prior_delta, 1);
       current_statement__ = 67;
       stan::math::validate_non_negative_index("Beta_raw", "K", K);
       current_statement__ = 68;
@@ -461,7 +461,7 @@ public:
                          stan::math::to_vector(Beta_raw)));
         current_statement__ = 31;
         lp_accum__.add(stan::math::lkj_corr_cholesky_lpdf<false>(L_Theta,
-                         ((prior_Rho_marginal + 1) - (K / 2.0))));
+                         ((prior_delta + 1) - (K / 2.0))));
         current_statement__ = 32;
         lp_accum__.add(stan::math::student_t_lpdf<false>(sigma_theta, 3, 0, 2));
         current_statement__ = 39;
