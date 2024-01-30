@@ -82,24 +82,33 @@ stan_gvar <-
     } else {
         prior_Rho_marginal <- priors[["prior_Rho_marginal"]]
     }
+
+    if(is.null(priors[["prior_Eta"]])){
+      prior_Eta <- 1
+    } else {
+      prior_Eta <- priors[["prior_Eta"]]
+    }
+
     # Convert SD to delta: SD = 1/(delta+1), delta = (1 / SD) - 1
     prior_delta <- (1 / prior_Rho_marginal) - 1
 
-    # Stan Data
-    stan_data <- list(
-      K = K,
-      "T" = n_t,
-      Y = as.matrix(Y),
-      beep = beep,
-      prior_Rho_loc = prior_Rho_loc,
-      prior_Rho_scale = prior_Rho_scale,
-      prior_Beta_loc = prior_Beta_loc,
-      prior_Beta_scale = prior_Beta_scale,
-      prior_delta = prior_delta
-    )
+
 
     # Choose model to fit
     if (cov_prior == "LKJ") {
+      # Stan Data
+      stan_data <- list(
+        K = K,
+        "T" = n_t,
+        Y = as.matrix(Y),
+        beep = beep,
+        prior_Rho_loc = prior_Rho_loc,
+        prior_Rho_scale = prior_Rho_scale,
+        prior_Beta_loc = prior_Beta_loc,
+        prior_Beta_scale = prior_Beta_scale,
+        prior_Eta = prior_Eta
+      )
+
       if (isTRUE(rmv_overnight)) {
         # remove overnight effects
         model_name <- "VAR_LKJ_beep"
@@ -109,6 +118,19 @@ stan_gvar <-
       }
     }
     if (cov_prior == "IW") {
+      # Stan Data
+      stan_data <- list(
+        K = K,
+        "T" = n_t,
+        Y = as.matrix(Y),
+        beep = beep,
+        prior_Rho_loc = prior_Rho_loc,
+        prior_Rho_scale = prior_Rho_scale,
+        prior_Beta_loc = prior_Beta_loc,
+        prior_Beta_scale = prior_Beta_scale,
+        prior_delta = prior_delta
+      )
+
       if (isTRUE(rmv_overnight)) {
         # remove overnight effects
         model_name <- "VAR_wishart_beep"
