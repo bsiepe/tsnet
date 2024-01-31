@@ -26,7 +26,10 @@
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 #' Default: "random"
-#' @param indices A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
+#' @param indices A list of "beta" and "pcor" indices specifying which elements of the matrices to consider when calculating distances.
+#' If NULL (default), all elements of both matrices are considered.
+#' If provided, only the elements at these indices are considered. If only one of the matrices should have indices, the other one should be NULL.
+#' This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
 #' @param burnin
 #' The number of burn-in iterations to discard (default: 500).
 #' @return A list containing the results of the comparison. The list includes:
@@ -100,6 +103,26 @@ compare_gvar <- function(fit_a,
     stop("Error: 'fit_b' must be either a 'var_estimate' or 'stanfit' object.")
   }
 
+  # Check indices
+  if (!is.null(indices)) {
+    if (!is.list(indices)) {
+      stop("Error: 'indices' must be a list.")
+    }
+    if (!all(c("beta", "pcor") %in% names(indices))) {
+      stop("Error: 'indices' must contain 'beta' and 'pcor'.")
+    }
+    if (!is.null(indices$beta)) {
+      if (!is.numeric(indices$beta)) {
+        stop("Error: 'indices$beta' must be numeric.")
+      }
+    }
+    if (!is.null(indices$pcor)) {
+      if (!is.numeric(indices$pcor)) {
+        stop("Error: 'indices$pcor' must be numeric.")
+      }
+    }
+  }
+
 
 
   ## Input conversion
@@ -140,6 +163,12 @@ compare_gvar <- function(fit_a,
     matrix(x[upper.tri(x, diag = FALSE)])
   }
 
+  ## Create empty indices if not provided
+  if (is.null(indices)) {
+    indices <- list(beta = NULL, pcor = NULL)
+  }
+
+
   ## Create reference distributions for both models
   ref_a <- post_distance_within(fit_a,
     comp = comp,
@@ -162,17 +191,17 @@ compare_gvar <- function(fit_a,
   # Compute empirical distance as test statistic
   emp_beta <- compute_metric(fit_a$beta_mu, fit_b$beta_mu,
                              comp,
-                             indices)
+                             indices$beta)
   if (is.null(indices)) {
     emp_pcor <- compute_metric(ut(fit_a$pcor_mu),
                                ut(fit_b$pcor_mu),
                                comp,
-                               indices)
+                               indices$pcor)
   } else {
     emp_pcor <- compute_metric(fit_a$pcor_mu,
                                fit_b$pcor_mu,
                                comp,
-                               indices)
+                               indices$pcor)
   }
 
 
