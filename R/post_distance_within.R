@@ -131,17 +131,17 @@ post_distance_within <- function(fitobj,
       beta_distance <- distance_fn_beta(fitobj$fit[[mod_one]]$beta_mu,
                                         fitobj$fit[[mod_two]]$beta_mu,
                                         comp,
-                                        indices)
+                                        indices$beta)
       pcor_distance <- if (is.null(indices)) {
         distance_fn_pcor(ut(fitobj$fit[[mod_one]]$pcor_mu),
                          ut(fitobj$fit[[mod_two]]$pcor_mu),
                          comp,
-                         indices)
+                         indices$pcor)
       } else {
         distance_fn_pcor(fitobj$fit[[mod_one]]$pcor_mu,
                          fitobj$fit[[mod_two]]$pcor_mu,
                          comp,
-                         indices)
+                         indices$pcor)
       }
     }
   }
@@ -157,17 +157,17 @@ post_distance_within <- function(fitobj,
       beta_distance <- distance_fn_beta(fitobj$fit$beta[, , mod_one],
                                         fitobj$fit$beta[, , mod_two],
                                         comp,
-                                        indices)
+                                        indices$beta)
       pcor_distance <- if (is.null(indices)) {
         distance_fn_pcor(ut(fitobj$fit$pcors[, , mod_one]),
                          ut(fitobj$fit$pcors[, , mod_two]),
                          comp,
-                         indices)
+                         indices$pcor)
       } else {
         distance_fn_pcor(fitobj$fit$pcors[, , mod_one],
                          fitobj$fit$pcors[, , mod_two],
                          comp,
-                         indices)
+                         indices$pcor)
       }
     }
   }
