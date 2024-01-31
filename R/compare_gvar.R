@@ -9,12 +9,20 @@
 #'
 #' @param fit_a
 #' Fitted model object for Model A.
+#' This can be a stanfit object (obtained from [stan_gvar()]),
+#' a BGGM object (obtained from [BGGM::var_estimate()]),
+#' or extracted posterior samples (obtained from [stan_fit_convert()).
 #' @param fit_b
 #' Fitted model object for Model B.
+#' This can be a stanfit object (obtained from [stan_gvar()]),
+#' a BGGM object (obtained from [BGGM::var_estimate()]),
+#' or extracted posterior samples (obtained from [stan_fit_convert()).
 #' @param cutoff
 #' The percentage level of the test (default: 5\%) as integer.
 #' @param dec_rule
-#' The decision rule to be used. Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).
+#' The decision rule to be used.
+#' Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).
+#' The use of "or" is recommended, as "comb" is less stable.
 #' @param n_draws
 #' The number of draws to use for reference distributions (default: 1000).
 #' @param comp
@@ -31,7 +39,7 @@
 #' If provided, only the elements at these indices are considered. If only one of the matrices should have indices, the other one should be NULL.
 #' This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
 #' @param burnin
-#' The number of burn-in iterations to discard (default: 500).
+#' The number of burn-in iterations to discard (default: 0).
 #' @return A list containing the results of the comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
@@ -56,7 +64,7 @@ compare_gvar <- function(fit_a,
                          return_all = FALSE,
                          sampling_method = "random",
                          indices = NULL,
-                         burnin = 500) {
+                         burnin = 0) {
 
 
   # Store arguments
@@ -96,11 +104,15 @@ compare_gvar <- function(fit_a,
 
   # Check fit input
   # fit_a and fit_b need to either be "var_estimate" or "stanfit"
-  if(!(inherits(fit_a, "var_estimate") || inherits(fit_a, "stanfit"))) {
-    stop("Error: 'fit_a' must be either a 'var_estimate' or 'stanfit' object.")
+  if(!(inherits(fit_a, "var_estimate") ||
+       inherits(fit_a, "stanfit") ||
+       inherits(fit_a, "tsnet_samples"))) {
+    stop("Error: 'fit_a' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
   }
-  if(!(inherits(fit_b, "var_estimate") || inherits(fit_b, "stanfit"))) {
-    stop("Error: 'fit_b' must be either a 'var_estimate' or 'stanfit' object.")
+  if(!(inherits(fit_b, "var_estimate") ||
+       inherits(fit_b, "stanfit") ||
+       inherits(fit_b, "tsnet_samples"))) {
+    stop("Error: 'fit_b' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
   }
 
   # Check indices

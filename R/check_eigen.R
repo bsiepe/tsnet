@@ -1,10 +1,28 @@
-#' Check Eigenvalues of BGGM Object
+#' Check Eigenvalues of Bayesian GVAR object
 #'
-#' This function checks the eigenvalues of Beta to assure that the model is stationary. It uses the same check as the `graphicalVAR` package.
+#' This function checks the eigenvalues of the Beta matrix (containing the temporal coefficients) to assure that the model is stationary.
+#' It uses the same check as the `graphicalVAR` package.
 #'
-#' @param fitobj A BGGM object.
+#' @param fitobj
+#' A fitted Bayesian GVAR object.
+#' This can be a stanfit object (obtained from [stan_gvar()]),
+#' a BGGM object (obtained from [BGGM::var_estimate()]),
+#' or extracted posterior samples (obtained from [stan_fit_convert()).
 #' @return A list containing the eigenvalues and a verbal summary of the results.
 check_eigen <- function(fitobj){
+
+  # Input check
+  if(!(inherits(fit_a, "var_estimate") ||
+       inherits(fit_a, "stanfit") ||
+       inherits(fit_a, "tsnet_samples"))) {
+    stop("Error: 'fitobj' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+  }
+
+  if(inherits(fit_a, "stanfit")) {
+    fitobj <- tsnet::stan_fit_convert(fitobj,
+                                     return_params = c("beta", "pcor"))
+  }
+
   # Extract elements
   beta_mu <- fitobj$beta_mu
   # Calculate eigenvalues
