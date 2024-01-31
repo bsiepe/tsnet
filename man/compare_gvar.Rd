@@ -37,7 +37,10 @@ Has to be set to TRUE for plotting the results.}
 \item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
 Default: "random"}
 
-\item{indices}{A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
+\item{indices}{A list of "beta" and "pcor" indices specifying which elements of the matrices to consider when calculating distances.
+If NULL (default), all elements of both matrices are considered.
+If provided, only the elements at these indices are considered. If only one of the matrices should have indices, the other one should be NULL.
+This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
 
 \item{burnin}{The number of burn-in iterations to discard (default: 500).}
 }

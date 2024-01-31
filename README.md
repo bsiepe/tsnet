@@ -26,6 +26,9 @@ You can install the development version of `tsnet` from
 devtools::install_github("bsiepe/tsnet")
 ```
 
+This installation may take some time as the models are compiled upon
+installation.
+
 ## Getting Started
 
 ### Estimating Network Models with Stan
