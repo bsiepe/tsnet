@@ -2,6 +2,8 @@
 #'
 #' This function fits a Bayesian gVAR model to the provided data using Stan.
 #'
+#' Currently, we use an `adapt_delta` default of 0.8. You can overwrite this setting.
+#'
 #' @param data A data frame or matrix containing the time series data.
 #' @param beep A vector of beeps with length of `nrow(data)`. The beep indicator can be used to remove overnight effects from the last beep of a day to the first beep of the next day.
 #' @param priors A list of prior distributions for the model parameters.

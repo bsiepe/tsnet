@@ -7,7 +7,9 @@
 #'
 #' @param fitobj A BGGM var_estimate fit object.
 #' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
-#' @param pred A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
+#' @param pred
+#' A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
+#' Default: FALSE
 #' @param draws An integer specifying the number of random pairs of models that should be compared.
 #' @param sampling_method
 #' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
@@ -15,7 +17,7 @@
 #' @param indices
 #' A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
 #' @param burnin
-#' The number of burn-in iterations to discard (default: 500).
+#' The number of burn-in iterations to discard (Default: 0).
 #' @return A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
 #'
 #'
@@ -28,7 +30,7 @@ post_distance_within <- function(fitobj,
                                  draws = 1000,
                                  sampling_method = "random",
                                  indices = NULL,
-                                 burnin = 500) {
+                                 burnin = 0) {
   # storage
   dist_out <- list()
 

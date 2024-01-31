@@ -1,6 +1,7 @@
 #' Plot compare_gvar
 #'
-#' This function is a plotting method for the class produced by compare_gvar(). It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
+#' This function is a plotting method for the class produced by [compare_gvar()].
+#' It generates a plot showing the density of posterior uncertainty distributions for distances and the empirical distance value.
 #'
 #' @param x An object of class "compare_gvar".
 #' @param name_a Optional. The name for model A. If provided, it replaces "mod_a" in the plot.
@@ -8,11 +9,11 @@
 #' @param ... Additional arguments to be passed to the plotting functions.
 #'
 #' @details
-#' The function first checks if the full reference distributions of compare_gvar are saved using the argument 'return_all' set to TRUE. If not, an error is thrown.
+#' The function first checks if the full reference distributions of [compare_gvar()] are saved using the argument 'return_all' set to TRUE. If not, an error is thrown.
 #'
 #' Using the "name_a" and "name_b" arguments allows for custom labeling of the two models in the plot.
 #'
-#' The function generates two density plots using ggplot2, one for the variable temporal network (beta) and another for the contemporaneous network (pcor). The density distributions are filled with different colors based on the corresponding models (mod_a and mod_b). The empirical distances between the networks are indicated by red vertical lines.
+#' The function generates two density plots using `ggplot2`, one for the temporal network (beta) and another for the contemporaneous network (pcor). The density distributions are filled with different colors based on the corresponding models (mod_a and mod_b). The empirical distances between the networks are indicated by red vertical lines.
 #'
 #' @import ggplot2
 #' @importFrom ggokabeito scale_fill_okabe_ito palette_okabe_ito

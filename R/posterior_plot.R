@@ -1,9 +1,11 @@
 #' posterior_plot
 #'
 #' Plots posterior distributions of the parameters of the temporal and
-#' contemporaneous networks of a gVAR model.
+#' contemporaneous networks of a GVAR model.
 #'
-#' @param fitobj A 'var_estimate' fit object from the `BGGM` package.
+#' @param fitobj
+#' An object containing results of a Bayesian GVAR model.
+#' Currently, this can be a BGGM var_estimate object (obtained from [BGGM::var_estimate()]).
 #' @param mat A matrix to use for plotting. Possibilities include "beta" (temporal network)
 #' and "pcor" (contemporaneous network). Default is "beta" (temporal network).
 #' @param cis A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).
@@ -24,8 +26,8 @@ posterior_plot <- function(fitobj,
                            mat = "beta",
                            cis = c(0.8, 0.9, 0.95)) { # credible intervals for plotting
   # Input Checks
-  if (!inherits(fitobj, "var_estimate")) {
-    stop("Please provide a var_estimate object as input for fit_a.")
+  if(!(inherits(fit_a, "var_estimate"))) {
+    stop("Error: 'fitboj' must be either a 'var_estimate'object.")
   }
 
   if (!is.numeric(cis) || any(cis <= 0) || any(cis >= 1)) {
@@ -36,8 +38,13 @@ posterior_plot <- function(fitobj,
     stop("Column names must not contain an underscore. Please rename.")
   }
 
+  # Convert stanfit objects to needed format
+  if(inherits(fitobj, "stanfit")) {
+    fitobj <- tsnet::stan_fit_convert(fitobj,
+                                     return_params = c("beta", "pcor"))
+  }
 
-  # Obtain samples in matrix notation for BGGM
+  # Obtain samples in matrix notation
   samps <- posterior_samples_bggm(fitobj)
 
 
