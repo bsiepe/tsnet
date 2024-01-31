@@ -154,6 +154,11 @@ draws_array2matrix <- function(array_3d,
 #'
 #' @examples
 #' \dontrun{
+#' data(ts_data)
+#' ts_data1 <- ts_data[1:100,1:3]
+#' stan_fit <- stan_gvar(data = ts_data1,
+#'                  n_chains = 2,
+#'                  n_cores = 1)
 #' samples <- stan_fit_convert(stan_fit, return_params = c("beta", "pcor"))
 #' }
 #'
@@ -226,6 +231,9 @@ stan_fit_convert <- function(stan_fit,
   if("pcor" %in% return_params) {
     return_list$pcor_mu <- apply(return_list$fit$pcors, c(1,2), mean)
   }
+
+
+  class(return_list) <- c("tsnet_samples", class(return_list))
 
   return(return_list)
 
