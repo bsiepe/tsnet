@@ -1,33 +1,38 @@
-#' Calculates distances between pairs of posterior samples using the posterior samples or posterior predictive draws
+#' Calculates distances between pairs of posterior samples using the posterior
+#' samples or posterior predictive draws
 #'
-#' This function computes distances between posterior samples of a fitted gVAR model.
-#' Distances can be obtained either from posterior samples or posterior predictive draws.
-#' The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
-#' Used within [compare_gvar()].
+#' @description This function computes distances between posterior samples of a
+#' single fitted gVAR model. Thereby, it calculates the uncertainty contained in
+#' the posterior distribution, which can be used as a reference to compare two
+#' modes.
+#' Distances can be obtained either from posterior samples or
+#' posterior predictive draws. The distance between two models can currently be
+#' calculated based on three options: Frobenius norm, maximum difference, or L1
+#' norm. Used within [compare_gvar()]. The function is not intended to be used
+#' directly by the user.
 #'
-#' @param fitobj A BGGM var_estimate fit object.
-#' @param comp A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).
-#' @param pred
-#' A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).
-#' Default: FALSE
-#' @param draws An integer specifying the number of random pairs of models that should be compared.
-#' @param sampling_method
-#' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-#' Default: "random"
-#' @param indices
-#' A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
-#' @param burnin
-#' The number of burn-in iterations to discard (Default: 0).
-#' @return A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
+#' @inheritParams compare_gvar
+#' @param fitobj
+#'  Fitted model object. This can be a stanfit object
+#'  (obtained from [stan_gvar()]), a BGGM object (obtained from
+#'  [BGGM::var_estimate()]), or extracted posterior samples (obtained from
+#'  [stan_fit_convert()).
+#' @param pred A logical indicating whether the input is posterior predictive
+#'   draws (TRUE) or posterior samples (FALSE). Default: FALSE
+#' @return A list of distances between the specified pairs of fitted models. The
+#'   list has length equal to the specified number of random pairs. Each list
+#'   element contains two distance values, one for beta coefficients and one for
+#'   partial correlations.
+#' @examples
+#' data(fit_data)
+#' post_distance_within(fitobj = fit_data[[1]], comp = "frob", pred = FALSE)
 #'
-#'
-#' @export post_distance_within
-#'
+#' @export
 
 post_distance_within <- function(fitobj,
                                  comp,
-                                 pred, # posterior predictive?
-                                 draws = 1000,
+                                 pred,
+                                 n_draws = 1000,
                                  sampling_method = "random",
                                  indices = NULL,
                                  burnin = 0) {

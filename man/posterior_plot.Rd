@@ -7,18 +7,28 @@
 posterior_plot(fitobj, mat = "beta", cis = c(0.8, 0.9, 0.95))
 }
 \arguments{
-\item{fitobj}{A 'var_estimate' fit object from the `BGGM` package.}
+\item{fitobj}{Fitted model object. This can be a stanfit object (obtained
+from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
+or extracted posterior samples (obtained from [stan_fit_convert()).}
 
-\item{mat}{A matrix to use for plotting. Possibilities include "beta" (temporal network)
-and "pcor" (contemporaneous network). Default is "beta" (temporal network).}
+\item{mat}{A matrix to use for plotting. Possibilities include "beta"
+(temporal network) and "pcor" (contemporaneous network). Default is "beta"
+(temporal network).}
 
-\item{cis}{A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).}
+\item{cis}{A numeric vector of credible intervals to use for plotting.
+Default is c(0.8, 0.9, 0.95).}
 }
 \description{
-Plots posterior distributions of the parameters of the temporal and
-contemporaneous networks of a gVAR model.
+Plots posterior distributions of the parameters of the temporal
+or the contemporaneous networks of a GVAR model. The posterior distributions
+are visualized as densities in a matrix layout.
 }
 \details{
-In the returned plot, posterior distributions for every parameter are shown.
-Lagged variables are displayed along the vertical line of the grid, and non-lagged variables along the horizontal line of the grids.
+In the returned plot, posterior distributions for every parameter
+are shown. Lagged variables are displayed along the vertical line of the
+grid, and non-lagged variables along the horizontal line of the grids.
+}
+\examples{
+data(fit_data)
+posterior_plot(fit_data[[1]])
 }

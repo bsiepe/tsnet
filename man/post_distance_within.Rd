@@ -2,40 +2,70 @@
 % Please edit documentation in R/post_distance_within.R
 \name{post_distance_within}
 \alias{post_distance_within}
-\title{Calculates distances between pairs of posterior samples using the posterior samples or posterior predictive draws}
+\title{Calculates distances between pairs of posterior samples using the posterior
+samples or posterior predictive draws}
 \usage{
 post_distance_within(
   fitobj,
   comp,
   pred,
-  draws = 1000,
+  n_draws = 1000,
   sampling_method = "random",
   indices = NULL,
-  burnin = 500
+  burnin = 0
 )
 }
 \arguments{
-\item{fitobj}{A BGGM var_estimate fit object.}
+\item{fitobj}{Fitted model object. This can be a stanfit object
+(obtained from [stan_gvar()]), a BGGM object (obtained from
+[BGGM::var_estimate()]), or extracted posterior samples (obtained from
+[stan_fit_convert()).}
 
-\item{comp}{A character string indicating the type of distance between models that should be calculated. The options include: "frob" (Frobenius norm), "maxdiff" (maximum difference), or "l1" (L1 norm).}
+\item{comp}{The distance metric to use. Should be one of "frob" (Frobenius
+norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
+"frob"). The use of the Frobenius norm is recommended.}
 
-\item{pred}{A logical indicating whether the input is posterior predictive draws (TRUE) or posterior samples (FALSE).}
+\item{pred}{A logical indicating whether the input is posterior predictive
+draws (TRUE) or posterior samples (FALSE). Default: FALSE}
 
-\item{draws}{An integer specifying the number of random pairs of models that should be compared.}
+\item{n_draws}{The number of draws to use for reference distributions
+(default: 1000).}
 
-\item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-Default: "random"}
+\item{sampling_method}{Draw sequential pairs of samples from the posterior,
+with certain distance between them ("sequential") or randomly from two
+halves of the posterior ("random"). The "random" method is preferred to
+account for potential autocorrelation between subsequent samples. Default:
+"random".}
 
-\item{indices}{A vector of indices specifying which elements of the matrices to consider when calculating distances. If NULL (default), all elements are considered. If provided, only the elements at these indices are considered. This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
+\item{indices}{A list of "beta" and "pcor" indices specifying which elements
+of the matrices to consider when calculating distances. If NULL (default),
+all elements of both matrices are considered. If provided, only the
+elements at these indices are considered. If only one of the matrices
+should have indices, the other one should be NULL. This can be useful if
+you want to calculate distances based on a subset of the elements in the
+matrices.}
 
-\item{burnin}{The number of burn-in iterations to discard (default: 500).}
+\item{burnin}{The number of burn-in iterations to discard (default: 0).}
 }
 \value{
-A list of distances between the specified pairs of fitted models. The list has length equal to the specified number of random pairs. Each list element contains two distance values, one for beta coefficients and one for partial correlations.
+A list of distances between the specified pairs of fitted models. The
+  list has length equal to the specified number of random pairs. Each list
+  element contains two distance values, one for beta coefficients and one for
+  partial correlations.
 }
 \description{
-This function computes distances between posterior samples of a fitted gVAR model.
-Distances can be obtained either from posterior samples or posterior predictive draws.
-The distance between two models can currently be calculated based on three options: Frobenius norm, maximum difference, or L1 norm.
-Used within [compare_gvar()].
+This function computes distances between posterior samples of a
+single fitted gVAR model. Thereby, it calculates the uncertainty contained in
+the posterior distribution, which can be used as a reference to compare two
+modes.
+Distances can be obtained either from posterior samples or
+posterior predictive draws. The distance between two models can currently be
+calculated based on three options: Frobenius norm, maximum difference, or L1
+norm. Used within [compare_gvar()]. The function is not intended to be used
+directly by the user.
+}
+\examples{
+data(fit_data)
+post_distance_within(fitobj = fit_data[[1]], comp = "frob", pred = FALSE)
+
 }

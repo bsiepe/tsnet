@@ -2,16 +2,25 @@
 #'
 #' This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
 #'
-#' @param x A compare_gvar object.
+#' @param x A test object obtained from [compare_gvar()]
 #' @param ... Additional arguments to be passed to the print method. (currently not used)
 #'
-#' @return None
+#' @return Prints a summary of the Norm-Based Comparison Test to the console
 #'
-#' @details This function prints a summary of the Norm-Based Comparison Test for a compare_gvar object.
+#' @details This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
 #' It displays the general summary and model-specific results, including the number of significant comparisons
 #' in the temporal and contemporaneous networks, as well as the number of reference distances that were larger
 #' than the empirical distance for each network.
 #'
+#' @examples 
+#' # Load example fits
+#' data(fit_data)
+#' 
+#' # Perform test
+#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
+#' 
+#' # Print results
+#' print(test_res)
 #'
 #' @export
 print.compare_gvar <- function(x,

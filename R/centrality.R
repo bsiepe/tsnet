@@ -1,10 +1,21 @@
 #' Compute Centrality Measures
 #'
-#' This function computes various centrality measures for a given fit object.
+#' This function computes various network centrality measures for a given GVAR
+#' fit object. Centrality measures describe the "connectedness" of a variable in a network, while density describes the networks' overall connectedness.
+#' Specifically, it computes the in-strength, out-strength,
+#' contemporaneous strength, temporal network density, and contemporaneous
+#' network density. The result can then be visualized using [plot_centrality()].
 #'
-#' @param fitobj A fit object containing the beta and pcor samples.
-#' @param burnin An integer specifying the number of initial samples to discard as burn-in. Default is 500.
-#' @param remove_ar A logical value specifying whether to remove the autoregressive effects for centrality calculation. Default is TRUE.
+#' @param fitobj
+#' Fitted model object for a Bayesian GVAR model.
+#' This can be a stanfit object (obtained from [stan_gvar()]),
+#' a BGGM object (obtained from [BGGM::var_estimate()]),
+#' or extracted posterior samples (obtained from [stan_fit_convert()).
+#' @param burnin An integer specifying the number of initial samples to discard
+#'   as burn-in. Default is 0.
+#' @param remove_ar A logical value specifying whether to remove the
+#'   autoregressive effects for centrality calculation. Default is TRUE. This is
+#'   only relevant for the calculation of temporal centrality/density measures.
 #'
 #' @return A list containing the following centrality measures:
 #' \itemize{
@@ -16,19 +27,34 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
-#' fit <- # fit your model here TODO add this
-#'   centrality_measures <- get_centrality(fit, burnin = 500)
-#' }
+#'  # Use first individual from example fit data from tsnet
+#'  data(fit_data)
+#'  centrality_measures <- get_centrality(fit_data[[1]])
 #'
 #' @export
 get_centrality <- function(fitobj,
-                           burnin = 500,
+                           burnin = 0,
                            remove_ar = TRUE) {
-  #--- BGGM
+
+  # Input checks
+  if(!(inherits(fitobj, "var_estimate") ||
+       inherits(fitobj, "stanfit") ||
+       inherits(fitobj, "tsnet_samples"))) {
+    stop("Error: 'fit_a' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+  }
+
+  # Input Conversion
+  if(inherits(fitobj, "stanfit")) {
+    fit_a <- tsnet::stan_fit_convert(fit_a,
+                                     return_params = c("beta", "pcor"))
+  }
+
+
   # Obtain samples
-  beta_samps <- abs(fitobj$fit$beta[, , -c(1:burnin)])
-  pcor_samps <- abs(fitobj$fit$pcors[, , -c(1:burnin)])
+  n_samps <- dim(fitobj$fit$beta)[3]
+
+  beta_samps <- abs(fitobj$fit$beta[, , burnin:n_samps])
+  pcor_samps <- abs(fitobj$fit$pcors[, , burnin:n_samps])
 
   cnames <- colnames(fitobj$Y)
 
@@ -73,25 +99,41 @@ get_centrality <- function(fitobj,
 
 #' Plot Centrality Measures
 #'
-#' This function creates a plot of various centrality measures for a given object.
+#' This function creates a plot of various centrality measures for a given
+#' object. The plot can be either a "tiefighter" plot or a "density" plot. The
+#' "tiefighter" plot shows the centrality measures for each variable with
+#' uncertainty bands, while the "density" plot shows the full density of the
+#' centrality measures.
 #'
-#' @param obj An object containing the centrality measures obtained from [get_centrality()].
-#' @param plot_type A character string specifying the type of plot. Accepts "tiefighter" or "density". Default is "tiefighter".
-#' @param density_type A character string specifying the type of density. Accepts "instrength", "outstrength", "strength", "density_beta", "density_pcor". Default is "outstrength".
-#' @param cis A numeric value specifying the credible interval. Must be between 0 and 1 (exclusive). Default is 0.95.
+#' @param obj An object containing the centrality measures obtained from
+#'   [get_centrality()].
+#' @param plot_type A character string specifying the type of plot. Accepts
+#'   "tiefighter" or "density". Default is "tiefighter".
+#' @param cis A numeric value specifying the credible interval. Must be between
+#'   0 and 1 (exclusive). Default is 0.95.
 #'
-#' @return A ggplot object.
+#' @return A ggplot object visualizing the centrality measures. For a
+#'   "tiefighter" plot, each point represents the mean centrality measure for a
+#'   variable, and the bars represent the credible interval. In a "density"
+#'   plot, distribution of the centrality measures is visualized.
 #'
 #' @examples
 #' \dontrun{
-#' obj <- # create your object here
-#'   plot_centrality(obj, plot_type = "tiefighter", density_type = "outstrength", cis = 0.95)
+#' data(fit_data)
+#' obj <- get_centrality(fit_data[[1]])
+#'   plot_centrality(obj,
+#'   plot_type = "tiefighter",
+#'   cis = 0.95)
 #' }
-#'
+#' 
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr group_by summarize
+#' @importFrom stats quantile
+#' @import ggplot2
+#' 
 #' @export
 plot_centrality <- function(obj,
                             plot_type = "tiefighter",
-                            density_type = "outstrength",
                             cis = 0.95) {
   if (!is.numeric(cis) || any(cis <= 0) || any(cis >= 1)) {
     stop("cis must be a numeric vector with values between 0 and 1 (exclusive)")

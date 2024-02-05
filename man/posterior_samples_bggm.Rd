@@ -7,19 +7,34 @@
 posterior_samples_bggm(fitobj, burnin = 500)
 }
 \arguments{
-\item{fitobj}{A BGGM fit object from which to extract the posterior samples.}
+\item{fitobj}{A [BGGM::var_estimate()] fit object from which to extract the posterior samples.}
 
-\item{burnin}{An integer specifying the number of initial samples to discard as burn-in. Default is 500.}
+\item{burnin}{An integer specifying the number of initial samples to discard
+as burn-in. Default is 500.}
 }
 \value{
-A matrix containing the posterior samples of partial correlations and beta coefficients. The rows represent the samples, and the columns represent the different parameters. The first set of columns represent the partial correlations, and the second set of columns represent the beta coefficients. Each column is named according to the corresponding parameter.
+A matrix containing the posterior samples of partial correlations and
+  beta coefficients. The rows represent the samples, and the columns
+  represent the different parameters. The first set of columns represent the
+  partial correlations, and the second set of columns represent the beta
+  coefficients. Each column is named according to the corresponding
+  parameter.
 }
 \description{
-This function extracts the posterior samples of partial correlations and beta coefficients from a fitted BGGM model.
+This function extracts the posterior samples of partial correlations and beta
+coefficients from a Bayesian GVAR model that was fitted with [BGGM::var_estimate()]. 
+The function is not intended to be called directly by the user, but is used internally by the package.
 }
 \examples{
 \dontrun{
-fit <- var_estimate (...) # replace with actual fitting function
+# Load imulated time series data
+data(ts_data)
+example_data <- ts_data[1:100,]
+
+# Estimate a GVAR model
+fit <- BGGM::var_estimate(example_data)
+
+# Extract posterior samples
 posterior_samples <- posterior_samples_bggm(fit)
 }
 

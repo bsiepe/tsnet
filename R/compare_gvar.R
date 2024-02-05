@@ -1,46 +1,49 @@
-#' Compare two BGGM gVAR models
+#' Compare two Bayesian gVAR models
 #'
-#' @description
-#' Computes the empirical distance between two models based on their point estimates
-#' and compares them using reference distributions created from their
-#' posterior distributions. Returns the p-value for the comparison
-#' based on a decision rule specified by the user. Details are available in
-#' Siepe & Heck (2023) <doi:10.31234/osf.io/uwfjc>.
+#' @description This function compares two Bayesian Graphical Vector
+#'   Autoregressive models using matrix norms to test if the observed
+#'   differences between two models is reliable. It computes the empirical
+#'   distance between two models based on their point estimates and compares
+#'   them using reference distributions created from their posterior
+#'   distributions. Returns the p-value for the comparison based on a decision
+#'   rule specified by the user. Details are available in Siepe, Kloft & Heck (2023)
+#'   <doi:10.31234/osf.io/uwfjc>.
 #'
-#' @param fit_a
-#' Fitted model object for Model A.
-#' This can be a stanfit object (obtained from [stan_gvar()]),
-#' a BGGM object (obtained from [BGGM::var_estimate()]),
-#' or extracted posterior samples (obtained from [stan_fit_convert()).
-#' @param fit_b
-#' Fitted model object for Model B.
-#' This can be a stanfit object (obtained from [stan_gvar()]),
-#' a BGGM object (obtained from [BGGM::var_estimate()]),
-#' or extracted posterior samples (obtained from [stan_fit_convert()).
-#' @param cutoff
-#' The percentage level of the test (default: 5\%) as integer.
-#' @param dec_rule
-#' The decision rule to be used.
-#' Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).
-#' The use of "or" is recommended, as "comb" is less stable.
-#' @param n_draws
-#' The number of draws to use for reference distributions (default: 1000).
-#' @param comp
-#' The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob").
-#' The use of the Frobenius norm is recommended.
-#' @param return_all
-#' Logical indicating whether to return all distributions (default: FALSE).
-#' Has to be set to TRUE for plotting the results.
-#' @param sampling_method
-#' Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-#' Default: "random"
-#' @param indices A list of "beta" and "pcor" indices specifying which elements of the matrices to consider when calculating distances.
-#' If NULL (default), all elements of both matrices are considered.
-#' If provided, only the elements at these indices are considered. If only one of the matrices should have indices, the other one should be NULL.
-#' This can be useful if you want to calculate distances based on a subset of the elements in the matrices.
-#' @param burnin
-#' The number of burn-in iterations to discard (default: 0).
-#' @return A list containing the results of the comparison. The list includes:
+#' @param fit_a Fitted model object for Model A. This can be a stanfit object
+#'   (obtained from [stan_gvar()]), a BGGM object (obtained from
+#'   [BGGM::var_estimate()]), or extracted posterior samples (obtained from
+#'   [stan_fit_convert()).
+#' @param fit_b Fitted model object for Model B. This can be a stanfit object
+#'   (obtained from [stan_gvar()]), a BGGM object (obtained from
+#'   [BGGM::var_estimate()]), or extracted posterior samples (obtained from
+#'   [stan_fit_convert()).
+#' @param cutoff The percentage level of the test (default: 5\%) as integer.
+#' @param dec_rule The decision rule to be used. Currently supports default "or"
+#'   (comparing against two reference distributions) and "comb" (combining the
+#'   reference distributions). The use of "or" is recommended, as "comb" is less
+#'   stable.
+#' @param n_draws The number of draws to use for reference distributions
+#'   (default: 1000).
+#' @param comp The distance metric to use. Should be one of "frob" (Frobenius
+#'   norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
+#'   "frob"). The use of the Frobenius norm is recommended.
+#' @param return_all Logical indicating whether to return all distributions
+#'   (default: FALSE). Has to be set to TRUE for plotting the results.
+#' @param sampling_method Draw sequential pairs of samples from the posterior,
+#'   with certain distance between them ("sequential") or randomly from two
+#'   halves of the posterior ("random"). The "random" method is preferred to
+#'   account for potential autocorrelation between subsequent samples. Default:
+#'   "random".
+#' @param indices A list of "beta" and "pcor" indices specifying which elements
+#'   of the matrices to consider when calculating distances. If NULL (default),
+#'   all elements of both matrices are considered. If provided, only the
+#'   elements at these indices are considered. If only one of the matrices
+#'   should have indices, the other one should be NULL. This can be useful if
+#'   you want to calculate distances based on a subset of the elements in the
+#'   matrices.
+#' @param burnin The number of burn-in iterations to discard (default: 0).
+#' @return A list (of class "compare_gvar") containing the results of the
+#'   comparison. The list includes:
 #'  \itemize{
 #'   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
 #'   \item{sig_pcor}{Binary decision on whether there is a significant difference between the contemporaneous networks of A and B}
@@ -53,6 +56,11 @@
 #'   \item{arguments}{The arguments used in the function call}
 #'    }
 #' @importFrom dplyr group_by summarize pull
+#'
+#' @examples
+#' # use internal fit data of two individuals
+#' data(fit_data)
+#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
 #' @export
 
 compare_gvar <- function(fit_a,
@@ -139,11 +147,11 @@ compare_gvar <- function(fit_a,
 
   ## Input conversion
   if(inherits(fit_a, "stanfit")) {
-    fit_a <- tsnet::stan_fit_convert(fit_a,
+    fit_a <- stan_fit_convert(fit_a,
                                      return_params = c("beta", "pcor"))
   }
   if(inherits(fit_b, "stanfit")) {
-    fit_b <- tsnet::stan_fit_convert(fit_b,
+    fit_b <- stan_fit_convert(fit_b,
                                      return_params = c("beta", "pcor"))
   }
 
@@ -185,7 +193,7 @@ compare_gvar <- function(fit_a,
   ref_a <- post_distance_within(fit_a,
     comp = comp,
     pred = FALSE,
-    draws = n_draws,
+    n_draws = n_draws,
     sampling_method = sampling_method,
     indices = indices,
     burnin = burnin
@@ -193,7 +201,7 @@ compare_gvar <- function(fit_a,
   ref_b <- post_distance_within(fit_b,
     comp = comp,
     pred = FALSE,
-    draws = n_draws,
+    n_draws = n_draws,
     sampling_method = sampling_method,
     indices = indices,
     burnin = burnin

@@ -1,7 +1,8 @@
 #' Check Eigenvalues of Bayesian GVAR object
 #'
 #' This function checks the eigenvalues of the Beta matrix (containing the temporal coefficients) to assure that the model is stationary.
-#' It uses the same check as the `graphicalVAR` package.
+#' It uses the same check as the `graphicalVAR` package. The function calculates the eigenvalues of the Beta matrix and checks if the sum of the squares of the real and imaginary parts of the eigenvalues is less than 1.
+#' If it is, the VAR model is considered stable.
 #'
 #' @param fitobj
 #' A fitted Bayesian GVAR object.
@@ -12,15 +13,15 @@
 check_eigen <- function(fitobj){
 
   # Input check
-  if(!(inherits(fit_a, "var_estimate") ||
-       inherits(fit_a, "stanfit") ||
-       inherits(fit_a, "tsnet_samples"))) {
+  if(!(inherits(fitobj, "var_estimate") ||
+       inherits(fitobj, "stanfit") ||
+       inherits(fitobj, "tsnet_samples"))) {
     stop("Error: 'fitobj' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
   }
 
   if(inherits(fit_a, "stanfit")) {
-    fitobj <- tsnet::stan_fit_convert(fitobj,
-                                     return_params = c("beta", "pcor"))
+    fitobj <- stan_fit_convert(fitobj,
+                                  return_params = c("beta", "pcor"))
   }
 
   # Extract elements

@@ -4,19 +4,35 @@
 \alias{ess_gvar}
 \title{Compute Effective Sample Sizes for MCMC Samples of BGGM GVAR models}
 \usage{
-ess_gvar(fitobj, burnin = 500)
+ess_gvar(fitobj, burnin = 0)
 }
 \arguments{
-\item{fitobj}{A `BGGM` var_estimate fit object.}
+\item{fitobj}{A [BGGM::var_estimate()] fit object.}
 
-\item{burnin}{An integer indicating the number of burn-in iterations to discard. Default is 50.}
+\item{burnin}{An integer indicating the number of burn-in iterations to
+discard. Default is 0.}
 }
 \value{
-A list with two elements: ess_beta and ess_pcor. ess_beta contains the ESS of MCMC samples of VAR, and ess_pcor contains the ESS of MCMC samples of partial correlation coefficients.
+A list with two elements: ess_beta and ess_pcor. ess_beta contains
+  the ESS of MCMC samples of the temporal coefficients, and ess_pcor contains
+  the ESS of MCMC samples of partial correlation coefficients.
 }
 \description{
-This function computes the effective sample size (ESS) of MCMC samples
-of temporal and contemporaneous network parameters
-based on the provided `BGGM::var_estimate` fit object.
-It uses the default functionality of the `coda` package to compute ESS.
+This function computes the effective sample size (ESS) of MCMC samples of
+temporal and contemporaneous network parameters based on the provided
+[BGGM::var_estimate()] fit object. It uses the default functionality of the
+`coda` package to compute ESS. Effective sample size estimates for
+[stan_gvar()] models can be found in their model output itself.
+}
+\examples{
+\dontrun{
+# Load data
+data(ts_data)
+example_data <- ts_data[1:100,]
+
+# Estimate a GVAR model
+fit <- BGGM::var_estimate(example_data)
+ess <- ess_gvar(fit)
+}
+
 }

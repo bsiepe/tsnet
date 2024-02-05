@@ -4,32 +4,38 @@
 \alias{plot_centrality}
 \title{Plot Centrality Measures}
 \usage{
-plot_centrality(
-  obj,
-  plot_type = "tiefighter",
-  density_type = "outstrength",
-  cis = 0.95
-)
+plot_centrality(obj, plot_type = "tiefighter", cis = 0.95)
 }
 \arguments{
-\item{obj}{An object containing the centrality measures obtained from [get_centrality()].}
+\item{obj}{An object containing the centrality measures obtained from
+[get_centrality()].}
 
-\item{plot_type}{A character string specifying the type of plot. Accepts "tiefighter" or "density". Default is "tiefighter".}
+\item{plot_type}{A character string specifying the type of plot. Accepts
+"tiefighter" or "density". Default is "tiefighter".}
 
-\item{density_type}{A character string specifying the type of density. Accepts "instrength", "outstrength", "strength", "density_beta", "density_pcor". Default is "outstrength".}
-
-\item{cis}{A numeric value specifying the credible interval. Must be between 0 and 1 (exclusive). Default is 0.95.}
+\item{cis}{A numeric value specifying the credible interval. Must be between
+0 and 1 (exclusive). Default is 0.95.}
 }
 \value{
-A ggplot object.
+A ggplot object visualizing the centrality measures. For a
+  "tiefighter" plot, each point represents the mean centrality measure for a
+  variable, and the bars represent the credible interval. In a "density"
+  plot, distribution of the centrality measures is visualized.
 }
 \description{
-This function creates a plot of various centrality measures for a given object.
+This function creates a plot of various centrality measures for a given
+object. The plot can be either a "tiefighter" plot or a "density" plot. The
+"tiefighter" plot shows the centrality measures for each variable with
+uncertainty bands, while the "density" plot shows the full density of the
+centrality measures.
 }
 \examples{
 \dontrun{
-obj <- # create your object here
-  plot_centrality(obj, plot_type = "tiefighter", density_type = "outstrength", cis = 0.95)
+data(fit_data)
+obj <- get_centrality(fit_data[[1]])
+  plot_centrality(obj,
+  plot_type = "tiefighter",
+  cis = 0.95)
 }
 
 }

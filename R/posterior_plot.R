@@ -1,25 +1,29 @@
 #' posterior_plot
 #'
-#' Plots posterior distributions of the parameters of the temporal and
-#' contemporaneous networks of a GVAR model.
+#' @description Plots posterior distributions of the parameters of the temporal
+#' or the contemporaneous networks of a GVAR model. The posterior distributions
+#' are visualized as densities in a matrix layout.
 #'
-#' @param fitobj
-#' An object containing results of a Bayesian GVAR model.
-#' Currently, this can be a BGGM var_estimate object (obtained from [BGGM::var_estimate()]).
-#' @param mat A matrix to use for plotting. Possibilities include "beta" (temporal network)
-#' and "pcor" (contemporaneous network). Default is "beta" (temporal network).
-#' @param cis A numeric vector of credible intervals to use for plotting. Default is c(0.8, 0.9, 0.95).
+#' @param fitobj Fitted model object. This can be a stanfit object (obtained
+#'   from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
+#'   or extracted posterior samples (obtained from [stan_fit_convert()).
+#' @param mat A matrix to use for plotting. Possibilities include "beta"
+#'   (temporal network) and "pcor" (contemporaneous network). Default is "beta"
+#'   (temporal network).
+#' @param cis A numeric vector of credible intervals to use for plotting.
+#'   Default is c(0.8, 0.9, 0.95).
 #'
-#' @details
-#' In the returned plot, posterior distributions for every parameter are shown.
-#' Lagged variables are displayed along the vertical line of the grid, and non-lagged variables along the horizontal line of the grids.
+#' @details In the returned plot, posterior distributions for every parameter
+#' are shown. Lagged variables are displayed along the vertical line of the
+#' grid, and non-lagged variables along the horizontal line of the grids.
 #'
-#' @import ggdist
-#' @import tidyr
-#' @import dplyr
-#' @importFrom ggplot2 aes scale_x_continuous  facet_grid geom_vline labs scale_alpha scale_fill_brewer ylim theme element_blank ggplot after_stat
+#' @import ggplot2
 #' @importFrom ggdist stat_pointinterval stat_slab
 #' @importFrom tidyr separate_wider_delim pivot_longer
+#'
+#' @examples
+#' data(fit_data)
+#' posterior_plot(fit_data[[1]])
 #' @export
 
 posterior_plot <- function(fitobj,

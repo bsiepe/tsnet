@@ -7,19 +7,30 @@
 \method{print}{compare_gvar}(x, ...)
 }
 \arguments{
-\item{x}{A compare_gvar object.}
+\item{x}{A test object obtained from [compare_gvar()]}
 
 \item{...}{Additional arguments to be passed to the print method. (currently not used)}
 }
 \value{
-None
+Prints a summary of the Norm-Based Comparison Test to the console
 }
 \description{
 This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
 }
 \details{
-This function prints a summary of the Norm-Based Comparison Test for a compare_gvar object.
+This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
 It displays the general summary and model-specific results, including the number of significant comparisons
 in the temporal and contemporaneous networks, as well as the number of reference distances that were larger
 than the empirical distance for each network.
+}
+\examples{
+# Load example fits
+data(fit_data)
+
+# Perform test
+test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
+
+# Print results
+print(test_res)
+
 }

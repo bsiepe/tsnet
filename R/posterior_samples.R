@@ -1,15 +1,31 @@
 #' Extract Posterior Samples from a BGGM Fit Object
 #'
-#' This function extracts the posterior samples of partial correlations and beta coefficients from a fitted BGGM model.
+#' @description
+#' This function extracts the posterior samples of partial correlations and beta
+#' coefficients from a Bayesian GVAR model that was fitted with [BGGM::var_estimate()]. 
+#' The function is not intended to be called directly by the user, but is used internally by the package.
 #'
-#' @param fitobj A BGGM fit object from which to extract the posterior samples.
-#' @param burnin An integer specifying the number of initial samples to discard as burn-in. Default is 500.
+#' @param fitobj A [BGGM::var_estimate()] fit object from which to extract the posterior samples.
+#' @param burnin An integer specifying the number of initial samples to discard
+#'   as burn-in. Default is 500.
 #'
-#' @return A matrix containing the posterior samples of partial correlations and beta coefficients. The rows represent the samples, and the columns represent the different parameters. The first set of columns represent the partial correlations, and the second set of columns represent the beta coefficients. Each column is named according to the corresponding parameter.
+#' @return A matrix containing the posterior samples of partial correlations and
+#'   beta coefficients. The rows represent the samples, and the columns
+#'   represent the different parameters. The first set of columns represent the
+#'   partial correlations, and the second set of columns represent the beta
+#'   coefficients. Each column is named according to the corresponding
+#'   parameter.
 #'
 #' @examples
 #' \dontrun{
-#' fit <- var_estimate (...) # replace with actual fitting function
+#' # Load imulated time series data
+#' data(ts_data)
+#' example_data <- ts_data[1:100,]
+#'
+#' # Estimate a GVAR model
+#' fit <- BGGM::var_estimate(example_data)
+#'
+#' # Extract posterior samples
 #' posterior_samples <- posterior_samples_bggm(fit)
 #' }
 #'
@@ -86,72 +102,22 @@ posterior_samples_bggm <- function(fitobj,
 }
 
 
-
-#' Convert Draws Matrix to List of Matrices
-#'
-#' This helper function transforms a matrix of draws into a list of matrices,
-#' each representing a single iteration.
-#'
-#' @param draws_matrix A matrix of draws where each row represents an iteration.
-#' @return A list of matrices, each representing a single iteration.
-draws_matrix2list <- function(draws_matrix) {
-  iterations_list <-
-    lapply(
-      X = 1:nrow(draws_matrix),
-      FUN = function(X) {
-        matrix(draws_matrix[X,], ncol = sqrt(ncol(draws_matrix)), byrow = FALSE)
-      }
-    )
-  return(iterations_list)
-}
-
-#' Convert Draws Matrix to Array
-#'
-#' This helper function transforms a matrix of draws into a 3D array.
-#'
-#' @param draws_matrix A matrix of draws where each row represents an iteration.
-#' @return A 3D array where each slice represents an iteration.
-draws_matrix2array <- function(draws_matrix) {
-  array <-
-    array(t(draws_matrix),
-          dim = c(sqrt(ncol(draws_matrix)),
-                  sqrt(ncol(draws_matrix)),
-                  nrow(draws_matrix)))
-
-  return(array)
-}
-
-#' Convert Draws Array to Matrix
-#'
-#' This helper function transforms a 3D array of draws into a matrix.
-#' It also allows for the removal of warmup samples.
-#'
-#' @param array_3d A 3D array of draws where each slice represents an iteration.
-#' @param warmup An integer specifying the number of initial samples to discard as warm-up. Default is 0.
-#' @return A matrix where each row represents an iteration.
-draws_array2matrix <- function(array_3d,
-                               warmup = 0) { # set to zero to keep everything
-  iterations_list <-
-    lapply(
-      X = (warmup+1):dim(array_3d)[3],
-      FUN = function(X) {
-        as.vector(array_3d[, , X])
-      }
-    )
-  matrix <- do.call(rbind, iterations_list)
-  return(matrix)
-}
-
 #' Convert Stan Fit to Array of Samples
 #'
-#' This function converts a Stan fit object into an array of samples for each parameter (Beta, Sigma, Pcor).
-#' It supports rstan as a backend. The function allows to select which parameters should be returned.
+#' This function converts a Stan fit object into an array of samples for the temporal coefficients and the innovation covariance or partial correlation matrices. 
+#' It supports rstan as a backend. It can be used to convert models fit using [stan_gvar()] into 3D arrays, which is the standard data structure used in `tsnet`.
+#' The function allows to select which parameters should be returned.
 #'
-#' @param stan_fit A Stan fit object obtained from rstan.
-#' @param return_params A character vector specifying which parameters to return. Options are "beta", "sigma", and "pcor". Default is c("beta", "sigma", "pcor").
+#' @param stan_fit A Stan fit object obtained from rstan or [stan_gvar()].
+#' @param return_params A character vector specifying which parameters to
+#'   return. Options are "beta" (temporal network), "sigma" (innovation covariance), and "pcor" (partial correlations). 
+#' Default is c("beta","sigma", "pcor").
 #'
-#' @return A list containing 3D arrays for the selected parameters. Each array represents the posterior samples for a parameter, and each slice of the array represents a single iteration.
-#'
+#' @return A list containing 3D arrays for the selected parameters. Each array
+#'   represents the posterior samples for a parameter, and each slice of the
+#'   array represents a single iteration.
+#' @importFrom rstan extract
+#' @importFrom posterior as_draws_matrix
 #' @examples
 #' \dontrun{
 #' data(ts_data)

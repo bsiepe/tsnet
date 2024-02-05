@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_gvar.R
 \name{compare_gvar}
 \alias{compare_gvar}
-\title{Compare two BGGM gVAR models}
+\title{Compare two Bayesian gVAR models}
 \usage{
 compare_gvar(
   fit_a,
@@ -14,38 +14,56 @@ compare_gvar(
   return_all = FALSE,
   sampling_method = "random",
   indices = NULL,
-  burnin = 500
+  burnin = 0
 )
 }
 \arguments{
-\item{fit_a}{Fitted model object for Model A.}
+\item{fit_a}{Fitted model object for Model A. This can be a stanfit object
+(obtained from [stan_gvar()]), a BGGM object (obtained from
+[BGGM::var_estimate()]), or extracted posterior samples (obtained from
+[stan_fit_convert()).}
 
-\item{fit_b}{Fitted model object for Model B.}
+\item{fit_b}{Fitted model object for Model B. This can be a stanfit object
+(obtained from [stan_gvar()]), a BGGM object (obtained from
+[BGGM::var_estimate()]), or extracted posterior samples (obtained from
+[stan_fit_convert()).}
 
 \item{cutoff}{The percentage level of the test (default: 5\%) as integer.}
 
-\item{dec_rule}{The decision rule to be used. Currently supports default "or" (comparing against two reference distributions) and "comb" (combining the reference distributions).}
+\item{dec_rule}{The decision rule to be used. Currently supports default "or"
+(comparing against two reference distributions) and "comb" (combining the
+reference distributions). The use of "or" is recommended, as "comb" is less
+stable.}
 
-\item{n_draws}{The number of draws to use for reference distributions (default: 1000).}
+\item{n_draws}{The number of draws to use for reference distributions
+(default: 1000).}
 
-\item{comp}{The distance metric to use. Should be one of "frob" (Frobenius norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default: "frob").
-The use of the Frobenius norm is recommended.}
+\item{comp}{The distance metric to use. Should be one of "frob" (Frobenius
+norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
+"frob"). The use of the Frobenius norm is recommended.}
 
-\item{return_all}{Logical indicating whether to return all distributions (default: FALSE).
-Has to be set to TRUE for plotting the results.}
+\item{return_all}{Logical indicating whether to return all distributions
+(default: FALSE). Has to be set to TRUE for plotting the results.}
 
-\item{sampling_method}{Draw sequential pairs of samples from the posterior, with certain distance between them ("sequential") or randomly from two halves of the posterior ("random").
-Default: "random"}
+\item{sampling_method}{Draw sequential pairs of samples from the posterior,
+with certain distance between them ("sequential") or randomly from two
+halves of the posterior ("random"). The "random" method is preferred to
+account for potential autocorrelation between subsequent samples. Default:
+"random".}
 
-\item{indices}{A list of "beta" and "pcor" indices specifying which elements of the matrices to consider when calculating distances.
-If NULL (default), all elements of both matrices are considered.
-If provided, only the elements at these indices are considered. If only one of the matrices should have indices, the other one should be NULL.
-This can be useful if you want to calculate distances based on a subset of the elements in the matrices.}
+\item{indices}{A list of "beta" and "pcor" indices specifying which elements
+of the matrices to consider when calculating distances. If NULL (default),
+all elements of both matrices are considered. If provided, only the
+elements at these indices are considered. If only one of the matrices
+should have indices, the other one should be NULL. This can be useful if
+you want to calculate distances based on a subset of the elements in the
+matrices.}
 
-\item{burnin}{The number of burn-in iterations to discard (default: 500).}
+\item{burnin}{The number of burn-in iterations to discard (default: 0).}
 }
 \value{
-A list containing the results of the comparison. The list includes:
+A list (of class "compare_gvar") containing the results of the
+  comparison. The list includes:
  \itemize{
   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
   \item{sig_pcor}{Binary decision on whether there is a significant difference between the contemporaneous networks of A and B}
@@ -59,9 +77,17 @@ A list containing the results of the comparison. The list includes:
    }
 }
 \description{
-Computes the empirical distance between two models based on their point estimates
-and compares them using reference distributions created from their
-posterior distributions. Returns the p-value for the comparison
-based on a decision rule specified by the user. Details are available in
-Siepe & Heck (2023) <doi:10.31234/osf.io/uwfjc>.
+This function compares two Bayesian Graphical Vector
+  Autoregressive models using matrix norms to test if the observed
+  differences between two models is reliable. It computes the empirical
+  distance between two models based on their point estimates and compares
+  them using reference distributions created from their posterior
+  distributions. Returns the p-value for the comparison based on a decision
+  rule specified by the user. Details are available in Siepe, Kloft & Heck (2023)
+  <doi:10.31234/osf.io/uwfjc>.
+}
+\examples{
+# use internal fit data of two individuals
+data(fit_data)
+test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
 }

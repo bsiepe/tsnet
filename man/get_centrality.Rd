@@ -4,14 +4,20 @@
 \alias{get_centrality}
 \title{Compute Centrality Measures}
 \usage{
-get_centrality(fitobj, burnin = 500, remove_ar = TRUE)
+get_centrality(fitobj, burnin = 0, remove_ar = TRUE)
 }
 \arguments{
-\item{fitobj}{A fit object containing the beta and pcor samples.}
+\item{fitobj}{Fitted model object for a Bayesian GVAR model.
+This can be a stanfit object (obtained from [stan_gvar()]),
+a BGGM object (obtained from [BGGM::var_estimate()]),
+or extracted posterior samples (obtained from [stan_fit_convert()).}
 
-\item{burnin}{An integer specifying the number of initial samples to discard as burn-in. Default is 500.}
+\item{burnin}{An integer specifying the number of initial samples to discard
+as burn-in. Default is 0.}
 
-\item{remove_ar}{A logical value specifying whether to remove the autoregressive effects for centrality calculation. Default is TRUE.}
+\item{remove_ar}{A logical value specifying whether to remove the
+autoregressive effects for centrality calculation. Default is TRUE. This is
+only relevant for the calculation of temporal centrality/density measures.}
 }
 \value{
 A list containing the following centrality measures:
@@ -24,12 +30,15 @@ A list containing the following centrality measures:
 }
 }
 \description{
-This function computes various centrality measures for a given fit object.
+This function computes various network centrality measures for a given GVAR
+fit object. Centrality measures describe the "connectedness" of a variable in a network, while density describes the networks' overall connectedness.
+Specifically, it computes the in-strength, out-strength,
+contemporaneous strength, temporal network density, and contemporaneous
+network density. The result can then be visualized using [plot_centrality()].
 }
 \examples{
-\dontrun{
-fit <- # fit your model here TODO add this
-  centrality_measures <- get_centrality(fit, burnin = 500)
-}
+ # Use first individual from example fit data from tsnet
+ data(fit_data)
+ centrality_measures <- get_centrality(fit_data[[1]])
 
 }
