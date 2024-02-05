@@ -16,14 +16,12 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4VAR_LKJ_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4VAR_LKJ_beep_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4VAR_wishart_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4VAR_wishart_beep_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4test_mod();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4VAR_LKJ_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4VAR_LKJ_mod, 0},
     {"_rcpp_module_boot_stan_fit4VAR_LKJ_beep_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4VAR_LKJ_beep_mod, 0},
     {"_rcpp_module_boot_stan_fit4VAR_wishart_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4VAR_wishart_mod, 0},
     {"_rcpp_module_boot_stan_fit4VAR_wishart_beep_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4VAR_wishart_beep_mod, 0},
-    {"_rcpp_module_boot_stan_fit4test_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4test_mod, 0},
     {NULL, NULL, 0}
 };
 
