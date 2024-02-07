@@ -40,12 +40,12 @@ get_centrality <- function(fitobj,
   if(!(inherits(fitobj, "var_estimate") ||
        inherits(fitobj, "stanfit") ||
        inherits(fitobj, "tsnet_samples"))) {
-    stop("Error: 'fit_a' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+    stop("Error: 'fitobj' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
   }
 
   # Input Conversion
   if(inherits(fitobj, "stanfit")) {
-    fit_a <- tsnet::stan_fit_convert(fit_a,
+    fitobj <- tsnet::stan_fit_convert(fitobj,
                                      return_params = c("beta", "pcor"))
   }
 
@@ -125,12 +125,12 @@ get_centrality <- function(fitobj,
 #'   plot_type = "tiefighter",
 #'   cis = 0.95)
 #' }
-#' 
+#'
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr group_by summarize
+#' @importFrom dplyr group_by summarize everything
 #' @importFrom stats quantile
 #' @import ggplot2
-#' 
+#'
 #' @export
 plot_centrality <- function(obj,
                             plot_type = "tiefighter",
@@ -162,9 +162,9 @@ plot_centrality <- function(obj,
   #--- Overview
   if (plot_type == "tiefighter") {
     #--- Plot
-    overview_plot <- df_centrality %>%
+    overview_plot <- df_centrality |>
       tidyr::pivot_longer(
-        cols = everything(),
+        cols = dplyr::everything(),
         names_to = "measure",
         values_to = "value"
       ) |>
@@ -206,9 +206,9 @@ plot_centrality <- function(obj,
   #--- Density
   if (plot_type == "density") {
     #--- Plot
-    density_plot <- df_centrality %>%
+    density_plot <- df_centrality |>
       tidyr::pivot_longer(
-        cols = everything(),
+        cols = dplyr::everything(),
         names_to = "measure",
         values_to = "value"
       ) |>
