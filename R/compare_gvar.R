@@ -60,7 +60,7 @@
 #' @examples
 #' # use internal fit data of two individuals
 #' data(fit_data)
-#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
+#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]], n_draws = 100)
 #' @export
 
 compare_gvar <- function(fit_a,
@@ -183,11 +183,6 @@ compare_gvar <- function(fit_a,
     matrix(x[upper.tri(x, diag = FALSE)])
   }
 
-  ## Create empty indices if not provided
-  if (is.null(indices)) {
-    indices <- list(beta = NULL, pcor = NULL)
-  }
-
 
   ## Create reference distributions for both models
   ref_a <- post_distance_within(fit_a,
@@ -209,14 +204,24 @@ compare_gvar <- function(fit_a,
 
   ## Empirical distance
   # Compute empirical distance as test statistic
-  emp_beta <- compute_metric(fit_a$beta_mu, fit_b$beta_mu,
-                             comp,
-                             indices$beta)
+  # provide indices if specified
+  if (is.null(indices)) {
+    emp_beta <- compute_metric(fit_a$beta_mu,
+                               fit_b$beta_mu,
+                               comp,
+                               indices)
+  } else {
+    emp_beta <- compute_metric(fit_a$beta_mu,
+                               fit_b$beta_mu,
+                               comp,
+                               indices$beta)
+  }
+
   if (is.null(indices)) {
     emp_pcor <- compute_metric(ut(fit_a$pcor_mu),
                                ut(fit_b$pcor_mu),
                                comp,
-                               indices$pcor)
+                               indices)
   } else {
     emp_pcor <- compute_metric(fit_a$pcor_mu,
                                fit_b$pcor_mu,
