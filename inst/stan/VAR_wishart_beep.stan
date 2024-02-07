@@ -9,13 +9,11 @@ data {
   // Priors
   matrix[K,K] prior_Beta_loc; // locations for priors on Beta matrix
   matrix[K,K] prior_Beta_scale; // scales for priors on Beta matrix
-  // matrix[K,K] prior_Rho_loc; // locations for priors on partial correlations
-  // matrix[K,K] prior_Rho_scale; // scales for priors on partial correlations
+  matrix[K,K] prior_S; // prior for scale matrix
   int<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
-  matrix[K,K] I = diag_matrix(rep_vector(1, K));
   int first_beep = min(beep);
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +54,7 @@ model {
   target+=   std_normal_lpdf(to_vector(Beta_raw));    // prior on Beta
   //target+= student_t_lpdf(mu_Beta | 3,0,2);
   //target+= student_t_lpdf(sigma_Beta | 3,0,2);
-  target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, I);  // prior on precision matrix
+  target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, prior_S);  // prior on precision matrix
   {
     for(t in 2:T){
       if(beep[t] > first_beep){

@@ -5,25 +5,39 @@
 #'   Heck (2023) <doi:10.31234/osf.io/uwfjc>. The current implementation allows
 #'   for a normal prior on the temporal effects and either an Inverse Wishart or
 #'   an LKJ prior on the contemporaneous effects. `rstan` is used as a backend
-#'   for fitting the model in Stan.
+#'   for fitting the model in Stan. Data should be provided in long format, where
+#'   the columns represent the variables and the rows represent the time points.
+#'   Data are automatically z-scaled for estimation.
 #'
-#'   Currently, we use an `adapt_delta` default of 0.8. You can overwrite this
-#'   setting.
-#'
-#' @param data A data frame or matrix containing the time series data.
+#' @param data A data frame or matrix containing the time series data of a
+#'   single subject. The data should be in long format,  where the columns
+#'   represent the variables and the rows represent the time points. See the
+#'   example data [ts_data] for the correct format.
 #' @param beep A vector of beeps with length of `nrow(data)`. The beep indicator
 #'   can be used to remove overnight effects from the last beep of a day to the
 #'   first beep of the next day. This should be a vector of positive integers.
+#'   If left empty, the function will assume that there are no overnight
+#'   effects to remove.
 #' @param priors A list of prior distributions for the model parameters. This
 #'   should be a named list, with names corresponding to the parameter names and
-#'   values corresponding to the prior distributions.
+#'   values corresponding to the prior distributions. The following priors can
+#'   be specified:
+#'   \itemize{
+#'   \item `prior_Beta_loc` A matrix of the same dimensions as the beta matrix
+#'   `B` containing the mean of the prior distribution for the beta coefficients.
+#'   \item `prior_Beta_scale` A matrix of the same dimensions as the beta matrix
+#'   `B` containing the standard deviation of the prior distribution for the beta
+#'   coefficients.}
+#'
 #' @param method A string indicating the method to use for fitting the model.
 #'   Options are "sampling" (for MCMC estimation) or "variational" (for
 #'   variational inference). We currently recommend only using MCMC estimation.
 #' @param cov_prior A string indicating the prior distribution to use for the
 #'   covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart).
 #' @param rmv_overnight A logical indicating whether to remove overnight
-#'   effects. Default is `FALSE`.
+#'   effects. Default is `FALSE`. If `TRUE`, the function will remove overnight
+#'   effects from the last beep of a day to the first beep of the next day.
+#'   This requires the `beep` argument to be specified.
 #' @param iter_sampling An integer specifying the number of iterations for the
 #'   sampling method. Default is 500.
 #' @param iter_warmup An integer specifying the number of warmup iterations for
@@ -31,7 +45,7 @@
 #' @param n_chains An integer specifying the number of chains for the sampling
 #'   method. Default is 4.
 #' @param n_cores An integer specifying the number of cores to use for parallel
-#'   computation. Default is 1.
+#'   computation. Default is 1. [rstan] is used for parallel computation.
 #' @param center_only A logical indicating whether to only center (and not
 #'   scale) the data. Default is `FALSE`.
 #' @param ... Additional arguments passed to the `rstan::sampling` or
@@ -119,14 +133,15 @@
 #'   \deqn{\Sigma \sim IW(\nu, S)}
 #'   where `nu` is the degrees of freedom and `S` is the scale matrix. We here
 #'   use the default prior of `nu = delta + p - 1`for the degrees of freedom,
-#'   where `delta` is defined as \eqn{s_{\rho}^{-1}-1} and `s_{\rho}` is the
+#'   where `delta` is defined as \eqn{s_{\rho}^{-1}-1} and `s_{rho}` is the
 #'   standard deviation of the implied marginal beta distribution of the
 #'   partial correlations. For the scale matrix `S`, we use the identity matrix
 #'   `I_p` of order p.
 #'   The user can set a prior on the expected standard deviation of the partial
 #'   correlations by specifying a `prior_Rho_marginal` parameter. The default
 #'   value is 0.25, which has worked well in a simulation study.
-#'   TODO ADD NEW CUSTOM PRIORS
+#'   Additionally, the user can specify a `prior_S` parameter to set a different
+#'   scale matrix.
 #'
 #'   \bold{Sampling}
 #'   The model can be fitted using either MCMC sampling or variational
@@ -144,14 +159,12 @@
 #'
 #' @importFrom rstan sampling vb
 #' @examples
-#' \dontrun{
 #' # Load example data
 #' data(ts_data)
-#' example_data <- ts_data[1:100,]
+#' example_data <- ts_data[1:100,1:6]
 #'
 #' # Fit the model
 #' fit <- stan_gvar(data, method = "sampling", cov_prior = "LKJ")
-#' }
 #'
 #' @export
 
@@ -160,7 +173,7 @@ stan_gvar <-
            beep = NULL,
            priors = NULL,
            method = "sampling",
-           cov_prior = "LKJ",
+           cov_prior = "IW",
            rmv_overnight = FALSE,
            iter_sampling = 500,
            iter_warmup = 500,
@@ -213,6 +226,12 @@ stan_gvar <-
         prior_Rho_marginal <- priors[["prior_Rho_marginal"]]
     }
 
+    if(is.null(priors[["prior_S"]])){
+      prior_S <- diag(K)
+    } else {
+      prior_S <- priors[["prior_S"]]
+    }
+
     if(is.null(priors[["prior_Eta"]])){
       prior_Eta <- 1
     } else {
@@ -254,10 +273,9 @@ stan_gvar <-
         "T" = n_t,
         Y = as.matrix(Y),
         beep = beep,
-        prior_Rho_loc = prior_Rho_loc,
-        prior_Rho_scale = prior_Rho_scale,
         prior_Beta_loc = prior_Beta_loc,
         prior_Beta_scale = prior_Beta_scale,
+        prior_S = prior_S,
         prior_delta = prior_delta
       )
 
