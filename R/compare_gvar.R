@@ -149,10 +149,19 @@ compare_gvar <- function(fit_a,
   if(inherits(fit_a, "stanfit")) {
     fit_a <- stan_fit_convert(fit_a,
                                      return_params = c("beta", "pcor"))
+    # randomly change array index to remove ordering of chains
+    ind_a <- sample(dim(fit_a$fit$beta)[3], replace = FALSE)
+    fit_a$fit$beta <- fit_a$fit$beta[,,ind_a]
+    fit_a$fit$pcor <- fit_a$fit$pcor[,,ind_a]
+
   }
   if(inherits(fit_b, "stanfit")) {
     fit_b <- stan_fit_convert(fit_b,
                                      return_params = c("beta", "pcor"))
+    # randomly change array index to remove ordering of chains
+    ind_b <- sample(dim(fit_b$fit$beta)[3], replace = FALSE)
+    fit_b$fit$beta <- fit_b$fit$beta[,,ind_b]
+    fit_b$fit$pcor <- fit_b$fit$pcor[,,ind_b]
   }
 
 
