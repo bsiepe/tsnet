@@ -9,7 +9,7 @@ posterior_plot(fitobj, mat = "beta", cis = c(0.8, 0.9, 0.95))
 \arguments{
 \item{fitobj}{Fitted model object. This can be a stanfit object (obtained
 from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
-or extracted posterior samples (obtained from [stan_fit_convert()).}
+or extracted posterior samples (obtained from [stan_testfit_convert()).}
 
 \item{mat}{A matrix to use for plotting. Possibilities include "beta"
 (temporal network) and "pcor" (contemporaneous network). Default is "beta"

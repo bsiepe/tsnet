@@ -1,11 +1,12 @@
 #' Extract Posterior Samples from a BGGM Fit Object
 #'
-#' @description
-#' This function extracts the posterior samples of partial correlations and beta
-#' coefficients from a Bayesian GVAR model that was fitted with [BGGM::var_estimate()]. 
-#' The function is not intended to be called directly by the user, but is used internally by the package.
+#' @description This function extracts the posterior samples of partial
+#' correlations and beta coefficients from a Bayesian GVAR model that was fitted
+#' with [BGGM::var_estimate()]. The function is not intended to be called
+#' directly by the user, but is used internally by the package.
 #'
-#' @param fitobj A [BGGM::var_estimate()] fit object from which to extract the posterior samples.
+#' @param fitobj A [BGGM::var_estimate()] fit object from which to extract the
+#'   posterior samples.
 #' @param burnin An integer specifying the number of initial samples to discard
 #'   as burn-in. Default is 500.
 #'
@@ -29,7 +30,7 @@
 #' posterior_samples <- posterior_samples_bggm(fit)
 #' }
 #'
-#' @export
+#' @noRd
 posterior_samples_bggm <- function(fitobj,
                                    burnin = 500){
 
@@ -104,13 +105,13 @@ posterior_samples_bggm <- function(fitobj,
 
 #' Convert Stan Fit to Array of Samples
 #'
-#' This function converts a Stan fit object into an array of samples for the temporal coefficients and the innovation covariance or partial correlation matrices. 
+#' This function converts a Stan fit object into an array of samples for the temporal coefficients and the innovation covariance or partial correlation matrices.
 #' It supports rstan as a backend. It can be used to convert models fit using [stan_gvar()] into 3D arrays, which is the standard data structure used in `tsnet`.
 #' The function allows to select which parameters should be returned.
 #'
 #' @param stan_fit A Stan fit object obtained from rstan or [stan_gvar()].
 #' @param return_params A character vector specifying which parameters to
-#'   return. Options are "beta" (temporal network), "sigma" (innovation covariance), and "pcor" (partial correlations). 
+#'   return. Options are "beta" (temporal network), "sigma" (innovation covariance), and "pcor" (partial correlations).
 #' Default is c("beta","sigma", "pcor").
 #'
 #' @return A list containing 3D arrays for the selected parameters. Each array
