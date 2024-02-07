@@ -79,8 +79,14 @@ post_distance_within <- function(fitobj,
 
   # for posteriors of empirical models
   if (isFALSE(pred)) {
+    if (!is.list(fitobj)) {
+      beta_distance <- NA
+      pcor_distance <- NA
+      stop("Not a list.")
+    } else{
     # Obtain number of posterior samples
     n_mod <- dim(fitobj$fit$beta)[3]
+    }
   }
 
   ## Draw two random models
@@ -88,15 +94,16 @@ post_distance_within <- function(fitobj,
   # "samples" would be more fitting here than "models"
   # "model" is still a residue from posterior predictive approach
   # Draw models spaced apart so that we don't have autocorrelation from sampling
-  mod_pairs <- array(NA, dim = c(2, draws))
+  mod_pairs <- array(NA, dim = c(2, n_draws))
 
 
   if(sampling_method == "sequential"){
     # draw from first half of samples
-    mod_pairs[1, 1:(draws)] <- seq(51, draws + 50, by = 1)
+    mod_pairs[1, 1:(n_draws)] <- seq(51, n_draws + 50, by = 1)
 
     # draw from second half of samples
-    mod_pairs[2, 1:(draws)] <- seq((n_mod / 2) + 51, (n_mod / 2) + 50 + (draws), by = 1)
+    mod_pairs[2, 1:(n_draws)] <- seq((n_mod / 2) + 51,
+                                     (n_mod / 2) + 50 + (n_draws), by = 1)
 
   }
   if(sampling_method == "random"){
@@ -107,13 +114,14 @@ post_distance_within <- function(fitobj,
                            ((n_mod/2 - 50 + (burnin/2)):(n_mod/2 + 49 + burnin/2)))
 
     # Draw pairs randomly from the first half and second half
-    mod_pairs[1, 1:draws] <- sample(valid_range[1:(length(valid_range)/2)], draws)
-    mod_pairs[2, 1:draws] <- sample(valid_range[(length(valid_range)/2 + 1):length(valid_range)], draws)
+    mod_pairs[1, 1:n_draws] <- sample(valid_range[1:(length(valid_range)/2)],
+                                      n_draws)
+    mod_pairs[2, 1:n_draws] <- sample(valid_range[(length(valid_range)/2 + 1):length(valid_range)], n_draws)
 
 
   }
 
-  for (i in seq(draws)) {
+  for (i in seq(n_draws)) {
     # storage
     dist_out[[i]] <- list()
     mod_one <- mod_pairs[1, i]
@@ -135,15 +143,23 @@ post_distance_within <- function(fitobj,
     # if both elements are lists
     # conditional: ut() is only called if indices is NULL to keep correct indexing for user-specified indices
     else {
-      beta_distance <- distance_fn_beta(fitobj$fit[[mod_one]]$beta_mu,
-                                        fitobj$fit[[mod_two]]$beta_mu,
-                                        comp,
-                                        indices$beta)
+      beta_distance <- if(is.null(indices)) {
+        distance_fn_beta(fitobj$fit[[mod_one]]$beta_mu,
+                         fitobj$fit[[mod_two]]$beta_mu,
+                         comp,
+                         indices)
+      } else {
+        distance_fn_beta(fitobj$fit[[mod_one]]$beta_mu,
+                         fitobj$fit[[mod_two]]$beta_mu,
+                         comp,
+                          indices$beta)
+        }
+
       pcor_distance <- if (is.null(indices)) {
         distance_fn_pcor(ut(fitobj$fit[[mod_one]]$pcor_mu),
                          ut(fitobj$fit[[mod_two]]$pcor_mu),
                          comp,
-                         indices$pcor)
+                         indices)
       } else {
         distance_fn_pcor(fitobj$fit[[mod_one]]$pcor_mu,
                          fitobj$fit[[mod_two]]$pcor_mu,
@@ -154,29 +170,32 @@ post_distance_within <- function(fitobj,
   }
 
   if (isFALSE(pred)) {
-    if (!is.list(fitobj) | !is.list(fitobj)) {
-      beta_distance <- NA
-      pcor_distance <- NA
-      stop("Not a list.")
-    }
     # if both elements are lists
-    else {
-      beta_distance <- distance_fn_beta(fitobj$fit$beta[, , mod_one],
-                                        fitobj$fit$beta[, , mod_two],
-                                        comp,
-                                        indices$beta)
+    # only use indices if probided
+
+      beta_distance <- if (is.null(indices)){
+        distance_fn_beta(fitobj$fit$beta[, , mod_one],
+                         fitobj$fit$beta[, , mod_two],
+                         comp,
+                         indices)
+      } else {
+        distance_fn_beta(fitobj$fit$beta[, , mod_one],
+                         fitobj$fit$beta[, , mod_two],
+                         comp,
+                         indices$beta)
+      }
       pcor_distance <- if (is.null(indices)) {
         distance_fn_pcor(ut(fitobj$fit$pcors[, , mod_one]),
                          ut(fitobj$fit$pcors[, , mod_two]),
                          comp,
-                         indices$pcor)
+                         indices)
       } else {
         distance_fn_pcor(fitobj$fit$pcors[, , mod_one],
                          fitobj$fit$pcors[, , mod_two],
                          comp,
                          indices$pcor)
       }
-    }
+
   }
 
     # Store results
