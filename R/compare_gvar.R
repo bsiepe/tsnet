@@ -9,11 +9,11 @@
 #'   rule specified by the user. Details are available in Siepe, Kloft & Heck (2023)
 #'   <doi:10.31234/osf.io/uwfjc>.
 #'
-#' @param fit_a Fitted model object for Model A. This can be a stanfit object
+#' @param fit_a Fitted model object for Model A. This can be a tsnet_fit object
 #'   (obtained from [stan_gvar()]), a BGGM object (obtained from
 #'   [BGGM::var_estimate()]), or extracted posterior samples (obtained from
 #'   [stan_fit_convert()).
-#' @param fit_b Fitted model object for Model B. This can be a stanfit object
+#' @param fit_b Fitted model object for Model B. This can be a tsnet_fit object
 #'   (obtained from [stan_gvar()]), a BGGM object (obtained from
 #'   [BGGM::var_estimate()]), or extracted posterior samples (obtained from
 #'   [stan_fit_convert()).
@@ -113,14 +113,14 @@ compare_gvar <- function(fit_a,
   # Check fit input
   # fit_a and fit_b need to either be "var_estimate" or "stanfit"
   if(!(inherits(fit_a, "var_estimate") ||
-       inherits(fit_a, "stanfit") ||
+       inherits(fit_a, "tsnet_fit") ||
        inherits(fit_a, "tsnet_samples"))) {
-    stop("Error: 'fit_a' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+    stop("Error: 'fit_a' must be either a 'var_estimate', 'tsnet_fit', or 'tsnet_samples' object.")
   }
   if(!(inherits(fit_b, "var_estimate") ||
-       inherits(fit_b, "stanfit") ||
+       inherits(fit_b, "tsnet_fit") ||
        inherits(fit_b, "tsnet_samples"))) {
-    stop("Error: 'fit_b' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+    stop("Error: 'fit_b' must be either a 'var_estimate', 'tsnet_fit', or 'tsnet_samples' object.")
   }
 
   # Check indices
@@ -146,7 +146,7 @@ compare_gvar <- function(fit_a,
 
 
   ## Input conversion
-  if(inherits(fit_a, "stanfit")) {
+  if(inherits(fit_a, "tsnet_fit")) {
     fit_a <- stan_fit_convert(fit_a,
                                      return_params = c("beta", "pcor"))
     # randomly change array index to remove ordering of chains
@@ -155,7 +155,7 @@ compare_gvar <- function(fit_a,
     fit_a$fit$pcor <- fit_a$fit$pcor[,,ind_a]
 
   }
-  if(inherits(fit_b, "stanfit")) {
+  if(inherits(fit_b, "tsnet_fit")) {
     fit_b <- stan_fit_convert(fit_b,
                                      return_params = c("beta", "pcor"))
     # randomly change array index to remove ordering of chains

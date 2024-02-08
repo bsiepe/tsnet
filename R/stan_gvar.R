@@ -155,7 +155,10 @@
 #'
 #'
 #'
-#' @return A `stanfit` object representing the fitted model.
+#' @return A `tsnet_fit` object in list format. The object contains the
+#'  following elements:
+#'  \item{fit}{A stanfit object containing the fitted model.}
+#'  \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
 #'
 #' @importFrom rstan sampling vb
 #' @examples
@@ -189,6 +192,15 @@ stan_gvar <-
 
     K <- ncol(data)
     n_t <- nrow(data)
+    cnames <- colnames(data)
+
+    # Store arguments
+    mc <- match.call()
+    fl <- formals()
+        missing_args <- setdiff(names(fl), names(mc))
+        missing_args <- Map(function(arg, default)
+      if (!is.null(default)) mc[[arg]] <- default, missing_args, fl[missing_args])
+    all_args <- c(as.list(mc), missing_args)
 
     if(is.null(beep)){
       beep <- seq(1, n_t)
@@ -315,5 +327,19 @@ stan_gvar <-
         )
       }
 
-    return(stan_fit)
+
+    args <- list(p = K,
+                 n_t = n_t,
+                 cnames = cnames,
+                 fn_args = all_args
+                 )
+
+    ret_fit <- list(
+      stan_fit = stan_fit,
+      arguments = args
+    )
+
+    class(ret_fit) <- c("tsnet_fit", class(ret_fit))
+    return(ret_fit)
+
 }

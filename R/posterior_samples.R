@@ -21,7 +21,7 @@
 #' \dontrun{
 #' # Load imulated time series data
 #' data(ts_data)
-#' example_data <- ts_data[1:100,]
+#' example_data <- ts_data[1:100,1:4]
 #'
 #' # Estimate a GVAR model
 #' fit <- BGGM::var_estimate(example_data)
@@ -105,14 +105,19 @@ posterior_samples_bggm <- function(fitobj,
 
 #' Convert Stan Fit to Array of Samples
 #'
-#' This function converts a Stan fit object into an array of samples for the temporal coefficients and the innovation covariance or partial correlation matrices.
-#' It supports rstan as a backend. It can be used to convert models fit using [stan_gvar()] into 3D arrays, which is the standard data structure used in `tsnet`.
-#' The function allows to select which parameters should be returned.
+#' This function converts a Stan fit object into an array of samples for the
+#' temporal coefficients and the innovation covariance or partial correlation
+#' matrices. It supports rstan as a backend. It can be used to convert models
+#' fit using [stan_gvar()] into 3D arrays, which is the standard data structure
+#' used in `tsnet`. The function allows to select which parameters should be
+#' returned.
 #'
-#' @param stan_fit A Stan fit object obtained from rstan or [stan_gvar()].
+#' @param stan_fit A Stan fit object obtained from rstan or a tsnet_fit object
+#'   from [stan_gvar()].
 #' @param return_params A character vector specifying which parameters to
-#'   return. Options are "beta" (temporal network), "sigma" (innovation covariance), and "pcor" (partial correlations).
-#' Default is c("beta","sigma", "pcor").
+#'   return. Options are "beta" (temporal network), "sigma" (innovation
+#'   covariance), and "pcor" (partial correlations). Default is
+#'   c("beta","sigma", "pcor").
 #'
 #' @return A list containing 3D arrays for the selected parameters. Each array
 #'   represents the posterior samples for a parameter, and each slice of the
@@ -123,27 +128,37 @@ posterior_samples_bggm <- function(fitobj,
 #' \dontrun{
 #' data(ts_data)
 #' ts_data1 <- ts_data[1:100,1:3]
-#' stan_fit <- stan_gvar(data = ts_data1,
+#' fit <- stan_gvar(data = ts_data1,
 #'                  n_chains = 2,
 #'                  n_cores = 1)
-#' samples <- stan_fit_convert(stan_fit, return_params = c("beta", "pcor"))
+#' samples <- stan_fit_convert(fit, return_params = c("beta", "pcor"))
 #' }
 #'
 #' @export
 stan_fit_convert <- function(stan_fit,
                              return_params = c("beta", "sigma", "pcor")) {
+
+  if (inherits(stan_fit, "tsnet_fit")) {
+    stan_obj <- stan_fit$stan_fit
+  } else {
+    stan_obj <- stan_fit
+  }
+
   # check fitting backend
-  c <- class(stan_fit)
+  c <- class(stan_obj)
 
   if (attr(c, "package") == "rstan") {
     if ("beta" %in% return_params) {
-      draws_beta <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Beta", permuted = FALSE))
+      draws_beta <-
+        posterior::as_draws_matrix(rstan::extract(stan_obj, pars = "Beta", permuted = FALSE))
     }
     if ("sigma" %in% return_params) {
-      draws_sigma <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Sigma", permuted = FALSE))
+      draws_sigma <-
+        posterior::as_draws_matrix(rstan::extract(stan_obj, pars = "Sigma", permuted = FALSE))
     }
     if ("pcor" %in% return_params) {
-      draws_pcor <- posterior::as_draws_matrix(rstan::extract(stan_fit, pars = "Rho", permuted = FALSE))
+      draws_pcor <-
+        posterior::as_draws_matrix(rstan::extract(stan_obj, pars = "Rho", permuted = FALSE))
     }
   } else {
     stop("Only rstan backend within `stan_gvar` is supported at the moment.")
@@ -159,44 +174,47 @@ stan_fit_convert <- function(stan_fit,
     split_beta <- split(draws_beta, seq(nrow(draws_beta)))
     beta_l <- lapply(split_beta, function(x) {
       matrix(x,
-            nrow = nvar,
-            ncol = nvar,
-            byrow = TRUE)
+             nrow = nvar,
+             ncol = nvar,
+             byrow = TRUE)
     })
-    return_list$fit$beta <- array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
+    return_list$fit$beta <-
+      array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
   }
 
   if ("sigma" %in% return_params) {
     split_sigma <- split(draws_sigma, seq(nrow(draws_sigma)))
     sigma_l <- lapply(split_sigma, function(x) {
       matrix(x,
-            nrow = nvar,
-            ncol = nvar,
-            byrow = TRUE)
+             nrow = nvar,
+             ncol = nvar,
+             byrow = TRUE)
     })
-    return_list$fit$sigma <- array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
+    return_list$fit$sigma <-
+      array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
   }
 
   if ("pcor" %in% return_params) {
     split_pcor <- split(draws_pcor, seq(nrow(draws_pcor)))
     pcor_l <- lapply(split_pcor, function(x) {
       matrix(x,
-            nrow = nvar,
-            ncol = nvar,
-            byrow = TRUE)
+             nrow = nvar,
+             ncol = nvar,
+             byrow = TRUE)
     })
-    return_list$fit$pcors <- array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
+    return_list$fit$pcors <-
+      array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
   }
 
   # Add means
-  if("beta" %in% return_params) {
-    return_list$beta_mu <- apply(return_list$fit$beta, c(1,2), mean)
+  if ("beta" %in% return_params) {
+    return_list$beta_mu <- apply(return_list$fit$beta, c(1, 2), mean)
   }
-  if("sigma" %in% return_params) {
-    return_list$sigma_mu <- apply(return_list$fit$sigma, c(1,2), mean)
+  if ("sigma" %in% return_params) {
+    return_list$sigma_mu <- apply(return_list$fit$sigma, c(1, 2), mean)
   }
-  if("pcor" %in% return_params) {
-    return_list$pcor_mu <- apply(return_list$fit$pcors, c(1,2), mean)
+  if ("pcor" %in% return_params) {
+    return_list$pcor_mu <- apply(return_list$fit$pcors, c(1, 2), mean)
   }
 
 

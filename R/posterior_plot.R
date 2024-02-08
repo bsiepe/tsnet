@@ -4,7 +4,7 @@
 #' or the contemporaneous networks of a GVAR model. The posterior distributions
 #' are visualized as densities in a matrix layout.
 #'
-#' @param fitobj Fitted model object. This can be a stanfit object (obtained
+#' @param fitobj Fitted model object. This can be a tsnet_fit object (obtained
 #'   from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
 #'   or extracted posterior samples (obtained from [stan_fit_convert()).
 #' @param mat A matrix to use for plotting. Possibilities include "beta"
@@ -30,7 +30,7 @@ posterior_plot <- function(fitobj,
                            mat = "beta",
                            cis = c(0.8, 0.9, 0.95)) { # credible intervals for plotting
   # Input Checks
-  if(!(inherits(fit_a, "var_estimate"))) {
+  if(!(inherits(fitobj, "var_estimate"))) {
     stop("Error: 'fitboj' must be either a 'var_estimate'object.")
   }
 
@@ -42,14 +42,36 @@ posterior_plot <- function(fitobj,
     stop("Column names must not contain an underscore. Please rename.")
   }
 
+  # Obtain samples in matrix notation for BGGM
+  if(inherits(fitobj, "var_estimate")){
+    samps <- posterior_samples_bggm(fitobj)
+  }
+
   # Convert stanfit objects to needed format
   if(inherits(fitobj, "stanfit")) {
-    fitobj <- tsnet::stan_fit_convert(fitobj,
+    fitobj <- stan_fit_convert(fitobj,
                                      return_params = c("beta", "pcor"))
   }
 
-  # Obtain samples in matrix notation
-  samps <- posterior_samples_bggm(fitobj)
+  # Then convert to matrix notation
+  if(inherits(fitobj, "tsnet_samples")){
+    # Number of variables
+    p <- dims(fitobj$beta_mu)[2]
+
+    # Number of partial correlations
+    pcors_total <- p * (p-1) * 0.5
+
+    # Identity
+    I_p <- diag(p)
+
+    # Get the samples
+
+
+
+  }
+
+
+
 
 
   # Split into betas and pcors

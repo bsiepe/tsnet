@@ -8,7 +8,7 @@
 #'
 #' @param fitobj
 #' Fitted model object for a Bayesian GVAR model.
-#' This can be a stanfit object (obtained from [stan_gvar()]),
+#' This can be `tsnet_fit` object (obtained from [stan_gvar()]),
 #' a BGGM object (obtained from [BGGM::var_estimate()]),
 #' or extracted posterior samples (obtained from [stan_fit_convert()).
 #' @param burnin An integer specifying the number of initial samples to discard
@@ -38,14 +38,14 @@ get_centrality <- function(fitobj,
 
   # Input checks
   if(!(inherits(fitobj, "var_estimate") ||
-       inherits(fitobj, "stanfit") ||
+       inherits(fitobj, "tsnet_fit") ||
        inherits(fitobj, "tsnet_samples"))) {
-    stop("Error: 'fitobj' must be either a 'var_estimate', 'stanfit', or 'tsnet_samples' object.")
+    stop("Error: 'fitobj' must be either a 'var_estimate', 'tsnet_fit', or 'tsnet_samples' object.")
   }
 
   # Input Conversion
-  if(inherits(fitobj, "stanfit")) {
-    fitobj <- tsnet::stan_fit_convert(fitobj,
+  if(inherits(fitobj, "tsnet_fit")) {
+    fitobj <- stan_fit_convert(fitobj,
                                      return_params = c("beta", "pcor"))
   }
 
