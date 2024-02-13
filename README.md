@@ -6,17 +6,22 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-Please note that this package is currently undergoing major changes as
-part of a manuscript revision. Please get in contact if you currently
-wish to use the package.
-
 The goal of `tsnet` is to include helpful functions for dynamic network
 modelling in psychology and surrounding fields. The package contains
 functionality to estimate Bayesian GVAR models in Stan, as well as a
 test for network comparison. Additionally, the package includes
-functions to plot posterior estimates and centrality indices.
+functions to plot posterior estimates and centrality indices. More
+information is provided in the associated preprint [Siepe et
+al. (2024)](https://psyarxiv.com/uwfjc/).
 
 ## Installation
+
+You can install the released version of `tsnet` from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("tsnet")
+```
 
 You can install the development version of `tsnet` from
 [GitHub](https://github.com/bsiepe/tsnet) with:
@@ -26,7 +31,7 @@ You can install the development version of `tsnet` from
 devtools::install_github("bsiepe/tsnet")
 ```
 
-This installation may take some time as the models are compiled upon
+The installation may take some time as the models are compiled upon
 installation.
 
 ## Getting Started
@@ -42,14 +47,20 @@ preprint.
 library(tsnet)
 
 # Load example data
-data <- tsnet::ts_data
+data(ts_data)
+
+# use data of first individual
+data <- subset(ts_data, id == "ID1")
 
 # Estimate network
-fit_stan <- tsnet::stan_gvar(data[,-7],
+fit_stan <- stan_gvar(data[,-7],
                  cov_prior = "IW",
                  iter_warmup = 500,
                  iter_sampling = 500,
                  n_chains = 4)
+
+# print summary
+print(fit_stan)
 ```
 
 ### Comparing Network Models
@@ -59,40 +70,38 @@ models. We use here BGGM to estimate the networks, but the `stan_gvar`
 function can be used as well.
 
 ``` r
-library(BGGM)
 library(tsnet)
 
-
-# Load data of two individuals
-data <- BGGM::ifit
-data_1 <- subset(data, id == 1)
-data_3 <- subset(data, id == 3)
+# Load simulated time series data of two individuals
+data(ts_data)
+data_1 <- subset(ts_data, id == "ID1")
+data_2 <- subset(ts_data, id == "ID2")
 
 # Estimate networks
 # (should perform detrending etc. in a real use case)
-net_1 <- BGGM::var_estimate(data_1[,-1],
-                            rho_sd = 0.25, 
-                            beta_sd = 0.5,
-                            iter = 50000)
-net_3 <- BGGM::var_estimate(data_3[,-1],
-                            rho_sd = 0.25, 
-                            beta_sd = 0.5,
-                            iter = 50000)
+net_1 <- stan_gvar(data_1[,-7],
+                   iter_sampling = 1000,
+                   n_chains = 4)
+net_2 <- stan_gvar(data_2[,-7],
+                   iter_sampling = 1000,
+                   n_chains = 4)
 
 # Plot individual temporal network estimates
-post_plot_1 <- tsnet::posterior_plot(net_1)
+post_plot_1 <- posterior_plot(net_1)
 ```
 
-![](man/figures/post_plot_example.png)
+![](man/figures/post_plot_example_tsnet.png)
 
 You can then compare these networks, summarize the results and plot the
-test results:
+test results. In this case, the test is significant for both the
+temporal and the contemporaneous network.
 
 ``` r
 # Compare networks
-compare_13 <- tsnet::compare_gvar(net_1, 
-                    net_3,
-                    return_all = TRUE)
+compare_13 <- compare_gvar(net_1, 
+                           net_2,
+                           return_all = TRUE,
+                           n_draws = 1000)
 
 # Print summary of results
 print(compare_13)
@@ -110,5 +119,6 @@ test_plot_13 <- plot(compare_13,
 If you use the package, please cite the preprint that introduces the
 package and the test:
 
-Siepe, B.S. & Heck, D.W. (2023). Bayesian Estimation and Comparison of
-Idiographic Network Models. (<https://psyarxiv.com/uwfjc/>)
+Siepe, B.S., Kloft, M. & Heck, D.W. (2024). Bayesian Estimation and
+Comparison of Idiographic Network Models.
+(<https://psyarxiv.com/uwfjc/>)
