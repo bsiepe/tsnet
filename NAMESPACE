@@ -2,6 +2,7 @@
 
 S3method(plot,compare_gvar)
 S3method(print,compare_gvar)
+S3method(print,tsnet_fit)
 export(check_eigen)
 export(compare_gvar)
 export(get_centrality)
@@ -35,4 +36,5 @@ importFrom(rstantools,rstan_config)
 importFrom(stats,quantile)
 importFrom(tidyr,pivot_longer)
 importFrom(tidyr,separate_wider_delim)
+importFrom(utils,modifyList)
 useDynLib(tsnet, .registration = TRUE)

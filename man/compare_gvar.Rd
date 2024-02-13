@@ -18,12 +18,12 @@ compare_gvar(
 )
 }
 \arguments{
-\item{fit_a}{Fitted model object for Model A. This can be a stanfit object
+\item{fit_a}{Fitted model object for Model A. This can be a tsnet_fit object
 (obtained from [stan_gvar()]), a BGGM object (obtained from
 [BGGM::var_estimate()]), or extracted posterior samples (obtained from
 [stan_fit_convert()).}
 
-\item{fit_b}{Fitted model object for Model B. This can be a stanfit object
+\item{fit_b}{Fitted model object for Model B. This can be a tsnet_fit object
 (obtained from [stan_gvar()]), a BGGM object (obtained from
 [BGGM::var_estimate()]), or extracted posterior samples (obtained from
 [stan_fit_convert()).}

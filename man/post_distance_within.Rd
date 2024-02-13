@@ -16,10 +16,9 @@ post_distance_within(
 )
 }
 \arguments{
-\item{fitobj}{Fitted model object. This can be a stanfit object
-(obtained from [stan_gvar()]), a BGGM object (obtained from
-[BGGM::var_estimate()]), or extracted posterior samples (obtained from
-[stan_fit_convert()).}
+\item{fitobj}{Fitted model object. This can be a tsnet_fit object (obtained
+from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
+or extracted posterior samples (obtained from [stan_fit_convert()).}
 
 \item{comp}{The distance metric to use. Should be one of "frob" (Frobenius
 norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
@@ -55,17 +54,19 @@ A list of distances between the specified pairs of fitted models. The
 }
 \description{
 This function computes distances between posterior samples of a
-single fitted gVAR model. Thereby, it calculates the uncertainty contained in
-the posterior distribution, which can be used as a reference to compare two
-modes.
-Distances can be obtained either from posterior samples or
-posterior predictive draws. The distance between two models can currently be
-calculated based on three options: Frobenius norm, maximum difference, or L1
-norm. Used within [compare_gvar()]. The function is not intended to be used
-directly by the user.
+  single fitted gVAR model. Thereby, it calculates the uncertainty contained
+  in the posterior distribution, which can be used as a reference to compare
+  two modes. Distances can be obtained either from posterior samples or
+  posterior predictive draws. The distance between two models can currently
+  be calculated based on three options: Frobenius norm, maximum difference,
+  or L1 norm. Used within [compare_gvar()]. The function is not intended to
+  be used directly by the user.
 }
 \examples{
 data(fit_data)
-post_distance_within(fitobj = fit_data[[1]], comp = "frob", pred = FALSE)
+post_distance_within(fitobj = fit_data[[1]],
+comp = "frob",
+pred = FALSE,
+n_draws = 100)
 
 }

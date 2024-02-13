@@ -53,5 +53,5 @@ test_that("check_eigen converts stanfit object",{
   example_data <- ts_data[1:100,1:3]
   fit <- stan_gvar(example_data, n_chains = 1)
   expect_no_error(check_eigen(fit))
-  expect_output(check_eigen(fit))
+  expect_message(check_eigen(fit, verbose = TRUE))
 })

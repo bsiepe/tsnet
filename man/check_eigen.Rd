@@ -4,19 +4,26 @@
 \alias{check_eigen}
 \title{Check Eigenvalues of Bayesian GVAR object}
 \usage{
-check_eigen(fitobj)
+check_eigen(fitobj, verbose = TRUE)
 }
 \arguments{
-\item{fitobj}{A fitted Bayesian GVAR object.
-This can be a stanfit object (obtained from [stan_gvar()]),
-a BGGM object (obtained from [BGGM::var_estimate()]),
-or extracted posterior samples (obtained from [stan_fit_convert()).}
+\item{fitobj}{A fitted Bayesian GVAR object. This can be a tsnet_fit object
+(obtained from [stan_gvar()]), a BGGM object (obtained from
+[BGGM::var_estimate()]), or extracted posterior samples (obtained from
+[stan_fit_convert()).}
+
+\item{verbose}{Logical. If TRUE, a verbal summary of the results is printed.
+Default is TRUE.}
 }
 \value{
-A list containing the eigenvalues and a verbal summary of the results.
+A list containing the eigenvalues and a verbal summary of the
+  results.
 }
 \description{
-This function checks the eigenvalues of the Beta matrix (containing the temporal coefficients) to assure that the model is stationary.
-It uses the same check as the `graphicalVAR` package. The function calculates the eigenvalues of the Beta matrix and checks if the sum of the squares of the real and imaginary parts of the eigenvalues is less than 1.
-If it is, the VAR model is considered stable.
+This function checks the eigenvalues of the Beta matrix (containing the
+temporal coefficients) to assure that the model is stationary. It uses the
+same check as the `graphicalVAR` package. The function calculates the
+eigenvalues of the Beta matrix and checks if the sum of the squares of the
+real and imaginary parts of the eigenvalues is less than 1. If it is, the VAR
+model is considered stable.
 }

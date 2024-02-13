@@ -8,7 +8,7 @@ get_centrality(fitobj, burnin = 0, remove_ar = TRUE)
 }
 \arguments{
 \item{fitobj}{Fitted model object for a Bayesian GVAR model.
-This can be a stanfit object (obtained from [stan_gvar()]),
+This can be `tsnet_fit` object (obtained from [stan_gvar()]),
 a BGGM object (obtained from [BGGM::var_estimate()]),
 or extracted posterior samples (obtained from [stan_fit_convert()).}
 
