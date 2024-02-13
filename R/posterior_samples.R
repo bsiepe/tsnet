@@ -1,14 +1,15 @@
-#' Extract Posterior Samples from a BGGM Fit Object
+#' Prepare posterior samples for plotting
 #'
 #' @description This function extracts the posterior samples of partial
 #' correlations and beta coefficients from a Bayesian GVAR model that was fitted
-#' with [BGGM::var_estimate()]. The function is not intended to be called
-#' directly by the user, but is used internally by the package.
+#' with [BGGM::var_estimate()] or [stan_gvar()].
+#' The function is not intended to be called directly by the user,
+#' but is used internally by the package.
 #'
-#' @param fitobj A [BGGM::var_estimate()] fit object from which to extract the
-#'   posterior samples.
+#' @param fitobj A [BGGM::var_estimate()] or [stan_gvar()]
+#' fit object from which to extract the posterior samples.
 #' @param burnin An integer specifying the number of initial samples to discard
-#'   as burn-in. Default is 500.
+#'   as burn-in. Default is 0.
 #'
 #' @return A matrix containing the posterior samples of partial correlations and
 #'   beta coefficients. The rows represent the samples, and the columns
@@ -19,87 +20,157 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Load imulated time series data
+#' # Load simulated time series data
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:4]
 #'
 #' # Estimate a GVAR model
-#' fit <- BGGM::var_estimate(example_data)
+#' fit <- stan_gvar(example_data, n_chains = 2)
 #'
 #' # Extract posterior samples
-#' posterior_samples <- posterior_samples_bggm(fit)
+#' plot_samples <- prepare_samples_plot (fit)
 #' }
 #'
 #' @noRd
-posterior_samples_bggm <- function(fitobj,
-                                   burnin = 500){
+prepare_samples_plot <- function(fitobj,
+                                   burnin = 0){
 
-  # All nodes
-  p <- fitobj$p
-  # iterations (50 is default burnin in BGGM)
-  iter <- fitobj$iter + 50
+  if(inherits(fitobj, "var_estimate")) {
+    # All nodes
+    p <- fitobj$p
+    # iterations (50 is default burnin in BGGM)
+    iter <- fitobj$iter + 50
 
-  # Number of partial corelations
-  pcors_total <- p * (p - 1) * 0.5
+    # Number of partial corelations
+    pcors_total <- p * (p - 1) * 0.5
 
-  # identity matrix
-  I_p <- diag(p)
+    # identity matrix
+    I_p <- diag(p)
 
-  # pcor samples
-  # 50 is default burnin in BGGM
-  pcor_samples <-
-    matrix(
-      fitobj$fit$pcors[, , (burnin+1):(iter)][upper.tri(I_p)],
-      nrow =  iter - burnin,
-      ncol = pcors_total,
-      byrow = TRUE
-    )
+    # pcor samples
+    # 50 is default burnin in BGGM
+    pcor_samples <-
+      matrix(
+        fitobj$fit$pcors[, , (burnin+1):(iter)][upper.tri(I_p)],
+        nrow =  iter - burnin,
+        ncol = pcors_total,
+        byrow = TRUE
+      )
 
 
-  # column names
-  cn <- colnames(fitobj$Y)
+    # column names
+    cn <- colnames(fitobj$Y)
 
-  if(is.null(cn)){
+    if(is.null(cn)){
 
-    col_names <- sapply(1:p, function(x)  paste(1:p, x, sep = "--"))[upper.tri(I_p)]
+      col_names <- sapply(1:p, function(x)  paste(1:p, x, sep = "--"))[upper.tri(I_p)]
 
-  } else {
+    } else {
 
-    col_names <- sapply(cn, function(x)  paste(cn, x, sep = "--"))[upper.tri(I_p)]
+      col_names <- sapply(cn, function(x)  paste(cn, x, sep = "--"))[upper.tri(I_p)]
+    }
+    colnames(pcor_samples) <- col_names
+    posterior_samples <- pcor_samples
+
+    n_beta_terms <- nrow(fitobj$beta_mu)
+    beta_samples <- fitobj$fit$beta
+
+    col_names <- colnames(fitobj$Y)
+    beta_terms <- colnames(fitobj$X)
+
+    beta_start <- matrix(beta_samples[1:n_beta_terms,1, (burnin+1):(iter)],
+                         nrow = iter - burnin, n_beta_terms, byrow = TRUE)
+
+
+    colnames(beta_start) <- paste0(col_names[1], "_",  beta_terms)
+
+    for(i in 2:p){
+
+      # beta next
+      beta_i <- matrix(beta_samples[1:n_beta_terms, i, (burnin+1):(iter)],
+                       nrow = iter - burnin,
+                       n_beta_terms,
+                       byrow = TRUE)
+
+      # colnames
+      colnames(beta_i) <- paste0(col_names[i], "_",  beta_terms)
+
+      # beta combine
+      beta_start <- cbind(beta_start, beta_i)
+
+    }
+
+    posterior_samples <-  cbind(posterior_samples, beta_start)
+    return(posterior_samples)
   }
-  colnames(pcor_samples) <- col_names
-  posterior_samples <- pcor_samples
 
-  n_beta_terms <- nrow(fitobj$beta_mu)
-  beta_samples <- fitobj$fit$beta
+  if(inherits(fitobj, "tsnet_fit")) {
+    fitobj_conv <- stan_fit_convert(fitobj,
+                                    return_params = c("beta", "pcor"))
 
-  col_names <- colnames(fitobj$Y)
-  beta_terms <- colnames(fitobj$X)
+    # Number of variables
+    p <- fitobj$arguments$p
+    burnin <- burnin
+    iter <- dim(fitobj_conv$fit$beta)[3]
 
-  beta_start <- matrix(beta_samples[1:n_beta_terms,1, (burnin+1):(iter)],
-                       nrow = iter - burnin, n_beta_terms, byrow = TRUE)
+    # Number of partial correlations
+    pcors_total <- p * (p-1) * 0.5
+
+    # Identity
+    I_p <- diag(p)
+
+    # Get the samples
+    pcor_samples <- matrix(fitobj_conv$fit$pcors[,,][upper.tri(I_p)],
+                           nrow = dim(fitobj_conv$fit$pcors)[3],
+                           ncol = pcors_total,
+                           byrow = TRUE)
+
+    # column names
+    cnames <- fitobj$arguments$cnames
+
+    if(is.null(cnames)){
+
+      col_names <- sapply(1:p, function(x)  paste(1:p, x, sep = "--"))[upper.tri(I_p)]
+
+    } else {
+
+      col_names <- sapply(cnames, function(x)  paste(cnames, x, sep = "--"))[upper.tri(I_p)]
+    }
+
+    colnames(pcor_samples) <- col_names
+    posterior_samples <- pcor_samples
+
+    n_beta_terms <- nrow(fitobj_conv$beta_mu)
+    beta_samples <- fitobj_conv$fit$beta
+
+    col_names <- colnames(fitobj_conv$beta_mu)
+    beta_terms <- rownames(fitobj_conv$beta_mu)
+
+    beta_start <- matrix(beta_samples[1:n_beta_terms,1, (burnin+1):(iter)],
+                         nrow = iter - burnin, n_beta_terms, byrow = TRUE)
 
 
-  colnames(beta_start) <- paste0(col_names[1], "_",  beta_terms)
+    colnames(beta_start) <- paste0(col_names[1], "_",  beta_terms)
 
-  for(i in 2:p){
+    for(i in 2:p){
 
-    # beta next
-    beta_i <- matrix(beta_samples[1:n_beta_terms, i, (burnin+1):(iter)],
-                     nrow = iter - burnin,
-                     n_beta_terms,
-                     byrow = TRUE)
+      # beta next
+      beta_i <- matrix(beta_samples[1:n_beta_terms, i, (burnin+1):(iter)],
+                       nrow = iter - burnin,
+                       n_beta_terms,
+                       byrow = TRUE)
 
-    # colnames
-    colnames(beta_i) <- paste0(col_names[i], "_",  beta_terms)
+      # colnames
+      colnames(beta_i) <- paste0(col_names[i], "_",  beta_terms)
 
-    # beta combine
-    beta_start <- cbind(beta_start, beta_i)
+      # beta combine
+      beta_start <- cbind(beta_start, beta_i)
 
+    }
+
+    samps <-  cbind(posterior_samples, beta_start)
   }
-
-  posterior_samples <-  cbind(posterior_samples, beta_start)
-  return(posterior_samples)
+  return(samps)
 }
 
 
@@ -127,8 +198,8 @@ posterior_samples_bggm <- function(fitobj,
 #' @examples
 #' \dontrun{
 #' data(ts_data)
-#' ts_data1 <- ts_data[1:100,1:3]
-#' fit <- stan_gvar(data = ts_data1,
+#' example_data <- ts_data[1:100,1:3]
+#' fit <- stan_gvar(data = example_data,
 #'                  n_chains = 2,
 #'                  n_cores = 1)
 #' samples <- stan_fit_convert(fit, return_params = c("beta", "pcor"))
@@ -138,11 +209,23 @@ posterior_samples_bggm <- function(fitobj,
 stan_fit_convert <- function(stan_fit,
                              return_params = c("beta", "sigma", "pcor")) {
 
+
   if (inherits(stan_fit, "tsnet_fit")) {
     stan_obj <- stan_fit$stan_fit
+    cnames <- stan_fit$arguments$cnames
   } else {
     stan_obj <- stan_fit
+    cnames <- NULL
   }
+
+  # Number of variables
+  p <- stan_fit$stan_fit@par_dims$Beta[1]
+
+  if(is.null(cnames)){
+    cnames <- paste0("V", 1:p)
+  }
+  names0 <- cnames
+  names1 <- paste0(cnames, ".l1")
 
   # check fitting backend
   c <- class(stan_obj)
@@ -161,6 +244,7 @@ stan_fit_convert <- function(stan_fit,
         posterior::as_draws_matrix(rstan::extract(stan_obj, pars = "Rho", permuted = FALSE))
     }
   } else {
+
     stop("Only rstan backend within `stan_gvar` is supported at the moment.")
   }
 
@@ -180,6 +264,9 @@ stan_fit_convert <- function(stan_fit,
     })
     return_list$fit$beta <-
       array(unlist(beta_l), dim = c(nvar, nvar, nrow(draws_beta)))
+    return_list$beta_mu <- apply(return_list$fit$beta, c(1, 2), mean)
+    rownames(return_list$beta_mu) <- names1
+    colnames(return_list$beta_mu) <- names0
   }
 
   if ("sigma" %in% return_params) {
@@ -192,6 +279,9 @@ stan_fit_convert <- function(stan_fit,
     })
     return_list$fit$sigma <-
       array(unlist(sigma_l), dim = c(nvar, nvar, nrow(draws_sigma)))
+    return_list$sigma_mu <- apply(return_list$fit$sigma, c(1, 2), mean)
+    rownames(return_list$sigma_mu) <- cnames
+    colnames(return_list$sigma_mu) <- cnames
   }
 
   if ("pcor" %in% return_params) {
@@ -204,17 +294,9 @@ stan_fit_convert <- function(stan_fit,
     })
     return_list$fit$pcors <-
       array(unlist(pcor_l), dim = c(nvar, nvar, nrow(draws_pcor)))
-  }
-
-  # Add means
-  if ("beta" %in% return_params) {
-    return_list$beta_mu <- apply(return_list$fit$beta, c(1, 2), mean)
-  }
-  if ("sigma" %in% return_params) {
-    return_list$sigma_mu <- apply(return_list$fit$sigma, c(1, 2), mean)
-  }
-  if ("pcor" %in% return_params) {
     return_list$pcor_mu <- apply(return_list$fit$pcors, c(1, 2), mean)
+    rownames(return_list$pcor_mu) <- cnames
+    colnames(return_list$pcor_mu) <- cnames
   }
 
 

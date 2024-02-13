@@ -5,8 +5,7 @@
 #' are visualized as densities in a matrix layout.
 #'
 #' @param fitobj Fitted model object. This can be a tsnet_fit object (obtained
-#'   from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
-#'   or extracted posterior samples (obtained from [stan_fit_convert()).
+#'   from [stan_gvar()]) or a BGGM object (obtained from [BGGM::var_estimate()]).
 #' @param mat A matrix to use for plotting. Possibilities include "beta"
 #'   (temporal network) and "pcor" (contemporaneous network). Default is "beta"
 #'   (temporal network).
@@ -22,17 +21,24 @@
 #' @importFrom tidyr separate_wider_delim pivot_longer
 #'
 #' @examples
-#' data(fit_data)
-#' posterior_plot(fit_data[[1]])
+#' \dontrun{
+#' # Load simulated time series data
+#' data(ts_data)
+#' example_data <- ts_data[1:100,1:4]
+#'
+#' # Estimate a GVAR model
+#' fit <- stan_gvar(example_data, n_chains = 2)
+#'
+#' # Extract posterior samples
+#' posterior_plot(fit)
+#' }
 #' @export
 
 posterior_plot <- function(fitobj,
                            mat = "beta",
-                           cis = c(0.8, 0.9, 0.95)) { # credible intervals for plotting
-  # Input Checks
-  if(!(inherits(fitobj, "var_estimate"))) {
-    stop("Error: 'fitboj' must be either a 'var_estimate'object.")
-  }
+                           cis = c(0.8, 0.9, 0.95)) {
+
+  # browser()
 
   if (!is.numeric(cis) || any(cis <= 0) || any(cis >= 1)) {
     stop("cis must be a numeric vector with values between 0 and 1 (exclusive)")
@@ -42,37 +48,7 @@ posterior_plot <- function(fitobj,
     stop("Column names must not contain an underscore. Please rename.")
   }
 
-  # Obtain samples in matrix notation for BGGM
-  if(inherits(fitobj, "var_estimate")){
-    samps <- posterior_samples_bggm(fitobj)
-  }
-
-  # Convert stanfit objects to needed format
-  if(inherits(fitobj, "stanfit")) {
-    fitobj <- stan_fit_convert(fitobj,
-                                     return_params = c("beta", "pcor"))
-  }
-
-  # Then convert to matrix notation
-  if(inherits(fitobj, "tsnet_samples")){
-    # Number of variables
-    p <- dims(fitobj$beta_mu)[2]
-
-    # Number of partial correlations
-    pcors_total <- p * (p-1) * 0.5
-
-    # Identity
-    I_p <- diag(p)
-
-    # Get the samples
-
-
-
-  }
-
-
-
-
+  samps <- prepare_samples_plot(fitobj)
 
   # Split into betas and pcors
   beta_cols <- grep(".l1", colnames(samps), value = TRUE)
@@ -81,9 +57,15 @@ posterior_plot <- function(fitobj,
   beta_samps <- as.data.frame(samps[, beta_cols])
   pcor_samps <- as.data.frame(samps[, pcor_cols])
 
-  # Get order of variables for plotting
-  beta_order <- rownames(fitobj$beta_mu)
-  pcor_order <- colnames(fitobj$beta_mu)
+  # order of variables for plotting
+  if(inherits(fitobj, "tsnet_fit")) {
+    beta_order <- paste0(fitobj$arguments$cnames, ".l1")
+    pcor_order <- fitobj$arguments$cnames
+  } else {
+    beta_order <- rownames(fitobj$beta_mu)
+    pcor_order <- colnames(fitobj$beta_mu)
+  }
+
 
 
   # Pivot longer

@@ -7,9 +7,8 @@
 posterior_plot(fitobj, mat = "beta", cis = c(0.8, 0.9, 0.95))
 }
 \arguments{
-\item{fitobj}{Fitted model object. This can be a stanfit object (obtained
-from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
-or extracted posterior samples (obtained from [stan_testfit_convert()).}
+\item{fitobj}{Fitted model object. This can be a tsnet_fit object (obtained
+from [stan_gvar()]) or a BGGM object (obtained from [BGGM::var_estimate()]).}
 
 \item{mat}{A matrix to use for plotting. Possibilities include "beta"
 (temporal network) and "pcor" (contemporaneous network). Default is "beta"
@@ -29,6 +28,15 @@ are shown. Lagged variables are displayed along the vertical line of the
 grid, and non-lagged variables along the horizontal line of the grids.
 }
 \examples{
-data(fit_data)
-posterior_plot(fit_data[[1]])
+\dontrun{
+# Load simulated time series data
+data(ts_data)
+example_data <- ts_data[1:100,1:4]
+
+# Estimate a GVAR model
+fit <- stan_gvar(example_data, n_chains = 2)
+
+# Extract posterior samples
+posterior_plot(fit)
+}
 }
