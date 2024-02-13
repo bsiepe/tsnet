@@ -73,7 +73,7 @@ static constexpr std::array<const char*, 56> locations_array__ =
   " (in 'string', line 12, column 9 to column 10)",
   " (in 'string', line 12, column 11 to column 12)",
   " (in 'string', line 12, column 2 to column 22)",
-  " (in 'string', line 13, column 2 to column 27)",
+  " (in 'string', line 13, column 2 to column 28)",
   " (in 'string', line 22, column 9 to column 10)",
   " (in 'string', line 22, column 11 to column 12)",
   " (in 'string', line 26, column 13 to column 14)",
@@ -93,7 +93,7 @@ private:
   Eigen::Matrix<double,-1,-1> prior_Beta_loc_data__;
   Eigen::Matrix<double,-1,-1> prior_Beta_scale_data__;
   Eigen::Matrix<double,-1,-1> prior_S_data__;
-  int prior_delta;
+  double prior_delta;
   int log_lik_1dim__;
   Eigen::Map<Eigen::Matrix<double,-1,-1>> prior_Beta_loc{nullptr, 0, 0};
   Eigen::Map<Eigen::Matrix<double,-1,-1>> prior_Beta_scale{nullptr, 0, 0};
@@ -260,11 +260,11 @@ public:
         }
       }
       current_statement__ = 45;
-      context__.validate_dims("data initialization", "prior_delta", "int",
+      context__.validate_dims("data initialization", "prior_delta", "double",
         std::vector<size_t>{});
-      prior_delta = std::numeric_limits<int>::min();
+      prior_delta = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 45;
-      prior_delta = context__.vals_i("prior_delta")[(1 - 1)];
+      prior_delta = context__.vals_r("prior_delta")[(1 - 1)];
       current_statement__ = 45;
       stan::math::check_greater_or_equal(function__, "prior_delta",
         prior_delta, 1);

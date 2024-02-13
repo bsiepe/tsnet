@@ -7,11 +7,13 @@
 stan_fit_convert(stan_fit, return_params = c("beta", "sigma", "pcor"))
 }
 \arguments{
-\item{stan_fit}{A Stan fit object obtained from rstan or [stan_gvar()].}
+\item{stan_fit}{A Stan fit object obtained from rstan or a tsnet_fit object
+from [stan_gvar()].}
 
 \item{return_params}{A character vector specifying which parameters to
-  return. Options are "beta" (temporal network), "sigma" (innovation covariance), and "pcor" (partial correlations).
-Default is c("beta","sigma", "pcor").}
+return. Options are "beta" (temporal network), "sigma" (innovation
+covariance), and "pcor" (partial correlations). Default is
+c("beta","sigma", "pcor").}
 }
 \value{
 A list containing 3D arrays for the selected parameters. Each array
@@ -19,18 +21,21 @@ A list containing 3D arrays for the selected parameters. Each array
   array represents a single iteration.
 }
 \description{
-This function converts a Stan fit object into an array of samples for the temporal coefficients and the innovation covariance or partial correlation matrices.
-It supports rstan as a backend. It can be used to convert models fit using [stan_gvar()] into 3D arrays, which is the standard data structure used in `tsnet`.
-The function allows to select which parameters should be returned.
+This function converts a Stan fit object into an array of samples for the
+temporal coefficients and the innovation covariance or partial correlation
+matrices. It supports rstan as a backend. It can be used to convert models
+fit using [stan_gvar()] into 3D arrays, which is the standard data structure
+used in `tsnet`. The function allows to select which parameters should be
+returned.
 }
 \examples{
 \dontrun{
 data(ts_data)
-ts_data1 <- ts_data[1:100,1:3]
-stan_fit <- stan_gvar(data = ts_data1,
+example_data <- ts_data[1:100,1:3]
+fit <- stan_gvar(data = example_data,
                  n_chains = 2,
                  n_cores = 1)
-samples <- stan_fit_convert(stan_fit, return_params = c("beta", "pcor"))
+samples <- stan_fit_convert(fit, return_params = c("beta", "pcor"))
 }
 
 }

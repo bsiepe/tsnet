@@ -61,7 +61,8 @@ sampling method. Default is 500.}
 the sampling method. Default is 500.}
 
 \item{n_chains}{An integer specifying the number of chains for the sampling
-method. Default is 4.}
+method. Default is 4. If variational inference is used, the number of
+iterations is calculated as `iter_sampling`*`n_chains`.}
 
 \item{n_cores}{An integer specifying the number of cores to use for parallel
 computation. Default is 1. [rstan] is used for parallel computation.}
@@ -73,7 +74,10 @@ scale) the data. Default is `FALSE`.}
 `rstan::vb` function.}
 }
 \value{
-A `stanfit` object representing the fitted model.
+A `tsnet_fit` object in list format. The object contains the
+ following elements:
+ \item{fit}{A stanfit object containing the fitted model.}
+ \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
 }
 \description{
 This function fits a Bayesian GVAR model to the provided data
@@ -189,11 +193,15 @@ This function fits a Bayesian GVAR model to the provided data
   diagnostics.
 }
 \examples{
+\dontrun{
 # Load example data
 data(ts_data)
-example_data <- ts_data[1:100,1:6]
+example_data <- ts_data[1:100,1:3]
 
 # Fit the model
-fit <- stan_gvar(data, method = "sampling", cov_prior = "LKJ")
-
+fit <- stan_gvar(example_data,
+                 method = "sampling",
+                 cov_prior = "IW",
+                 n_chains = 2)
+}
 }

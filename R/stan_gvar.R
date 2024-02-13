@@ -43,7 +43,8 @@
 #' @param iter_warmup An integer specifying the number of warmup iterations for
 #'   the sampling method. Default is 500.
 #' @param n_chains An integer specifying the number of chains for the sampling
-#'   method. Default is 4.
+#'   method. Default is 4. If variational inference is used, the number of
+#'   iterations is calculated as `iter_sampling`*`n_chains`.
 #' @param n_cores An integer specifying the number of cores to use for parallel
 #'   computation. Default is 1. [rstan] is used for parallel computation.
 #' @param center_only A logical indicating whether to only center (and not
@@ -161,14 +162,20 @@
 #'  \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
 #'
 #' @importFrom rstan sampling vb
+#' @importFrom utils modifyList
 #' @examples
+#' \dontrun{
 #' # Load example data
 #' data(ts_data)
-#' example_data <- ts_data[1:100,1:6]
+#' example_data <- ts_data[1:100,1:3]
 #'
 #' # Fit the model
-#' fit <- stan_gvar(data, method = "sampling", cov_prior = "LKJ")
-#'
+#' fit <- stan_gvar(example_data,
+#'                  method = "sampling",
+#'                  cov_prior = "IW",
+#'                  n_chains = 2)
+#' print(fit)
+#'}
 #' @export
 
 stan_gvar <-
@@ -301,8 +308,7 @@ stan_gvar <-
     }
 
       if (method == "sampling") {
-        # Run sampler
-        stan_fit <- rstan::sampling(
+        default_args <- list(
           object = stanmodels[[model_name]],
           data = stan_data,
           chains = n_chains,
@@ -312,19 +318,25 @@ stan_gvar <-
           refresh = 500,
           thin = 1,
           init = .1,
-          control = list(adapt_delta = .8),
-          ...
+          control = list(adapt_delta = .8)
         )
+
+        # Run sampler
+        stan_fit <- do.call(rstan::sampling,
+                            utils::modifyList(default_args, list(...)))
+
       }
       if (method == "variational") {
-        stan_fit <- rstan::vb(
+        default_args <- list(
           object = stanmodels[[model_name]],
           data = stan_data,
           init = .1,
           tol_rel_obj = .001,
-          output_samples = iter_sampling * n_chains,
-          ...
+          output_samples = iter_sampling * n_chains
         )
+
+        stan_fit <- do.call(rstan::vb,
+                            utils::modifyList(default_args, list(...)))
       }
 
 

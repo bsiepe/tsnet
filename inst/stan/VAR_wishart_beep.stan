@@ -10,7 +10,7 @@ data {
   matrix[K,K] prior_Beta_loc; // locations for priors on Beta matrix
   matrix[K,K] prior_Beta_scale; // scales for priors on Beta matrix
   matrix[K,K] prior_S; // prior for scale matrix
-  int<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
+  real<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
