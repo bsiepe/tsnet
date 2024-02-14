@@ -8,7 +8,7 @@
 #' @return Prints a summary of the Norm-Based Comparison Test to the console
 #'
 #' @details This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
-#' It displays the general summary and model-specific results, including the number of significant comparisons
+# It displays the general summary and model-specific results, including the number of significant comparisons
 #' in the temporal and contemporaneous networks, as well as the number of reference distances that were larger
 #' than the empirical distance for each network.
 #'

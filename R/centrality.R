@@ -1,16 +1,16 @@
 #' Compute Centrality Measures
 #'
 #' This function computes various network centrality measures for a given GVAR
-#' fit object. Centrality measures describe the "connectedness" of a variable in a network, while density describes the networks' overall connectedness.
-#' Specifically, it computes the in-strength, out-strength,
-#' contemporaneous strength, temporal network density, and contemporaneous
-#' network density. The result can then be visualized using [plot_centrality()].
+#' fit object. Centrality measures describe the "connectedness" of a variable in
+#' a network, while density describes the networks' overall connectedness.
+#' Specifically, it computes the in-strength, out-strength, contemporaneous
+#' strength, temporal network density, and contemporaneous network density. The
+#' result can then be visualized using [plot_centrality()].
 #'
-#' @param fitobj
-#' Fitted model object for a Bayesian GVAR model.
-#' This can be `tsnet_fit` object (obtained from [stan_gvar()]),
-#' a BGGM object (obtained from [BGGM::var_estimate()]),
-#' or extracted posterior samples (obtained from [stan_fit_convert()).
+#' @param fitobj Fitted model object for a Bayesian GVAR model. This can be
+#'   `tsnet_fit` object (obtained from [stan_gvar()]), a BGGM object (obtained
+#'   from [BGGM::var_estimate()]), or extracted posterior samples (obtained from
+#'   [stan_fit_convert()).
 #' @param burnin An integer specifying the number of initial samples to discard
 #'   as burn-in. Default is 0.
 #' @param remove_ar A logical value specifying whether to remove the
