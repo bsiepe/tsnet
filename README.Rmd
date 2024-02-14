@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # tsnet
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/bsiepe/tsnet/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bsiepe/tsnet/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `tsnet` is to include helpful functions for dynamic network modelling in psychology and surrounding fields. The package contains functionality to estimate Bayesian GVAR models in Stan, as well as a test for network comparison. Additionally, the package includes functions to plot posterior estimates and centrality indices. More information is provided in the associated preprint [Siepe et al. (2024)](https://psyarxiv.com/uwfjc/).
