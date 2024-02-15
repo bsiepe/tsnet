@@ -23,7 +23,7 @@ test_that("prepare_samples_plot works with tsnet_fit input",{
                         n_chains = 1,
                         n_cores = 1))
   expect_no_error(
-    plot_data <- prepare_samples_plot(fit_data[[1]])
+    plot_data <- prepare_samples_plot(stan_fit)
   )
 
 })

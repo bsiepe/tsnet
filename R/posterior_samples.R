@@ -19,7 +19,7 @@
 #'   parameter.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load simulated time series data
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:4]

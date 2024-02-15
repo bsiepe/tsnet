@@ -29,8 +29,8 @@
 #' @importFrom cowplot plot_grid get_legend
 #' @importFrom ggdist theme_ggdist
 #'
-#' @examples 
-#' \dontrun{
+#' @examples
+#' \donttest{
 #' data(fit_data)
 #' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
 #' plot(test_res)
@@ -155,6 +155,6 @@ plot.compare_gvar <- function(x,
   }
 
   print(plt)
-  
+
 }
 

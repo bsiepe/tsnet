@@ -164,7 +164,7 @@
 #' @importFrom rstan sampling vb
 #' @importFrom utils modifyList
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load example data
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:3]

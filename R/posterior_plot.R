@@ -21,7 +21,7 @@
 #' @importFrom tidyr separate_wider_delim pivot_longer
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load simulated time series data
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:4]
