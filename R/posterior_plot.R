@@ -44,11 +44,11 @@ posterior_plot <- function(fitobj,
     stop("cis must be a numeric vector with values between 0 and 1 (exclusive)")
   }
 
-  if (length(grep("_", colnames(fitobj$Y))) > 0) {
-    stop("Column names must not contain an underscore. Please rename.")
-  }
 
   samps <- prepare_samples_plot(fitobj)
+
+
+
 
   # Split into betas and pcors
   beta_cols <- grep(".l1", colnames(samps), value = TRUE)
@@ -59,9 +59,15 @@ posterior_plot <- function(fitobj,
 
   # order of variables for plotting
   if(inherits(fitobj, "tsnet_fit")) {
+    if (length(grep("_", colnames(fitobj$arguments$cnames))) > 0) {
+      stop("Column names must not contain an underscore. Please rename.")
+    }
     beta_order <- paste0(fitobj$arguments$cnames, ".l1")
     pcor_order <- fitobj$arguments$cnames
   } else {
+    if (length(grep("_", colnames(fitobj$Y))) > 0) {
+      stop("Column names must not contain an underscore. Please rename.")
+    }
     beta_order <- rownames(fitobj$beta_mu)
     pcor_order <- colnames(fitobj$beta_mu)
   }
