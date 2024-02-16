@@ -71,6 +71,7 @@ print.compare_gvar <- function(x,
 #' @return Prints a summary to the console.
 #'
 #' @examples
+#' \donttest{
 #' # Load example data
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:3]
@@ -82,6 +83,7 @@ print.compare_gvar <- function(x,
 #'                  n_chains = 2)
 #'
 #' print(fit)
+#' }
 #' @export
 print.tsnet_fit <- function(x,
                             ...) {

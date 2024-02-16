@@ -20,6 +20,7 @@ It prints general information about the model, including the estimation method a
 It also prints the posterior mean of the temporal and contemporaneous coefficients.
 }
 \examples{
+\donttest{
 # Load example data
 data(ts_data)
 example_data <- ts_data[1:100,1:3]
@@ -31,4 +32,5 @@ fit <- stan_gvar(example_data,
                  n_chains = 2)
 
 print(fit)
+}
 }

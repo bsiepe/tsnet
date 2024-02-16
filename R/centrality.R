@@ -129,6 +129,7 @@ get_centrality <- function(fitobj,
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr group_by summarize everything
 #' @importFrom stats quantile
+#' @importFrom rlang .data
 #' @import ggplot2
 #'
 #' @export

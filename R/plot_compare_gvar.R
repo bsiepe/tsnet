@@ -28,11 +28,15 @@
 #' @importFrom ggokabeito scale_fill_okabe_ito palette_okabe_ito
 #' @importFrom cowplot plot_grid get_legend
 #' @importFrom ggdist theme_ggdist
+#' @importFrom rlang .data
 #'
 #' @examples
 #' \donttest{
 #' data(fit_data)
-#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
+#' test_res <- compare_gvar(fit_data[[1]],
+#' fit_data[[2]],
+#' n_draws = 100,
+#' return_all = TRUE)
 #' plot(test_res)
 #' }
 #' @export

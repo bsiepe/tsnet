@@ -193,7 +193,7 @@ This function fits a Bayesian GVAR model to the provided data
   diagnostics.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load example data
 data(ts_data)
 example_data <- ts_data[1:100,1:3]
@@ -203,5 +203,6 @@ fit <- stan_gvar(example_data,
                  method = "sampling",
                  cov_prior = "IW",
                  n_chains = 2)
+print(fit)
 }
 }

@@ -24,4 +24,9 @@ Authors:
   \item Matthias Kloft \email{kloft@uni-marburg.de} (\href{https://orcid.org/0000-0003-1845-6957}{ORCID})
 }
 
+Other contributors:
+\itemize{
+  \item Daniel W. Heck \email{daniel.heck@uni-marburg.de} (\href{https://orcid.org/0000-0002-6302-9252}{ORCID}) [contributor]
+}
+
 }

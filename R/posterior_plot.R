@@ -19,6 +19,7 @@
 #' @import ggplot2
 #' @importFrom ggdist stat_pointinterval stat_slab
 #' @importFrom tidyr separate_wider_delim pivot_longer
+#' @importFrom rlang .data
 #'
 #' @examples
 #' \donttest{

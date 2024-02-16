@@ -28,7 +28,7 @@ are shown. Lagged variables are displayed along the vertical line of the
 grid, and non-lagged variables along the horizontal line of the grids.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load simulated time series data
 data(ts_data)
 example_data <- ts_data[1:100,1:4]

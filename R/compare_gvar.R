@@ -56,11 +56,15 @@
 #'   \item{arguments}{The arguments used in the function call}
 #'    }
 #' @importFrom dplyr group_by summarize pull
+#' @importFrom rlang .data
 #'
 #' @examples
 #' # use internal fit data of two individuals
 #' data(fit_data)
-#' test_res <- compare_gvar(fit_data[[1]], fit_data[[2]], n_draws = 100)
+#' test_res <- compare_gvar(fit_data[[1]],
+#' fit_data[[2]],
+#' n_draws = 100,
+#' return_all = TRUE)
 #' print(test_res)
 #' @export
 

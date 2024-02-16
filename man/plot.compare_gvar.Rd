@@ -37,9 +37,12 @@ corresponding models (mod_a and mod_b). The empirical distances between the
 networks are indicated by red vertical lines.
 }
 \examples{
-\dontrun{
+\donttest{
 data(fit_data)
-test_res <- compare_gvar(fit_data[[1]], fit_data[[2]])
+test_res <- compare_gvar(fit_data[[1]],
+fit_data[[2]],
+n_draws = 100,
+return_all = TRUE)
 plot(test_res)
 }
 }
