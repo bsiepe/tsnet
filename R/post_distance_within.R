@@ -132,17 +132,9 @@ post_distance_within <- function(fitobj,
       mod_two <- sample(1:n_mod, size = 1)
     }
 
-  ## Check if estimation worked
-  # Should be unnecessary if non-converged attempts were deleted
+
   if (isTRUE(pred)) {
-    if (!is.list(fitobj$fit[[mod_one]]) | !is.list(fitobj$fit[[mod_two]])) {
-      beta_distance <- NA
-      pcor_distance <- NA
-      stop("Not a list.")
-    }
-    # if both elements are lists
     # conditional: ut() is only called if indices is NULL to keep correct indexing for user-specified indices
-    else {
       beta_distance <- if(is.null(indices)) {
         distance_fn_beta(fitobj$fit[[mod_one]]$beta_mu,
                          fitobj$fit[[mod_two]]$beta_mu,
@@ -166,7 +158,7 @@ post_distance_within <- function(fitobj,
                          comp,
                          indices$pcor)
       }
-    }
+
   }
 
   if (isFALSE(pred)) {

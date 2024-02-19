@@ -97,17 +97,4 @@ test_that("post_distance_within works for posterior predictive lists with indice
 
 })
 
-test_that("post_distance_within for posterior predictive lists breaks when one model is not a list",{
-  data(fit_data)
-  # Create fake posterior predictive draws
-  pp_list <- list()
-  pp_list$fit <- lapply(1:100, function(x) fit_data[[1]])
-  pp_list$fit[[1]] <- matrix(rnorm(100))
 
-  expect_error(post_distance_within(pp_list,
-                                    pred = TRUE,
-                                    n_draws = 50,
-                                    comp = "frob",
-                                    indices = list(beta = 1:2, pcor = 3:5)))
-
-})
