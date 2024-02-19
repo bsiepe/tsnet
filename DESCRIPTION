@@ -1,6 +1,6 @@
 Package: tsnet
 Type: Package
-Title: Fitting, Comparing, and Visualizing Networks based on Time Series Data
+Title: Fitting, Comparing, and Visualizing Networks Based on Time Series Data
 Version: 0.1.0
 Authors@R: 
   c(person("Björn S.", "Siepe", 

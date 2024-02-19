@@ -69,13 +69,13 @@
 #'
 #'   \bold{Model}
 #'
-#'   Let `Y` be a matrix with `n` rows and `p` columns, where `n_t` is the
-#'   number of time points and `p` is the number of variables. The GVAR model is
+#'   Let \eqn{Y} be a matrix with \eqn{n} rows and \eqn{p} columns, where \eqn{n_t} is the
+#'   number of time points and \eqn{p} is the number of variables. The GVAR model is
 #'   given by the following equations: \deqn{Y_t = B* Y_{t-1} + zeta_t}
-#'   \deqn{zeta_t \sim  N(0, Sigma)} where `B` is a `p x p` matrix of VAR
-#'   coefficients between variables i and j (beta_ij), `zeta_t` contains the
-#'   innovations at time point `t`, and `Sigma` is a `p x p`covariance matrix.
-#'   The inverse of `Sigma` is the precision matrix, which is used to obtain the
+#'   \deqn{zeta_t \sim  N(0, \Sigma)} where \eqn{B} is a `p x p` matrix of VAR
+#'   coefficients between variables i and j (beta_ij), \eqn{\zeta_t} contains the
+#'   innovations at time point \eqn{t}, and \eqn{\Sigma} is a `p x p`covariance matrix.
+#'   The inverse of \eqn{\Sigma} is the precision matrix, which is used to obtain the
 #'   partial correlations between variables (rho_ij). The model setup is
 #'   explained in more detail in Siepe, Kloft & Heck (2023)
 #'   <doi:10.31234/osf.io/uwfjc>.
@@ -91,7 +91,7 @@
 #'   informative normal distribution with mean 0 and standard deviation 0.5. The
 #'   user can specify a different prior distribution by a matrix
 #'   `prior_Beta_loc` and a matrix `prior_Beta_scale` with the same dimensions
-#'   as `B`.
+#'   as \eqn{B}.
 #'
 #'
 #'   Both a Lewandowski-Kurowicka-Joe (LKJ) and an Inverse-Wishart (IW)
@@ -103,20 +103,20 @@
 #'   priors in the contemporaneous network to preferentially use IW priors.
 #'
 #'   The LKJ prior is a distribution on the correlation matrix, which is
-#'   parameterized by the shape parameter `eta`. To enable edge-specific priors
+#'   parameterized by the shape parameter \eqn{\eta}. To enable edge-specific priors
 #'   on the partial correlations, we use the workaraound of a "joint" prior
 #'   that, in addition to the LKJ on the correlation matrix itself, allows for
 #'   an additional beta prior on each of the partial correlations. We first
 #'   assigned an uninformed LKJ prior to the Cholesky factor decomposition of
 #'   the correlation matrix of innovations: \deqn{\Omega_L \sim
 #'   LKJ-Cholesky(\eta)}. For \eqn{\eta = 1}, this implies a symmetric marginal
-#'   scaled beta distribution on the zero-order correlations `omega_ij`.
+#'   scaled beta distribution on the zero-order correlations \eqn{\omega_{ij}}.
 #'   \deqn{(\omega_{ij}+1)/2 \sim Beta(p/2, p/2)}
 #'   We can then obtain the covariance matrix and,
 #'   subsequently, the precision matrix (see Siepe, Kloft & Heck (2023))
 #'   for details.
 #'   The second part of the prior is a beta prior on each partial correlation
-#'   `rho_ij` (obtained from the off-diagonal elements of the precision matrix).
+#'   \eqn{\rho_{ij}} (obtained from the off-diagonal elements of the precision matrix).
 #'   This prior was assigned by transforming the partial correlations to the
 #'   interval of 0,1 and then assigning a proportional (mean-variance
 #'   parameterized) beta prior:
@@ -126,18 +126,18 @@
 #'   partial correlations.
 #'   The user can specify a different prior distribution by a matrix
 #'   `prior_Rho_loc` and a matrix `prior_Rho_scale` with the same dimensions as
-#'   the partial correlation matrix. Additionally, the user can change `eta`
+#'   the partial correlation matrix. Additionally, the user can change \eqn{eta}
 #'   via the `prior_Eta` parameter.
 #'
 #'   The Inverse-Wishart prior is a distribution on the innovation covariance
 #'   matrix `Sigma`:
 #'   \deqn{\Sigma \sim IW(\nu, S)}
-#'   where `nu` is the degrees of freedom and `S` is the scale matrix. We here
-#'   use the default prior of `nu = delta + p - 1`for the degrees of freedom,
-#'   where `delta` is defined as \eqn{s_{\rho}^{-1}-1} and `s_{rho}` is the
+#'   where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix. We here
+#'   use the default prior of \deqn{nu = delta + p - 1} for the degrees of freedom,
+#'   where \eqn{\delta} is defined as \eqn{s_{\rho}^{-1}-1} and \eqn{s_{\rho}} is the
 #'   standard deviation of the implied marginal beta distribution of the
-#'   partial correlations. For the scale matrix `S`, we use the identity matrix
-#'   `I_p` of order p.
+#'   partial correlations. For the scale matrix \eqn{S}, we use the identity matrix
+#'   \eqn{I_p} of order p.
 #'   The user can set a prior on the expected standard deviation of the partial
 #'   correlations by specifying a `prior_Rho_marginal` parameter. The default
 #'   value is 0.25, which has worked well in a simulation study.

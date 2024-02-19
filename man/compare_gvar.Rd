@@ -64,7 +64,7 @@ matrices.}
 \value{
 A list (of class "compare_gvar") containing the results of the
   comparison. The list includes:
- \itemize{
+
   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}
   \item{sig_pcor}{Binary decision on whether there is a significant difference between the contemporaneous networks of A and B}
   \item{res_beta}{The null distribution for the temporal networks for both models}
@@ -74,7 +74,6 @@ A list (of class "compare_gvar") containing the results of the
   \item{larger_beta}{The number of reference distances larger than the empirical distance for the temporal network}
   \item{larger_pcor}{The number of reference distances larger than the empirical distance for the temporal network}
   \item{arguments}{The arguments used in the function call}
-   }
 }
 \description{
 This function compares two Bayesian Graphical Vector
