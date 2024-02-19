@@ -32,7 +32,7 @@ jobs:
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package"),
-            function_exclusions = c("\\.h", "\\.o"),
+            function_exclusions = c("src/"),
           )
         shell: Rscript {0}
 
