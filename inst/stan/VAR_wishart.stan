@@ -12,10 +12,7 @@ data {
   matrix[K,K] prior_S; // prior for scale matrix
   real<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
 }
-// ////////////////////////////////////////////////////////////////////////////////
-// transformed data{
-//   matrix[K,K] I = diag_matrix(rep_vector(1, K));
-// }
+
 ////////////////////////////////////////////////////////////////////////////////
 parameters {
   // Temporal

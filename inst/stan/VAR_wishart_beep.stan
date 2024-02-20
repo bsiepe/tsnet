@@ -58,7 +58,6 @@ model {
   {
     for(t in 2:T){
       if(beep[t] > first_beep){
-        // BS: What about intercept?
         vector[K] mu = Beta * Y[t-1,];
         target += multi_normal_lpdf(Y[t,] | mu, Sigma);
       }
