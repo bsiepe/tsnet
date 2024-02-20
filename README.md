@@ -14,7 +14,7 @@ functionality to estimate Bayesian GVAR models in Stan, as well as a
 test for network comparison. Additionally, the package includes
 functions to plot posterior estimates and centrality indices. More
 information is provided in the associated preprint [Siepe et
-al. (2024)](https://psyarxiv.com/uwfjc/).
+al. (2024)](https://osf.io/preprints/psyarxiv/uwfjc/).
 
 ## Installation
 
