@@ -123,4 +123,4 @@ package and the test:
 
 Siepe, B.S., Kloft, M. & Heck, D.W. (2024). Bayesian Estimation and
 Comparison of Idiographic Network Models.
-(<https://psyarxiv.com/uwfjc/>)
+(<https://osf.io/preprints/psyarxiv/uwfjc/>)
