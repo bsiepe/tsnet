@@ -54,7 +54,7 @@ A list of distances between the specified pairs of fitted models. The
 }
 \description{
 This function computes distances between posterior samples of a
-  single fitted gVAR model. Thereby, it calculates the uncertainty contained
+  single fitted GVAR model. Thereby, it calculates the uncertainty contained
   in the posterior distribution, which can be used as a reference to compare
   two modes. Distances can be obtained either from posterior samples or
   posterior predictive draws. The distance between two models can currently

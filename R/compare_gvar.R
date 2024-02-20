@@ -1,4 +1,4 @@
-#' Compare two Bayesian gVAR models
+#' Compare two Bayesian GVAR models
 #'
 #' @description This function compares two Bayesian Graphical Vector
 #'   Autoregressive models using matrix norms to test if the observed

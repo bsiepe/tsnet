@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_gvar.R
 \name{compare_gvar}
 \alias{compare_gvar}
-\title{Compare two Bayesian gVAR models}
+\title{Compare two Bayesian GVAR models}
 \usage{
 compare_gvar(
   fit_a,

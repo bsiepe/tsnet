@@ -104,7 +104,7 @@
 #'
 #'   The LKJ prior is a distribution on the correlation matrix, which is
 #'   parameterized by the shape parameter \eqn{\eta}. To enable edge-specific priors
-#'   on the partial correlations, we use the workaraound of a "joint" prior
+#'   on the partial correlations, we use the workaround of a "joint" prior
 #'   that, in addition to the LKJ on the correlation matrix itself, allows for
 #'   an additional beta prior on each of the partial correlations. We first
 #'   assigned an uninformed LKJ prior to the Cholesky factor decomposition of
