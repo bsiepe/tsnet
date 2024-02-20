@@ -16,7 +16,7 @@ Authors@R:
   role = c("ctb"),
   comment = c(ORCID = "0000-0002-6302-9252")))
 Maintainer: Björn S. Siepe <bjoernsiepe@gmail.com>
-Description: Fit, compare, and visualize Bayesian graphical vector autoregression (GVAR) network models using Stan as a backend. These models are commonly used in psychology to represent temporal and contemporaneous relationships between multiple variables in intensive longitudinal data. Fitted models can be compared with a test based on matrix norm differences of posterior point estimates to quantify the differences between two estimated networks. See also Siepe, Kloft & Heck (2024) <doi:10.31234/osf.io/uwfjc>.
+Description: Fit, compare, and visualize Bayesian graphical vector autoregressive (GVAR) network models using Stan. These models are commonly used in psychology to represent temporal and contemporaneous relationships between multiple variables in intensive longitudinal data. Fitted models can be compared with a test based on matrix norm differences of posterior point estimates to quantify the differences between two estimated networks. See also Siepe, Kloft & Heck (2024) <doi:10.31234/osf.io/uwfjc>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
