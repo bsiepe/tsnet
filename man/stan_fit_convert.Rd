@@ -29,7 +29,7 @@ used in `tsnet`. The function allows to select which parameters should be
 returned.
 }
 \examples{
-\dontrun{
+\donttest{
 data(ts_data)
 example_data <- ts_data[1:100,1:3]
 fit <- stan_gvar(data = example_data,

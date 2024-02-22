@@ -16,6 +16,9 @@
 #' are shown. Lagged variables are displayed along the vertical line of the
 #' grid, and non-lagged variables along the horizontal line of the grids.
 #'
+#' @return A ggplot object representing the posterior distributions of the parameters of the temporal
+#' or the contemporaneous networks of a GVAR model.
+#'
 #' @import ggplot2
 #' @importFrom ggdist stat_pointinterval stat_slab
 #' @importFrom tidyr separate_wider_delim pivot_longer

@@ -27,3 +27,9 @@ eigenvalues of the Beta matrix and checks if the sum of the squares of the
 real and imaginary parts of the eigenvalues is less than 1. If it is, the VAR
 model is considered stable.
 }
+\examples{
+ data(fit_data)
+ fitobj <- fit_data[[1]]
+ result <- check_eigen(fitobj)
+
+}

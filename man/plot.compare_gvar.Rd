@@ -17,6 +17,10 @@
 
 \item{...}{Additional arguments to be passed to the plotting functions.}
 }
+\value{
+A ggplot object representing the density plots of the posterior
+uncertainty distributions for distances and the empirical distance for two GVAR models.
+}
 \description{
 This function is a plotting method for the class produced by
 [compare_gvar()]. It generates a plot showing the density of posterior

@@ -196,7 +196,7 @@ prepare_samples_plot <- function(fitobj,
 #' @importFrom rstan extract
 #' @importFrom posterior as_draws_matrix
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(ts_data)
 #' example_data <- ts_data[1:100,1:3]
 #' fit <- stan_gvar(data = example_data,

@@ -30,7 +30,7 @@ uncertainty bands, while the "density" plot shows the full density of the
 centrality measures.
 }
 \examples{
-\dontrun{
+\donttest{
 data(fit_data)
 obj <- get_centrality(fit_data[[1]])
   plot_centrality(obj,

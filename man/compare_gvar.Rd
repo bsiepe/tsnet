@@ -82,7 +82,7 @@ This function compares two Bayesian Graphical Vector
   distance between two models based on their point estimates and compares
   them using reference distributions created from their posterior
   distributions. Returns the p-value for the comparison based on a decision
-  rule specified by the user. Details are available in Siepe, Kloft & Heck (2023)
+  rule specified by the user. Details are available in Siepe, Kloft & Heck (2024)
   <doi:10.31234/osf.io/uwfjc>.
 }
 \examples{

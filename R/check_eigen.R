@@ -13,6 +13,11 @@
 #'   [stan_fit_convert()).
 #' @param verbose Logical. If TRUE, a verbal summary of the results is printed.
 #'   Default is TRUE.
+#' @examples
+#'  data(fit_data)
+#'  fitobj <- fit_data[[1]]
+#'  result <- check_eigen(fitobj)
+#'
 #' @return A list containing the eigenvalues and a verbal summary of the
 #'   results.
 #' @export

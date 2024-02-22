@@ -24,6 +24,9 @@
 #' corresponding models (mod_a and mod_b). The empirical distances between the
 #' networks are indicated by red vertical lines.
 #'
+#' @return A ggplot object representing the density plots of the posterior
+#' uncertainty distributions for distances and the empirical distance for two GVAR models.
+#' 
 #' @import ggplot2
 #' @importFrom ggokabeito scale_fill_okabe_ito palette_okabe_ito
 #' @importFrom cowplot plot_grid get_legend

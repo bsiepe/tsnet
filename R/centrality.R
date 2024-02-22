@@ -118,7 +118,7 @@ get_centrality <- function(fitobj,
 #'   plot, distribution of the centrality measures is visualized.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(fit_data)
 #' obj <- get_centrality(fit_data[[1]])
 #'   plot_centrality(obj,
