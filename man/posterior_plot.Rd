@@ -17,6 +17,10 @@ from [stan_gvar()]) or a BGGM object (obtained from [BGGM::var_estimate()]).}
 \item{cis}{A numeric vector of credible intervals to use for plotting.
 Default is c(0.8, 0.9, 0.95).}
 }
+\value{
+A ggplot object representing the posterior distributions of the parameters of the temporal
+or the contemporaneous networks of a GVAR model.
+}
 \description{
 Plots posterior distributions of the parameters of the temporal
 or the contemporaneous networks of a GVAR model. The posterior distributions
@@ -26,9 +30,6 @@ are visualized as densities in a matrix layout.
 In the returned plot, posterior distributions for every parameter
 are shown. Lagged variables are displayed along the vertical line of the
 grid, and non-lagged variables along the horizontal line of the grids.
-
-#' @return A ggplot object representing the posterior distributions of the parameters of the temporal
-or the contemporaneous networks of a GVAR model.
 }
 \examples{
 \donttest{
