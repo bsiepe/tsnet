@@ -23,9 +23,9 @@ stan_gvar(
 \item{data}{A data frame or matrix containing the time series data of a
 single subject. The data should be in long format,  where the columns
 represent the variables and the rows represent the time points. See the
-example data [ts_data] for the correct format.}
+example data \code{\link{ts_data}} for the correct format.}
 
-\item{beep}{A vector of beeps with length of `nrow(data)`. The beep indicator
+\item{beep}{A vector of beeps with length of \code{nrow(data)}. The beep indicator
 can be used to remove overnight effects from the last beep of a day to the
 first beep of the next day. This should be a vector of positive integers.
 If left empty, the function will assume that there are no overnight
@@ -36,45 +36,46 @@ should be a named list, with names corresponding to the parameter names and
 values corresponding to the prior distributions. The following priors can
 be specified:
 \itemize{
-\item `prior_Beta_loc` A matrix of the same dimensions as the beta matrix
+\item \code{prior_Beta_loc} A matrix of the same dimensions as the beta matrix
 `B` containing the mean of the prior distribution for the beta coefficients.
-\item `prior_Beta_scale` A matrix of the same dimensions as the beta matrix
+\item \code{prior_Beta_scale} A matrix of the same dimensions as the beta matrix
 `B` containing the standard deviation of the prior distribution for the beta
 coefficients.}}
 
 \item{method}{A string indicating the method to use for fitting the model.
 Options are "sampling" (for MCMC estimation) or "variational" (for
-variational inference). We currently recommend only using MCMC estimation.}
+variational inference). We currently recommend only using MCMC estimation.
+Default: \code{"sampling"}.}
 
 \item{cov_prior}{A string indicating the prior distribution to use for the
-covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart).}
+covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"LKJ"}.}
 
 \item{rmv_overnight}{A logical indicating whether to remove overnight
-effects. Default is `FALSE`. If `TRUE`, the function will remove overnight
+effects. Default is \code{FALSE}. If `TRUE`, the function will remove overnight
 effects from the last beep of a day to the first beep of the next day.
-This requires the `beep` argument to be specified.}
+This requires the \code{beep} argument to be specified.}
 
 \item{iter_sampling}{An integer specifying the number of iterations for the
-sampling method. Default is 500.}
+sampling method. Default is \code{500}.}
 
 \item{iter_warmup}{An integer specifying the number of warmup iterations for
-the sampling method. Default is 500.}
+the sampling method. Default is \code{500}.}
 
 \item{n_chains}{An integer specifying the number of chains for the sampling
 method. Default is 4. If variational inference is used, the number of
-iterations is calculated as `iter_sampling`*`n_chains`.}
+iterations is calculated as \code{iter_sampling}*\code{n_chains}.}
 
 \item{n_cores}{An integer specifying the number of cores to use for parallel
-computation. Default is 1. [rstan] is used for parallel computation.}
+computation. Default is \code{1}. \code{rstan} is used for parallel computation.}
 
 \item{center_only}{A logical indicating whether to only center (and not
-scale) the data. Default is `FALSE`.}
+scale) the data. Default is \code{FALSE}.}
 
-\item{...}{Additional arguments passed to the `rstan::sampling` or
-`rstan::vb` function.}
+\item{...}{Additional arguments passed to the \code{\link[rstan::sampling]{rstan::sampling}} or
+\code{\link[rstan::vb]{rstan::vb}}  function.}
 }
 \value{
-A `tsnet_fit` object in list format. The object contains the
+A \code{tsnet_fit} object in list format. The object contains the
  following elements:
  \item{fit}{A stanfit object containing the fitted model.}
  \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
@@ -84,10 +85,11 @@ This function fits a Bayesian GVAR model to the provided data
   using Stan. The estimation procedure is described further in Siepe, Kloft &
   Heck (2023) <doi:10.31234/osf.io/uwfjc>. The current implementation allows
   for a normal prior on the temporal effects and either an Inverse Wishart or
-  an LKJ prior on the contemporaneous effects. `rstan` is used as a backend
+  an LKJ prior on the contemporaneous effects. \code{rstan} is used as a backend
   for fitting the model in Stan. Data should be provided in long format, where
   the columns represent the variables and the rows represent the time points.
-  Data are automatically z-scaled for estimation.
+  Data are automatically z-scaled for estimation. The model currently does not
+  support missing data.
 }
 \details{
 \bold{General Information}
@@ -102,33 +104,33 @@ This function fits a Bayesian GVAR model to the provided data
   lagged effects). This is typically represented in the partial correlation
   (pcor) matrix. If the model is represented and interpreted as a network,
   variables are called
-*nodes*, *edges* represent the statistical association between the nodes, and
-*edge weights* quantify the strength of these associations.
+\emph{nodes}, \emph{edges} represent the statistical association between the nodes, and
+\emph{edge weights} quantify the strength of these associations.
 
   \bold{Model}
 
   Let \eqn{Y} be a matrix with \eqn{n} rows and \eqn{p} columns, where \eqn{n_t} is the
   number of time points and \eqn{p} is the number of variables. The GVAR model is
-  given by the following equations: \deqn{Y_t = B* Y_{t-1} + zeta_t}
-  \deqn{zeta_t \sim  N(0, \Sigma)} where \eqn{B} is a `p x p` matrix of VAR
-  coefficients between variables i and j (beta_ij), \eqn{\zeta_t} contains the
-  innovations at time point \eqn{t}, and \eqn{\Sigma} is a `p x p`covariance matrix.
+  given by the following equations: \deqn{Y_t = B* Y_{t-1} + \zeta_t}
+  \deqn{\zeta_t \sim  N(0, \Sigma)} where \eqn{B} is a \eqn{p \times p} matrix of VAR
+  coefficients between variables \eqn{i} and \eqn{j} (\eqn{beta_{ij}}), \eqn{\zeta_t} contains the
+  innovations at time point \eqn{t}, and \eqn{\Sigma} is a \eqn{p \times p} covariance matrix.
   The inverse of \eqn{\Sigma} is the precision matrix, which is used to obtain the
-  partial correlations between variables (rho_ij). The model setup is
+  partial correlations between variables (\eqn{\rho_{ij}}). The model setup is
   explained in more detail in Siepe, Kloft & Heck (2023)
   <doi:10.31234/osf.io/uwfjc>.
 
 
   \bold{Prior Setup}
 
-  For the p x p temporal matrix B (containing the beta coefficients), we use
+  For the \eqn{p \times p} temporal matrix B (containing the \eqn{\beta} coefficients), we use
   a normal prior distribution on each individual parameter: \deqn{\beta_{ij}
-  \sim N(PriorBetaLoc_{ij}, PriorBetaScale_{ij})} where `PriorBetaLoc` is the
-  mean of the prior distribution and `PriorBetaScale` is the standard
+  \sim N(PriorBetaLoc_{ij}, PriorBetaScale_{ij})} where \code{PriorBetaLoc} is the
+  mean of the prior distribution and \code{PriorBetaScale} is the standard
   deviation of the prior distribution. The default prior is a weakly
   informative normal distribution with mean 0 and standard deviation 0.5. The
   user can specify a different prior distribution by a matrix
-  `prior_Beta_loc` and a matrix `prior_Beta_scale` with the same dimensions
+  \code{prior_Beta_loc} and a matrix \code{prior_Beta_scale} with the same dimensions
   as \eqn{B}.
 
 
@@ -147,49 +149,50 @@ This function fits a Bayesian GVAR model to the provided data
   an additional beta prior on each of the partial correlations. We first
   assigned an uninformed LKJ prior to the Cholesky factor decomposition of
   the correlation matrix of innovations: \deqn{\Omega_L \sim
-  LKJ-Cholesky(\eta)}. For \eqn{\eta = 1}, this implies a symmetric marginal
+  LKJ-Cholesky(\eta)}
+  For \eqn{\eta = 1}, this implies a symmetric marginal
   scaled beta distribution on the zero-order correlations \eqn{\omega_{ij}}.
   \deqn{(\omega_{ij}+1)/2 \sim Beta(p/2, p/2)}
   We can then obtain the covariance matrix and,
-  subsequently, the precision matrix (see Siepe, Kloft & Heck (2023))
-  for details.
+  subsequently, the precision matrix (see Siepe, Kloft & Heck, 2023,
+  for details).
   The second part of the prior is a beta prior on each partial correlation
   \eqn{\rho_{ij}} (obtained from the off-diagonal elements of the precision matrix).
   This prior was assigned by transforming the partial correlations to the
-  interval of 0,1 and then assigning a proportional (mean-variance
+  interval of \eqn{[0,1]} and then assigning a proportional (mean-variance
   parameterized) beta prior:
   \deqn{(\rho_{ij}+1)/2 \sim Beta_{prop}(PriorRhoLoc, PriorRhoScale)}
   A beta location parameter of 0.5 translates to an expected correlation of 0.
-  The variance parameter of sqrt(0.5) implies a uniform distribution of
+  The variance parameter of \eqn{\sqrt(0.5)} implies a uniform distribution of
   partial correlations.
   The user can specify a different prior distribution by a matrix
-  `prior_Rho_loc` and a matrix `prior_Rho_scale` with the same dimensions as
+  \code{prior_Rho_loc} and a matrix \code{prior_Rho_scale} with the same dimensions as
   the partial correlation matrix. Additionally, the user can change \eqn{eta}
-  via the `prior_Eta` parameter.
+  via the \code{prior_Eta} parameter.
 
   The Inverse-Wishart prior is a distribution on the innovation covariance
-  matrix `Sigma`:
+  matrix \eqn{\Sigma}:
   \deqn{\Sigma \sim IW(\nu, S)}
   where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix. We here
   use the default prior of \deqn{nu = delta + p - 1} for the degrees of freedom,
   where \eqn{\delta} is defined as \eqn{s_{\rho}^{-1}-1} and \eqn{s_{\rho}} is the
   standard deviation of the implied marginal beta distribution of the
   partial correlations. For the scale matrix \eqn{S}, we use the identity matrix
-  \eqn{I_p} of order p.
+  \eqn{I_p} of order \eqn{p}.
   The user can set a prior on the expected standard deviation of the partial
-  correlations by specifying a `prior_Rho_marginal` parameter. The default
+  correlations by specifying a \code{prior_Rho_marginal} parameter. The default
   value is 0.25, which has worked well in a simulation study.
-  Additionally, the user can specify a `prior_S` parameter to set a different
+  Additionally, the user can specify a \code{prior_S} parameter to set a different
   scale matrix.
 
   \bold{Sampling}
   The model can be fitted using either MCMC sampling or variational
-  inference via [rstan]. Per default, the model is fitted using the Stan
+  inference via \code{rstan}. Per default, the model is fitted using the Stan
   Hamiltonian Monte Carlo (HMC) No U-Turn (NUTS) sampler with 4 chains,
   500 warmup iterations and 500 sampling iterations. We use a default
-  target average acceptance probability `adapt_delta` of 0.8. As the output
-  is returned as a standard `stanfit` object, the user can use the
-  `rstan` package to extract and analyze the results and obtain convergence
+  target average acceptance probability \code{adapt_delta} of 0.8. As the output
+  is returned as a standard \code{stanfit} object, the user can use the
+  \code{rstan} package to extract and analyze the results and obtain convergence
   diagnostics.
 }
 \examples{

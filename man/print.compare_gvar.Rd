@@ -7,7 +7,7 @@
 \method{print}{compare_gvar}(x, ...)
 }
 \arguments{
-\item{x}{A test object obtained from [compare_gvar()]}
+\item{x}{A test object obtained from \code{\link{compare_gvar}}}
 
 \item{...}{Additional arguments to be passed to the print method. (currently not used)}
 }
@@ -15,10 +15,10 @@
 Prints a summary of the Norm-Based Comparison Test to the console
 }
 \description{
-This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
+This function prints a summary of the Norm-Based Comparison Test for a \code{\link{compare_gvar}} object.
 }
 \details{
-This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
+This function prints a summary of the Norm-Based Comparison Test for a \code{\link{compare_gvar}} object.
 in the temporal and contemporaneous networks, as well as the number of reference distances that were larger
 than the empirical distance for each network.
 }

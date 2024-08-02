@@ -1,13 +1,13 @@
 #' Print method for compare_gvar objects
 #'
-#' This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
+#' This function prints a summary of the Norm-Based Comparison Test for a \code{\link{compare_gvar}} object.
 #'
-#' @param x A test object obtained from [compare_gvar()]
+#' @param x A test object obtained from \code{\link{compare_gvar}}
 #' @param ... Additional arguments to be passed to the print method. (currently not used)
 #'
 #' @return Prints a summary of the Norm-Based Comparison Test to the console
 #'
-#' @details This function prints a summary of the Norm-Based Comparison Test for a [compare_gvar()] object.
+#' @details This function prints a summary of the Norm-Based Comparison Test for a \code{\link{compare_gvar}} object.
 # It displays the general summary and model-specific results, including the number of significant comparisons
 #' in the temporal and contemporaneous networks, as well as the number of reference distances that were larger
 #' than the empirical distance for each network.
@@ -61,7 +61,7 @@ print.compare_gvar <- function(x,
 
 #' Print method for tsnet_fit objects
 #'
-#' This method provides a summary of the Bayesian GVAR model fitted with [stan_gvar()].
+#' This method provides a summary of the Bayesian GVAR model fitted with \code{\link{stan_gvar}}.
 #' It prints general information about the model, including the estimation method and the number of chains and iterations
 #' It also prints the posterior mean of the temporal and contemporaneous coefficients.
 #'

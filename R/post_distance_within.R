@@ -7,15 +7,16 @@
 #'   two modes. Distances can be obtained either from posterior samples or
 #'   posterior predictive draws. The distance between two models can currently
 #'   be calculated based on three options: Frobenius norm, maximum difference,
-#'   or L1 norm. Used within [compare_gvar()]. The function is not intended to
+#'   or L1 norm. Used within \code{\link{compare_gvar}}. The function is not intended to
 #'   be used directly by the user.
 #'
 #' @inheritParams compare_gvar
-#' @param fitobj Fitted model object. This can be a tsnet_fit object (obtained
-#'   from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
-#'   or extracted posterior samples (obtained from [stan_fit_convert()).
+#' @param fitobj Fitted model object. This can be a tsnet_fit object
+#'   (obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+#'   \code{\link[BGGM]{var_estimate}}, or extracted posterior samples (obtained from
+#'   \code{\link{stan_fit_convert}}).
 #' @param pred A logical indicating whether the input is posterior predictive
-#'   draws (TRUE) or posterior samples (FALSE). Default: FALSE
+#'   draws (TRUE) or posterior samples (FALSE). Default: \code{FALSE}
 #' @return A list of distances between the specified pairs of fitted models. The
 #'   list has length equal to the specified number of random pairs. Each list
 #'   element contains two distance values, one for beta coefficients and one for

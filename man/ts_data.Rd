@@ -12,14 +12,14 @@
   }
 }
 \source{
-Simulated using the [graphicalVAR::graphicalVARsim()] function.
+Simulated using the \code{\link[graphicalVAR]{graphicalVARsim}} function in the \code{graphicalVAR} package.
 }
 \usage{
 data(ts_data)
 }
 \description{
 This dataset contains a simulated time series dataset for two individuals
-generated using the `graphicalVAR` package. The dataset is useful for testing
+generated using the \code{graphicalVAR} package. The dataset is useful for testing
 and demonstrating the functionality of the package.
 }
 \details{

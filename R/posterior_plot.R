@@ -4,20 +4,21 @@
 #' or the contemporaneous networks of a GVAR model. The posterior distributions
 #' are visualized as densities in a matrix layout.
 #'
-#' @param fitobj Fitted model object. This can be a tsnet_fit object (obtained
-#'   from [stan_gvar()]) or a BGGM object (obtained from [BGGM::var_estimate()]).
+#' @param fitobj Fitted model object. This can be a tsnet_fit object
+#'   (obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+#'   \code{\link[BGGM]{var_estimate}}.
 #' @param mat A matrix to use for plotting. Possibilities include "beta"
-#'   (temporal network) and "pcor" (contemporaneous network). Default is "beta"
+#'   (temporal network) and "pcor" (contemporaneous network). Default is \code{"beta"}
 #'   (temporal network).
 #' @param cis A numeric vector of credible intervals to use for plotting.
-#'   Default is c(0.8, 0.9, 0.95).
+#'   Default is \code{c(0.8, 0.9, 0.95)}.
 #'
 #' @details In the returned plot, posterior distributions for every parameter
 #' are shown. Lagged variables are displayed along the vertical line of the
 #' grid, and non-lagged variables along the horizontal line of the grids.
 #'
-#' @return A ggplot object representing the posterior distributions of the parameters of the temporal
-#' or the contemporaneous networks of a GVAR model.
+#' @return A \code{ggplot} object representing the posterior distributions of the
+#' parameters of the temporal or the contemporaneous networks of a GVAR model.
 #'
 #' @import ggplot2
 #' @importFrom ggdist stat_pointinterval stat_slab

@@ -7,19 +7,20 @@
 posterior_plot(fitobj, mat = "beta", cis = c(0.8, 0.9, 0.95))
 }
 \arguments{
-\item{fitobj}{Fitted model object. This can be a tsnet_fit object (obtained
-from [stan_gvar()]) or a BGGM object (obtained from [BGGM::var_estimate()]).}
+\item{fitobj}{Fitted model object. This can be a tsnet_fit object
+(obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+\code{\link[BGGM]{var_estimate}}.}
 
 \item{mat}{A matrix to use for plotting. Possibilities include "beta"
-(temporal network) and "pcor" (contemporaneous network). Default is "beta"
+(temporal network) and "pcor" (contemporaneous network). Default is \code{"beta"}
 (temporal network).}
 
 \item{cis}{A numeric vector of credible intervals to use for plotting.
-Default is c(0.8, 0.9, 0.95).}
+Default is \code{c(0.8, 0.9, 0.95)}.}
 }
 \value{
-A ggplot object representing the posterior distributions of the parameters of the temporal
-or the contemporaneous networks of a GVAR model.
+A \code{ggplot} object representing the posterior distributions of the
+parameters of the temporal or the contemporaneous networks of a GVAR model.
 }
 \description{
 Plots posterior distributions of the parameters of the temporal

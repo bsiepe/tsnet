@@ -8,16 +8,17 @@ get_centrality(fitobj, burnin = 0, remove_ar = TRUE)
 }
 \arguments{
 \item{fitobj}{Fitted model object for a Bayesian GVAR model. This can be
-`tsnet_fit` object (obtained from [stan_gvar()]), a BGGM object (obtained
-from [BGGM::var_estimate()]), or extracted posterior samples (obtained from
-[stan_fit_convert()).}
+`tsnet_fit` object (obtained from \code{\link{stan_gvar}},
+a BGGM object (obtained from \code{\link[BGGM]{var_estimate}} in \code{BGGM}),
+or extracted posterior samples (obtained from \code{\link{stan_fit_convert}}).}
 
 \item{burnin}{An integer specifying the number of initial samples to discard
-as burn-in. Default is 0.}
+as burn-in. Default is \code{0}.}
 
 \item{remove_ar}{A logical value specifying whether to remove the
-autoregressive effects for centrality calculation. Default is TRUE. This is
-only relevant for the calculation of temporal centrality/density measures.}
+autoregressive effects for centrality calculation. Default is \code{TRUE}.
+This is only relevant for the calculation of temporal centrality/density
+measures.}
 }
 \value{
 A list containing the following centrality measures:
@@ -35,7 +36,7 @@ fit object. Centrality measures describe the "connectedness" of a variable in
 a network, while density describes the networks' overall connectedness.
 Specifically, it computes the in-strength, out-strength, contemporaneous
 strength, temporal network density, and contemporaneous network density. The
-result can then be visualized using [plot_centrality()].
+result can then be visualized using \code{\link{plot_centrality}}.
 }
 \examples{
  # Use first individual from example fit data from tsnet

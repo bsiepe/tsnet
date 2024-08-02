@@ -15,7 +15,7 @@
 Prints a summary to the console.
 }
 \description{
-This method provides a summary of the Bayesian GVAR model fitted with [stan_gvar()].
+This method provides a summary of the Bayesian GVAR model fitted with \code{\link{stan_gvar}}.
 It prints general information about the model, including the estimation method and the number of chains and iterations
 It also prints the posterior mean of the temporal and contemporaneous coefficients.
 }
