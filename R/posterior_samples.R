@@ -306,3 +306,36 @@ stan_fit_convert <- function(stan_fit,
 
 }
 
+
+
+
+
+
+
+# FROM BMGARCH
+# Obtain weighted samples
+# TODO adjust
+# @keywords internal
+.weighted_samples <- function(model_fit,
+                              params,
+                              weights) {
+  # Extract all samples
+  samps <- lapply(model_fit, rstan::extract, pars = params)
+  # Apply weights
+  for (i in seq_len(length(samps))) {
+    # Each model
+    samps[[i]] <- lapply(samps[[i]], function(p) {
+      # Each parameter
+      p * weights[i] # Weight them
+    })
+  }
+  # Reduce
+  samps_comb <- lapply(params, function(p) {
+    # For each parameter
+    Reduce("+", lapply(samps, function(m) {
+      m[[p]]
+    })) # Sum samples together
+  })
+  names(samps_comb) <- params
+  return(samps_comb)
+}

@@ -12,6 +12,11 @@ data {
   matrix[K,K] prior_Rho_loc;  // locations for priors on partial correlations
   matrix[K,K] prior_Rho_scale;   // scales for priors on partial correlations
   int<lower=1> prior_Eta; // prior for LKJ
+  // Forecast
+  int<lower=1> ahead; // forecasted time points
+  array[ahead] vector[K] Y_future; // future responses for loglik computation
+  int<lower = 0, upper = 1> compute_log_lik; // compute log likelihood?
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
@@ -85,14 +90,30 @@ model {
 ////////////////////////////////////////////////////////////////////////////////
 generated quantities{
   int min_beep = first_beep;
-  vector[T-1] log_lik;
+  vector[T-1 + ahead] log_lik;
+  // Forecast
+  array[ahead] vector[K] Y_forecast; // forecasted responses
   {
     // Cholesky decomposition of the covariance matrix
     matrix[K, K] Sigma_chol = diag_pre_multiply(exp(sigma_theta), L_Theta);
     for(t in 2:T){
       if(beep[t] > first_beep){
         vector[K] mu = Beta * Y[t-1,];
+        // use t-1 here meaning that ll of timepoint two is stored in log_lik[1]
         log_lik[t-1] = multi_normal_cholesky_lpdf(Y[t, ] | mu, Sigma_chol);
+      }
+    }
+    // Forecasting ahead steps
+    // TODO probably need to make this optional, only if ahead is specified or so
+    vector[K] current_Y = Y[T]; // initialize current_Y to the last observed value
+    for (s in 1:ahead) {
+      vector[K] mu = Beta * current_Y; // mu for current step
+      Y_forecast[s] = multi_normal_cholesky_rng(mu, Sigma_chol); // generate forecast
+      current_Y = Y_forecast[s]; // update current_Y to predicted value
+      // forecasted log-likelihood
+      // TODO double check if the indexing is correct
+      if(compute_log_lik == 1){
+        log_lik[T + s - 1] = multi_normal_cholesky_lpdf(Y_future[s] | mu, Sigma_chol);
       }
     }
   }
