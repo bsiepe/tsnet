@@ -71,8 +71,8 @@ computation. Default is \code{1}. \code{rstan} is used for parallel computation.
 \item{center_only}{A logical indicating whether to only center (and not
 scale) the data. Default is \code{FALSE}.}
 
-\item{...}{Additional arguments passed to the \code{\link[rstan::sampling]{rstan::sampling}} or
-\code{\link[rstan::vb]{rstan::vb}}  function.}
+\item{...}{Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
+\code{\link[rstan:vb]{rstan::vb}}  function.}
 }
 \value{
 A \code{tsnet_fit} object in list format. The object contains the
@@ -113,7 +113,7 @@ This function fits a Bayesian GVAR model to the provided data
   number of time points and \eqn{p} is the number of variables. The GVAR model is
   given by the following equations: \deqn{Y_t = B* Y_{t-1} + \zeta_t}
   \deqn{\zeta_t \sim  N(0, \Sigma)} where \eqn{B} is a \eqn{p \times p} matrix of VAR
-  coefficients between variables \eqn{i} and \eqn{j} (\eqn{beta_{ij}}), \eqn{\zeta_t} contains the
+  coefficients between variables \eqn{i} and \eqn{j} (\eqn{\beta_{ij}}), \eqn{\zeta_t} contains the
   innovations at time point \eqn{t}, and \eqn{\Sigma} is a \eqn{p \times p} covariance matrix.
   The inverse of \eqn{\Sigma} is the precision matrix, which is used to obtain the
   partial correlations between variables (\eqn{\rho_{ij}}). The model setup is

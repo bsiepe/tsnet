@@ -51,8 +51,10 @@
 #'   computation. Default is \code{1}. \code{rstan} is used for parallel computation.
 #' @param center_only A logical indicating whether to only center (and not
 #'   scale) the data. Default is \code{FALSE}.
-#' @param ... Additional arguments passed to the \code{\link[rstan::sampling]{rstan::sampling}} or
-#'   \code{\link[rstan::vb]{rstan::vb}}  function.
+#' @param return_all A logical indicating whether to return all model inputs, including
+#' the data and prior objects. Default is \code{TRUE}.
+#' @param ... Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
+#'   \code{\link[rstan:vb]{rstan::vb}}  function.
 #'
 #' @details \bold{General Information}
 #'
@@ -193,6 +195,7 @@ stan_gvar <-
            n_chains = 4,
            n_cores = 1,
            center_only = FALSE,
+           return_all = TRUE,
            ...) {
     if(isTRUE(center_only)){
       Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
@@ -348,6 +351,11 @@ stan_gvar <-
                  cnames = cnames,
                  fn_args = all_args
                  )
+    if(isTRUE(return_all)){
+      args$data <- stan_data$Y
+      args$priors <- priors
+    }
+
 
     ret_fit <- list(
       stan_fit = stan_fit,
