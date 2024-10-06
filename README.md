@@ -13,8 +13,9 @@ modelling in psychology and surrounding fields. The package contains
 functionality to estimate Bayesian GVAR models in Stan, as well as a
 test for network comparison. Additionally, the package includes
 functions to plot posterior estimates and centrality indices. More
-information is provided in the associated preprint [Siepe et
-al. (2024)](https://osf.io/preprints/psyarxiv/uwfjc/).
+information is provided in the associated paper [Siepe et
+al. (2024)](https://doi.org/10.1037/met0000672) (Preprint available
+[here](https://osf.io/preprints/psyarxiv/uwfjc/)).
 
 ## Installation
 
@@ -118,9 +119,22 @@ test_plot_13 <- plot(compare_13,
 
 ## References
 
-If you use the package, please cite the preprint that introduces the
+If you use the package, please cite the paper that introduces the
 package and the test:
 
-Siepe, B.S., Kloft, M. & Heck, D.W. (2024). Bayesian Estimation and
-Comparison of Idiographic Network Models.
-(<https://osf.io/preprints/psyarxiv/uwfjc/>)
+Siepe, B. S., Kloft, M., & Heck, D. W. (2024). Bayesian estimation and
+comparison of idiographic network models. *Psychological Methods*.
+Advance online publication. <https://doi.org/10.1037/met0000672>
+
+As a BiBTeX entry:
+
+``` bibtex
+@article{siepe2024bayesian,
+  title={Bayesian estimation and comparison of idiographic network models},
+  author={Siepe, Björn S. and Kloft, Matthias and Heck, Daniel W.},
+  journal={Psychological Methods},
+  issue={Advance online publication},
+  year={2024},
+  doi={10.1037/met0000672}
+}
+```
