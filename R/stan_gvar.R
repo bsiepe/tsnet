@@ -53,6 +53,8 @@
 #'   scale) the data. Default is \code{FALSE}.
 #' @param return_all A logical indicating whether to return all model inputs, including
 #' the data and prior objects. Default is \code{TRUE}.
+#' @param ahead An integer specifying the forecast horizon. Default is \code{0}. If `ahead` is
+#'  greater than 0, the function will return posterior predictive forecasts for the specified number of time points.
 #' @param ... Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
 #'   \code{\link[rstan:vb]{rstan::vb}}  function.
 #'
@@ -183,167 +185,149 @@
 #'}
 #' @export
 
-stan_gvar <-
-  function(data,
-           beep = NULL,
-           priors = NULL,
-           method = "sampling",
-           cov_prior = "IW",
-           rmv_overnight = FALSE,
-           iter_sampling = 500,
-           iter_warmup = 500,
-           n_chains = 4,
-           n_cores = 1,
-           center_only = FALSE,
-           return_all = TRUE,
-           ...) {
-    if(isTRUE(center_only)){
-      Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
-    } else{
-      Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = TRUE)
-    }
+stan_gvar <- function(data,
+                      beep = NULL,
+                      priors = NULL,
+                      method = "sampling",
+                      cov_prior = "IW",
+                      rmv_overnight = FALSE,
+                      iter_sampling = 500,
+                      iter_warmup = 500,
+                      n_chains = 4,
+                      n_cores = 1,
+                      center_only = FALSE,
+                      return_all = TRUE,
+                      ahead = 0,
+                      ...) {
+  if (isTRUE(center_only)) {
+    Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
+  } else {
+    Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = TRUE)
+  }
 
-    K <- ncol(data)
-    n_t <- nrow(data)
-    cnames <- colnames(data)
+  K <- ncol(data)
+  n_t <- nrow(data)
+  cnames <- colnames(data)
 
-    # Store arguments
-    mc <- match.call()
-    fl <- formals()
-        missing_args <- setdiff(names(fl), names(mc))
-        missing_args <- Map(function(arg, default)
-      if (!is.null(default)) mc[[arg]] <- default, missing_args, fl[missing_args])
-    all_args <- c(as.list(mc), missing_args)
+  # Store arguments
+  mc <- match.call()
+  fl <- formals()
+  missing_args <- setdiff(names(fl), names(mc))
+  missing_args <- Map(function(arg, default)
+    if (!is.null(default)) mc[[arg]] <- default, missing_args, fl[missing_args])
+  all_args <- c(as.list(mc), missing_args)
 
-    if(is.null(beep)){
-      beep <- seq(1, n_t)
-    }
+  if (is.null(beep)) {
+    beep <- seq(1, n_t)
+  }
 
+  # Initialize priors with default values
+  default_priors <- list(
+    prior_Beta_loc = matrix(rep(0, K * K), nrow = K, ncol = K),
+    prior_Beta_scale = matrix(rep(0.5, K * K), nrow = K, ncol = K),
+    prior_Rho_loc = matrix(rep(0.5, K * K), nrow = K, ncol = K),
+    prior_Rho_scale = matrix(rep(sqrt(0.5), K * K), nrow = K, ncol = K),
+    prior_Rho_marginal = 0.25,
+    prior_S = diag(K),
+    prior_Eta = 1
+  )
 
-    # Specify Priors
-    if(is.null(priors[["prior_Beta_loc"]])){
-        prior_Beta_loc <- matrix(rep(0, K*K), nrow = K, ncol = K)
+  # Update default priors with any custom priors provided by the user
+  if (!is.null(priors)) {
+    priors <- modifyList(default_priors, priors)
+  } else {
+    priors <- default_priors
+  }
+
+  # Convert SD to delta: SD = 1/(delta+1), delta = (1 / SD) - 1
+  prior_delta <- (1 / priors$prior_Rho_marginal) - 1
+
+  # Forecasting
+  if (ahead > 0){
+    compute_log_lik <- 1
+  }
+
+  # Choose model to fit
+  if (cov_prior == "LKJ") {
+    # Stan Data
+    stan_data <- list(
+      K = K,
+      "T" = n_t,
+      Y = as.matrix(Y),
+      beep = beep,
+      prior_Rho_loc = priors$prior_Rho_loc,
+      prior_Rho_scale = priors$prior_Rho_scale,
+      prior_Beta_loc = priors$prior_Beta_loc,
+      prior_Beta_scale = priors$prior_Beta_scale,
+      prior_Eta = priors$prior_Eta,
+      ahead = ahead,
+      Y_future = matrix(rep(0, K), ncol = K),
+      compute_log_lik = compute_log_lik
+    )
+
+    if (isTRUE(rmv_overnight)) {
+      # remove overnight effects
+      model_name <- "VAR_LKJ_beep"
     } else {
-        prior_Beta_loc <- priors[["prior_Beta_loc"]]
+      # standard model
+      model_name <- "VAR_LKJ"
     }
+  }
+  if (cov_prior == "IW") {
+    # Stan Data
+    stan_data <- list(
+      K = K,
+      "T" = n_t,
+      Y = as.matrix(Y),
+      beep = beep,
+      prior_Beta_loc = priors$prior_Beta_loc,
+      prior_Beta_scale = priors$prior_Beta_scale,
+      prior_S = priors$prior_S,
+      prior_delta = prior_delta,
+      ahead = ahead,
+      Y_future = matrix(rep(0, K), ncol = K),
+      compute_log_lik = compute_log_lik
+    )
 
-    if(is.null(priors[["prior_Beta_scale"]])){
-        prior_Beta_scale <- matrix(rep(.5, K*K), nrow = K, ncol = K)
+    if (isTRUE(rmv_overnight)) {
+      # remove overnight effects
+      model_name <- "VAR_wishart_beep"
     } else {
-        prior_Beta_scale <- priors[["prior_Beta_scale"]]
+      # standard model
+      model_name <- "VAR_wishart"
     }
+  }
 
-    if(is.null(priors[["prior_Rho_loc"]])){
-        prior_Rho_loc <- matrix(rep(.5, K*K), nrow = K, ncol = K)
-    } else {
-        prior_Rho_loc <- priors[["prior_Rho_loc"]]
-    }
+  if (method == "sampling") {
+    default_args <- list(
+      object = stanmodels[[model_name]],
+      data = stan_data,
+      chains = n_chains,
+      cores = n_cores,
+      iter = iter_sampling + iter_warmup,
+      warmup = iter_warmup,
+      refresh = 500,
+      thin = 1,
+      init = .1,
+      control = list(adapt_delta = .8)
+    )
 
-    if(is.null(priors[["prior_Rho_scale"]])){
-        prior_Rho_scale <- matrix(rep(sqrt(.5), K*K), nrow = K, ncol = K)
-    } else {
-        prior_Rho_scale <- priors[["prior_Rho_scale"]]
-    }
+    stan_fit <- do.call(rstan::sampling,
+                        utils::modifyList(default_args, list(...)))
 
-    if(is.null(priors[["prior_Rho_marginal"]])){
-        prior_Rho_marginal <- 0.25
-    } else {
-        prior_Rho_marginal <- priors[["prior_Rho_marginal"]]
-    }
+  }
+  if (method == "variational") {
+    default_args <- list(
+      object = stanmodels[[model_name]],
+      data = stan_data,
+      init = .1,
+      tol_rel_obj = .001,
+      output_samples = iter_sampling * n_chains
+    )
 
-    if(is.null(priors[["prior_S"]])){
-      prior_S <- diag(K)
-    } else {
-      prior_S <- priors[["prior_S"]]
-    }
-
-    if(is.null(priors[["prior_Eta"]])){
-      prior_Eta <- 1
-    } else {
-      prior_Eta <- priors[["prior_Eta"]]
-    }
-
-    # Convert SD to delta: SD = 1/(delta+1), delta = (1 / SD) - 1
-    prior_delta <- (1 / prior_Rho_marginal) - 1
-
-
-
-    # Choose model to fit
-    if (cov_prior == "LKJ") {
-      # Stan Data
-      stan_data <- list(
-        K = K,
-        "T" = n_t,
-        Y = as.matrix(Y),
-        beep = beep,
-        prior_Rho_loc = prior_Rho_loc,
-        prior_Rho_scale = prior_Rho_scale,
-        prior_Beta_loc = prior_Beta_loc,
-        prior_Beta_scale = prior_Beta_scale,
-        prior_Eta = prior_Eta
-      )
-
-      if (isTRUE(rmv_overnight)) {
-        # remove overnight effects
-        model_name <- "VAR_LKJ_beep"
-      } else{
-        # standard model
-        model_name <- "VAR_LKJ"
-      }
-    }
-    if (cov_prior == "IW") {
-      # Stan Data
-      stan_data <- list(
-        K = K,
-        "T" = n_t,
-        Y = as.matrix(Y),
-        beep = beep,
-        prior_Beta_loc = prior_Beta_loc,
-        prior_Beta_scale = prior_Beta_scale,
-        prior_S = prior_S,
-        prior_delta = prior_delta
-      )
-
-      if (isTRUE(rmv_overnight)) {
-        # remove overnight effects
-        model_name <- "VAR_wishart_beep"
-      } else{
-        # standard model
-        model_name <- "VAR_wishart"
-      }
-    }
-
-      if (method == "sampling") {
-        default_args <- list(
-          object = stanmodels[[model_name]],
-          data = stan_data,
-          chains = n_chains,
-          cores = n_cores,
-          iter = iter_sampling + iter_warmup,
-          warmup = iter_warmup,
-          refresh = 500,
-          thin = 1,
-          init = .1,
-          control = list(adapt_delta = .8)
-        )
-
-        # Run sampler
-        stan_fit <- do.call(rstan::sampling,
-                            utils::modifyList(default_args, list(...)))
-
-      }
-      if (method == "variational") {
-        default_args <- list(
-          object = stanmodels[[model_name]],
-          data = stan_data,
-          init = .1,
-          tol_rel_obj = .001,
-          output_samples = iter_sampling * n_chains
-        )
-
-        stan_fit <- do.call(rstan::vb,
-                            utils::modifyList(default_args, list(...)))
-      }
+    stan_fit <- do.call(rstan::vb,
+                        utils::modifyList(default_args, list(...)))
+  }
 
 
     args <- list(p = K,
