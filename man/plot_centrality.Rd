@@ -8,13 +8,13 @@ plot_centrality(obj, plot_type = "tiefighter", cis = 0.95)
 }
 \arguments{
 \item{obj}{An object containing the centrality measures obtained from
-[get_centrality()].}
+\code{\link{get_centrality}}.}
 
 \item{plot_type}{A character string specifying the type of plot. Accepts
-"tiefighter" or "density". Default is "tiefighter".}
+"tiefighter" or "density". Default is \code{"tiefighter"}.}
 
 \item{cis}{A numeric value specifying the credible interval. Must be between
-0 and 1 (exclusive). Default is 0.95.}
+0 and 1 (exclusive). Default is \code{0.95}.}
 }
 \value{
 A ggplot object visualizing the centrality measures. For a

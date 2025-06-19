@@ -2,14 +2,14 @@
 #'
 #' @description This function extracts the posterior samples of partial
 #' correlations and beta coefficients from a Bayesian GVAR model that was fitted
-#' with [BGGM::var_estimate()] or [stan_gvar()].
+#' with \code{\link[BGGM]{var_estimate}} in \code{BGGM} or \code{\link{stan_gvar}}.
 #' The function is not intended to be called directly by the user,
 #' but is used internally by the package.
 #'
-#' @param fitobj A [BGGM::var_estimate()] or [stan_gvar()]
+#' @param fitobj A \code{\link[BGGM]{var_estimate}} or \code{\link{stan_gvar}}
 #' fit object from which to extract the posterior samples.
 #' @param burnin An integer specifying the number of initial samples to discard
-#'   as burn-in. Default is 0.
+#'   as burn-in. Default is \code{0}.
 #'
 #' @return A matrix containing the posterior samples of partial correlations and
 #'   beta coefficients. The rows represent the samples, and the columns
@@ -178,17 +178,17 @@ prepare_samples_plot <- function(fitobj,
 #'
 #' This function converts a Stan fit object into an array of samples for the
 #' temporal coefficients and the innovation covariance or partial correlation
-#' matrices. It supports rstan as a backend. It can be used to convert models
-#' fit using [stan_gvar()] into 3D arrays, which is the standard data structure
-#' used in `tsnet`. The function allows to select which parameters should be
+#' matrices. It supports \code{rstan} as a backend. It can be used to convert models
+#' fit using \code{\link{stan_gvar}} into 3D arrays, which is the standard data structure
+#' used in \code{tsnet}. The function allows to select which parameters should be
 #' returned.
 #'
 #' @param stan_fit A Stan fit object obtained from rstan or a tsnet_fit object
-#'   from [stan_gvar()].
+#'   from \code{\link{stan_gvar}}.
 #' @param return_params A character vector specifying which parameters to
 #'   return. Options are "beta" (temporal network), "sigma" (innovation
 #'   covariance), and "pcor" (partial correlations). Default is
-#'   c("beta","sigma", "pcor").
+#'   \code{c("beta","sigma", "pcor")}.
 #'
 #' @return A list containing 3D arrays for the selected parameters. Each array
 #'   represents the posterior samples for a parameter, and each slice of the
@@ -306,3 +306,57 @@ stan_fit_convert <- function(stan_fit,
 
 }
 
+
+
+
+
+
+
+#' Obtain Weighted Posterior Samples
+#'
+#' @description
+#' This internal function computes weighted posterior samples from multiple model fits.
+#' It takes a list of fitted models, extracts posterior samples for specified parameters,
+#' and combines them using model weights. Created based on \code{bmgarch:::.weighted_samples}.
+#'
+#' @param model_fit A list of model fit objects, typically of class \code{tsnet_fit}.
+#' @param params A character vector specifying the names of parameters to extract from the models.
+#' @param weights A numeric vector of model weights, typically obtained from \code{\link{model_weights}}.
+#' The length of \code{weights} must match the length of \code{model_fit}.
+#'
+#' @details
+#' For each parameter, the function extracts posterior samples from all model fits
+#' and multiplies them by the corresponding model weights. The weighted samples are then summed
+#' across models to produce combined posterior samples for each parameter.
+#'
+#' This function is intended for internal use in workflows that involve model averaging.
+#'
+#' @return A named list of weighted posterior samples for the specified parameters.
+#'
+#' @seealso \code{\link{model_weights}}, \code{\link{forecast.stan_gvar}}
+#'
+#' @keywords internal
+#' @noRd
+.weighted_samples <- function(model_fit,
+                              params,
+                              weights) {
+  # Extract all samples
+  samps <- lapply(model_fit, rstan::extract, pars = params)
+  # Apply weights
+  for (i in seq_len(length(samps))) {
+    # Each model
+    samps[[i]] <- lapply(samps[[i]], function(p) {
+      # Each parameter
+      p * weights[i] # Weight them
+    })
+  }
+  # Reduce
+  samps_comb <- lapply(params, function(p) {
+    # For each parameter
+    Reduce("+", lapply(samps, function(m) {
+      m[[p]]
+    })) # Sum samples together
+  })
+  names(samps_comb) <- params
+  return(samps_comb)
+}

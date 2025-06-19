@@ -48,8 +48,8 @@ test_that("plot_centrality returns expected output", {
   cent <- get_centrality(fitobj)
   result <- plot_centrality(cent)
 
-  # Check that the result is a ggplot object
-  expect_type(result, "list")
+  # check that the result is a ggplot object
+  expect_true(is_ggplot(result))
 
 })
 

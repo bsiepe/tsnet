@@ -16,35 +16,36 @@ post_distance_within(
 )
 }
 \arguments{
-\item{fitobj}{Fitted model object. This can be a tsnet_fit object (obtained
-from [stan_gvar()]), a BGGM object (obtained from [BGGM::var_estimate()]),
-or extracted posterior samples (obtained from [stan_fit_convert()).}
+\item{fitobj}{Fitted model object. This can be a tsnet_fit object
+(obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+\code{\link[BGGM]{var_estimate}}, or extracted posterior samples (obtained from
+\code{\link{stan_fit_convert}}).}
 
 \item{comp}{The distance metric to use. Should be one of "frob" (Frobenius
 norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
-"frob"). The use of the Frobenius norm is recommended.}
+\code{"frob"}). The use of the Frobenius norm is recommended.}
 
 \item{pred}{A logical indicating whether the input is posterior predictive
-draws (TRUE) or posterior samples (FALSE). Default: FALSE}
+draws (TRUE) or posterior samples (FALSE). Default: \code{FALSE}}
 
 \item{n_draws}{The number of draws to use for reference distributions
-(default: 1000).}
+(default: \code{1000}).}
 
 \item{sampling_method}{Draw sequential pairs of samples from the posterior,
 with certain distance between them ("sequential") or randomly from two
 halves of the posterior ("random"). The "random" method is preferred to
 account for potential autocorrelation between subsequent samples. Default:
-"random".}
+\code{"random"}.}
 
 \item{indices}{A list of "beta" and "pcor" indices specifying which elements
-of the matrices to consider when calculating distances. If NULL (default),
+of the matrices to consider when calculating distances. If \code{NULL} (default),
 all elements of both matrices are considered. If provided, only the
 elements at these indices are considered. If only one of the matrices
 should have indices, the other one should be NULL. This can be useful if
 you want to calculate distances based on a subset of the elements in the
 matrices.}
 
-\item{burnin}{The number of burn-in iterations to discard (default: 0).}
+\item{burnin}{The number of burn-in iterations to discard (default: \code{0}).}
 }
 \value{
 A list of distances between the specified pairs of fitted models. The
@@ -59,7 +60,7 @@ This function computes distances between posterior samples of a
   two modes. Distances can be obtained either from posterior samples or
   posterior predictive draws. The distance between two models can currently
   be calculated based on three options: Frobenius norm, maximum difference,
-  or L1 norm. Used within [compare_gvar()]. The function is not intended to
+  or L1 norm. Used within \code{\link{compare_gvar}}. The function is not intended to
   be used directly by the user.
 }
 \examples{

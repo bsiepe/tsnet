@@ -8,12 +8,12 @@ stan_fit_convert(stan_fit, return_params = c("beta", "sigma", "pcor"))
 }
 \arguments{
 \item{stan_fit}{A Stan fit object obtained from rstan or a tsnet_fit object
-from [stan_gvar()].}
+from \code{\link{stan_gvar}}.}
 
 \item{return_params}{A character vector specifying which parameters to
 return. Options are "beta" (temporal network), "sigma" (innovation
 covariance), and "pcor" (partial correlations). Default is
-c("beta","sigma", "pcor").}
+\code{c("beta","sigma", "pcor")}.}
 }
 \value{
 A list containing 3D arrays for the selected parameters. Each array
@@ -23,9 +23,9 @@ A list containing 3D arrays for the selected parameters. Each array
 \description{
 This function converts a Stan fit object into an array of samples for the
 temporal coefficients and the innovation covariance or partial correlation
-matrices. It supports rstan as a backend. It can be used to convert models
-fit using [stan_gvar()] into 3D arrays, which is the standard data structure
-used in `tsnet`. The function allows to select which parameters should be
+matrices. It supports \code{rstan} as a backend. It can be used to convert models
+fit using \code{\link{stan_gvar}} into 3D arrays, which is the standard data structure
+used in \code{tsnet}. The function allows to select which parameters should be
 returned.
 }
 \examples{

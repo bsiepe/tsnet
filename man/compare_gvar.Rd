@@ -19,50 +19,50 @@ compare_gvar(
 }
 \arguments{
 \item{fit_a}{Fitted model object for Model A. This can be a tsnet_fit object
-(obtained from [stan_gvar()]), a BGGM object (obtained from
-[BGGM::var_estimate()]), or extracted posterior samples (obtained from
-[stan_fit_convert()).}
+(obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+\code{\link[BGGM]{var_estimate}}, or extracted posterior samples (obtained from
+\code{\link{stan_fit_convert}}).}
 
 \item{fit_b}{Fitted model object for Model B. This can be a tsnet_fit object
-(obtained from [stan_gvar()]), a BGGM object (obtained from
-[BGGM::var_estimate()]), or extracted posterior samples (obtained from
-[stan_fit_convert()).}
+(obtained from \code{\link{stan_gvar}}, a \code{BGGM} object (obtained from
+\code{\link[BGGM]{var_estimate}}, or extracted posterior samples (obtained from
+\code{\link{stan_fit_convert}}).}
 
-\item{cutoff}{The percentage level of the test (default: 5\%) as integer.}
+\item{cutoff}{The percentage level of the test (default: \code{5}) as integer.}
 
-\item{dec_rule}{The decision rule to be used. Currently supports default "or"
+\item{dec_rule}{The decision rule to be used. Currently supports default \code{"or"}
 (comparing against two reference distributions) and "comb" (combining the
 reference distributions). The use of "or" is recommended, as "comb" is less
 stable.}
 
 \item{n_draws}{The number of draws to use for reference distributions
-(default: 1000).}
+(default: \code{1000}).}
 
 \item{comp}{The distance metric to use. Should be one of "frob" (Frobenius
 norm), "maxdiff" (maximum  difference), or "l1" (L1 norm) (default:
-"frob"). The use of the Frobenius norm is recommended.}
+\code{"frob"}). The use of the Frobenius norm is recommended.}
 
 \item{return_all}{Logical indicating whether to return all distributions
-(default: FALSE). Has to be set to TRUE for plotting the results.}
+(default: \code{FALSE}). Has to be set to TRUE for plotting the results.}
 
 \item{sampling_method}{Draw sequential pairs of samples from the posterior,
 with certain distance between them ("sequential") or randomly from two
 halves of the posterior ("random"). The "random" method is preferred to
 account for potential autocorrelation between subsequent samples. Default:
-"random".}
+\code{"random"}.}
 
 \item{indices}{A list of "beta" and "pcor" indices specifying which elements
-of the matrices to consider when calculating distances. If NULL (default),
+of the matrices to consider when calculating distances. If \code{NULL} (default),
 all elements of both matrices are considered. If provided, only the
 elements at these indices are considered. If only one of the matrices
 should have indices, the other one should be NULL. This can be useful if
 you want to calculate distances based on a subset of the elements in the
 matrices.}
 
-\item{burnin}{The number of burn-in iterations to discard (default: 0).}
+\item{burnin}{The number of burn-in iterations to discard (default: \code{0}).}
 }
 \value{
-A list (of class "compare_gvar") containing the results of the
+A list (of class \code{compare_gvar}) containing the results of the
   comparison. The list includes:
 
   \item{sig_beta}{Binary decision on whether there is a significant difference between the temporal networks of A and B}

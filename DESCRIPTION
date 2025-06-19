@@ -1,7 +1,7 @@
 Package: tsnet
 Type: Package
 Title: Fitting, Comparing, and Visualizing Networks Based on Time Series Data
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
   c(person("Björn S.", "Siepe", 
   email = "bjoernsiepe@gmail.com", 
@@ -22,13 +22,14 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/bsiepe/tsnet
 BugReports: https://github.com/bsiepe/tsnet/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports:
     cowplot,
     dplyr,
     ggdist,
     ggokabeito,
     ggplot2,
+    loo,
     methods,
     posterior,
     Rcpp (>= 0.12.0),

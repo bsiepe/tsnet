@@ -5,17 +5,18 @@
 #' a network, while density describes the networks' overall connectedness.
 #' Specifically, it computes the in-strength, out-strength, contemporaneous
 #' strength, temporal network density, and contemporaneous network density. The
-#' result can then be visualized using [plot_centrality()].
+#' result can then be visualized using \code{\link{plot_centrality}}.
 #'
 #' @param fitobj Fitted model object for a Bayesian GVAR model. This can be
-#'   `tsnet_fit` object (obtained from [stan_gvar()]), a BGGM object (obtained
-#'   from [BGGM::var_estimate()]), or extracted posterior samples (obtained from
-#'   [stan_fit_convert()).
+#' `tsnet_fit` object (obtained from \code{\link{stan_gvar}},
+#' a BGGM object (obtained from \code{\link[BGGM]{var_estimate}} in \code{BGGM}),
+#' or extracted posterior samples (obtained from \code{\link{stan_fit_convert}}).
 #' @param burnin An integer specifying the number of initial samples to discard
-#'   as burn-in. Default is 0.
+#'   as burn-in. Default is \code{0}.
 #' @param remove_ar A logical value specifying whether to remove the
-#'   autoregressive effects for centrality calculation. Default is TRUE. This is
-#'   only relevant for the calculation of temporal centrality/density measures.
+#'   autoregressive effects for centrality calculation. Default is \code{TRUE}.
+#'   This is only relevant for the calculation of temporal centrality/density
+#'   measures.
 #'
 #' @return A list containing the following centrality measures:
 #' \itemize{
@@ -106,11 +107,11 @@ get_centrality <- function(fitobj,
 #' centrality measures.
 #'
 #' @param obj An object containing the centrality measures obtained from
-#'   [get_centrality()].
+#'   \code{\link{get_centrality}}.
 #' @param plot_type A character string specifying the type of plot. Accepts
-#'   "tiefighter" or "density". Default is "tiefighter".
+#'   "tiefighter" or "density". Default is \code{"tiefighter"}.
 #' @param cis A numeric value specifying the credible interval. Must be between
-#'   0 and 1 (exclusive). Default is 0.95.
+#'   0 and 1 (exclusive). Default is \code{0.95}.
 #'
 #' @return A ggplot object visualizing the centrality measures. For a
 #'   "tiefighter" plot, each point represents the mean centrality measure for a
