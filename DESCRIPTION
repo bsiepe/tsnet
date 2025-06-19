@@ -1,7 +1,7 @@
 Package: tsnet
 Type: Package
 Title: Fitting, Comparing, and Visualizing Networks Based on Time Series Data
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
   c(person("Björn S.", "Siepe", 
   email = "bjoernsiepe@gmail.com", 
