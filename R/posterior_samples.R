@@ -312,10 +312,31 @@ stan_fit_convert <- function(stan_fit,
 
 
 
-# FROM BMGARCH
-# Obtain weighted samples
-# TODO adjust
-# @keywords internal
+#' Obtain Weighted Posterior Samples
+#'
+#' @description
+#' This internal function computes weighted posterior samples from multiple model fits.
+#' It takes a list of fitted models, extracts posterior samples for specified parameters,
+#' and combines them using model weights. Created based on \code{bmgarch:::.weighted_samples}.
+#'
+#' @param model_fit A list of model fit objects, typically of class \code{tsnet_fit}.
+#' @param params A character vector specifying the names of parameters to extract from the models.
+#' @param weights A numeric vector of model weights, typically obtained from \code{\link{model_weights}}.
+#' The length of \code{weights} must match the length of \code{model_fit}.
+#'
+#' @details
+#' For each parameter, the function extracts posterior samples from all model fits
+#' and multiplies them by the corresponding model weights. The weighted samples are then summed
+#' across models to produce combined posterior samples for each parameter.
+#'
+#' This function is intended for internal use in workflows that involve model averaging.
+#'
+#' @return A named list of weighted posterior samples for the specified parameters.
+#'
+#' @seealso \code{\link{model_weights}}, \code{\link{forecast.stan_gvar}}
+#'
+#' @keywords internal
+#' @noRd
 .weighted_samples <- function(model_fit,
                               params,
                               weights) {

@@ -2,7 +2,6 @@
 #'
 #' @description Time Series Network Analysis with R
 #'
-#' @docType package
 #' @name tsnet-package
 #' @aliases tsnet
 #' @useDynLib tsnet, .registration = TRUE
@@ -13,4 +12,4 @@
 #' @importFrom RcppParallel RcppParallelLibs
 #'
 #'
-NULL
+"_PACKAGE"

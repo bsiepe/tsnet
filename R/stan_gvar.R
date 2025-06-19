@@ -55,6 +55,7 @@
 #' the data and prior objects. Default is \code{TRUE}.
 #' @param ahead An integer specifying the forecast horizon. Default is \code{0}. If `ahead` is
 #'  greater than 0, the function will return posterior predictive forecasts for the specified number of time points.
+#'  This functionality is experimental and may not work as expected.
 #' @param ... Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
 #'   \code{\link[rstan:vb]{rstan::vb}}  function.
 #'
@@ -245,6 +246,8 @@ stan_gvar <- function(data,
   # Forecasting
   if (ahead > 0){
     compute_log_lik <- 1
+  } else {
+    compute_log_lik <- 0
   }
 
   # Choose model to fit

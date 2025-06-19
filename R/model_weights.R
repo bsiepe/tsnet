@@ -1,19 +1,23 @@
-#' Compute model weights based on LFO
+#' Compute Model Weights Based on Leave-Future-Out Cross-Validation
 #'
-#' This function computes model weights based on Leave-Future-Out (LFO) cross-validation.
-#' It takes a list of fitted GVAR models and calculates the model weights using the LFO method.
-#' This function is oriented at the \code{\link[bmgarch:model_weights]{bmgarch::model_weights}} function.
+#' @description
+#' This function computes model weights based on Leave-Future-Out (LFO) cross-validation
+#' for a list of fitted GVAR models. It leverages the LFO method to evaluate predictive performance
+#' and calculates weights using the \code{\link[loo:loo_model_weights]{loo::loo_model_weights}} function.
 #'
 #' @param fits A list of \code{tsnet_fit} objects or an object of class \code{tsnet_list}.
 #' @inheritParams lfo.stan_gvar
-#' @param return_lfo Logical. If TRUE, the function also returns the LFO objects. Default is FALSE.
-#' @param ... Currently not in use
+#' @param return_lfo Logical. If \code{TRUE}, the function also returns the LFO objects. Default is \code{FALSE}.
+#' @param ... Additional arguments (currently not used).
 #'
-#' @details The function first checks if the input is a list of \code{tsnet_fit} objects.
-#' If not, it stops with an error. If the input is not of class \code{tsnet_list}, it converts it to \code{tsnet_list}.
-#' It then computes the LFO for each model in the list and extracts the log-likelihoods.
-#' The relative efficiency information is also obtained for each model.
-#' Finally, the model weights are computed using the \code{\link[loo:loo_model_weights]{loo::model_weights}} function.
+#' @details
+#' The function processes the input list of fitted models, ensuring compatibility with the \code{tsnet_list} class.
+#' It computes the LFO cross-validation results for each model in the list using \code{\link{lfo.stan_gvar}}
+#' and extracts log-likelihoods and relative efficiency information. The final model weights are then calculated
+#' based on the log-likelihoods and relative efficiency values using the \code{\link[loo:loo_model_weights]{loo::loo_model_weights}} function.
+#'
+#' The LFO cross-validation options (\code{start}, \code{ahead}, \code{mode}, \code{k_thres})
+#' are inherited from \code{\link{lfo.stan_gvar}}.
 #'
 #' @return A list with the following components:
 #' \describe{
@@ -24,16 +28,17 @@
 #' }
 #'
 #' @importFrom loo loo_model_weights
-#' @importFrom tsnet tsnet_list
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Assuming `fit1` and `fit2` are tsnet_fit objects
 #' fits <- tsnet_list(fit1, fit2)
 #' weights <- model_weights(fits)
 #' print(weights)
 #' }
-#' @export
+#' @keywords internal
+#' @noRd
+
 model_weights <- function(fits,
                           start = 0,
                           ahead = 1,
@@ -42,7 +47,7 @@ model_weights <- function(fits,
                           return_lfo = FALSE,
                           ...) {
 
-  browser()
+  # browser()
   # Check if input is a list
   if (!is.list(fits)) {
     stop("Input must be a list of tsnet_fit objects")
@@ -51,7 +56,7 @@ model_weights <- function(fits,
   # Check if input is tsnet_list
   # if not, convert to tsnet_list
   if (!inherits(fits, "tsnet_list")) {
-    fits <- tsnet::tsnet_list(fits)
+    fits <- tsnet_list(fits)
   }
 
   ## Compute model weights based on LFO
@@ -82,9 +87,11 @@ model_weights <- function(fits,
 
   # Compute model weights
   # adapted from bmgarch::model_weights
+  loo_method = "stacking"
+
   weights <- loo::loo_model_weights(
     ll_list,
-    method = method,
+    method = loo_method,
     r_eff_list = r_eff_list,
     optim_control = list(reltol = 1e-10)
   )

@@ -1,17 +1,49 @@
-#' Leave-Future Out Cross-Validation
+#' Leave-Future-Out Cross-Validation for Stan GVAR Models
 #'
 #' @description
-#' \code{lfo} computes the expected log predictive density (ELPD) with different approaches.
-#' ... The function borrows heavily from \code{\link[bmgarch:loo.bmgarch]{bmgarch::loo.bmgarch}}.
+#' Computes the Expected Log Predictive Density (ELPD) using Leave-One-Out (LOO) or Leave-Future-Out (LFO) approaches for models fitted using \code{\link{stan_gvar}}.
+#' Currently, only the LOO method is implemented. This function is designed to work with objects of class \code{tsnet_fit}.
 #'
+#' @param x A \code{tsnet_fit} object obtained from \code{\link{stan_gvar}}.
+#' @param type Character string specifying the type of cross-validation to perform. Options are:
+#'   \itemize{
+#'     \item \code{"loo"}: Leave-One-Out Cross-Validation.
+#'     \item \code{"lfo"}: Leave-Future-Out Cross-Validation (not yet fully implemented).
+#'   }
+#'   Default is \code{"loo"}.
+#' @param start Integer indicating the starting point for cross-validation. Default is 0.
+#' @param ahead Integer indicating the number of steps ahead for predictions in Leave-Future-Out mode. Default is 1.
+#' @param mode Character string specifying the cross-validation mode when \code{type = "lfo"}. Options are:
+#'   \itemize{
+#'     \item \code{"backward"}: LFO with backward refitting.
+#'     \item \code{"forward"}: LFO with forward refitting (not yet implemented).
+#'     \item \code{"exact"}: Exact LFO refitting at each time point (not yet implemented).
+#'   }
+#'   Default is \code{"backward"}.
+#' @param k_thres Numeric threshold for Pareto k values. Only used in \code{lfo} mode to determine when to refit the model. Default is 0.7.
+#' @param ... Additional arguments passed to underlying methods.
 #'
-#' @param x A \code{tsnet_fit object} obtained from \code{\link{stan_gvar}}.
-#' @param ...
+#' @details
+#' This function evaluates the predictive performance of \code{stan_gvar} models using cross-validation.
+#' When \code{type = "loo"}, the function performs Leave-One-Out Cross-Validation using efficient importance sampling via the \pkg{loo} package.
+#' For \code{type = "lfo"}, Leave-Future-Out Cross-Validation is conceptually supported but not yet fully implemented.
 #'
-#' @return
-#' @export
+#' @importFrom loo relative_eff loo psis pareto_k_values weights.importance_sampling
 #'
-#' @examples
+#' @return A list with the following components:
+#' \describe{
+#'   \item{elpd}{Expected Log Predictive Density.}
+#'   \item{mode}{Mode of cross-validation, as specified in the \code{mode} parameter.}
+#' }
+#'
+#' @note
+#' The LFO method is a work in progress and may not yet support all modes or configurations. The \code{backward} mode partially implements the LFO algorithm but does not include forecasting functionality.
+#' This function borrows heavily from \code{\link[bmgarch:loo.bmgarch]{bmgarch::loo.bmgarch}}.
+#'
+#' @keywords internal
+#' @noRd
+#'
+
 lfo.stan_gvar <- function(x,
                           type = "loo",
                           start = 0,
@@ -36,10 +68,6 @@ lfo.stan_gvar <- function(x,
     stop("mode must be one of 'backward', 'forward', or 'exact'.")
   }
 
-  # Temporary stop because lfo not implemented yet
-  if (type == "lfo") {
-    stop("lfo not implemented yet.")
-  }
 
 
   # Setup output list
@@ -47,12 +75,11 @@ lfo.stan_gvar <- function(x,
   out$type <- type
   out$mode <- mode
 
-
+  # Obtain the number of observations in log likelihood (one less than full obs)
+  # TODO should I change this?
+  n <- obj$stan_fit@par_dims$log_lik + 1
 
   if (type == "loo") {
-    # Obtain the number of observations in log likelihood (one less than full obs)
-    # TODO should I change this?
-    n <- obj$stan_fit@par_dims$log_lik + 1
 
     # Obtain log-likelihood
     ll_full <- .log_lik_tsnet(obj)
@@ -82,7 +109,7 @@ lfo.stan_gvar <- function(x,
       # loop across possible backfits
       for (i in seq((n - ahead), start, by = -ahead)) {
         # obtain log-likelihood
-        ll[, (i + 1):(i + ahead)] <- .log_lik(fit_past)[, (i + 1):(i + ahead)]
+        ll[, (i + 1):(i + ahead)] <- .log_lik_tsnet(fit_past)[, (i + 1):(i + ahead)]
         # compute log of raw importance ratios
         # TODO check this
         logratio <- .sum_log_ratios(ll, (i + 1):i_refit)
@@ -121,7 +148,7 @@ lfo.stan_gvar <- function(x,
         }
         # if k threshold not exceeded
         else {
-          lw <- weights(psis_obj, normalize = TRUE)[, 1]
+          lw <- loo:weights.importance_sampling(psis_obj, normalize = TRUE)[, 1]
           if (ahead == 1) {
             approx_elpds_1sap[i + 1] <-  .log_sum_exp(lw + ll[, i + 1])
           } else {
@@ -171,8 +198,9 @@ lfo.stan_gvar <- function(x,
 
 # Function for refitting a model with given specification
 # needed in lfo function above
-##' @keywords internal
 #' DOES NOT WORK YET WITH CUSTOM PRIORS
+#' @keywords internal
+#' @noRd
 .refit <- function(x, data) {
 
   args <- x$arguments$fn_args
@@ -187,7 +215,9 @@ lfo.stan_gvar <- function(x,
                    iter_warmup = args$iter_warmup,
                    n_chains = args$n_chains,
                    n_cores = args$n_cores,
-                   center_only = args$center_only)
+                   center_only = args$center_only,
+                   ahead = args$ahead,
+                   compute_log_lik = args$compute_log_lik)
   return(fit)
 }
 
@@ -195,31 +225,42 @@ lfo.stan_gvar <- function(x,
 
 
 # Following functions are obtained from bmgarch/lfo-cv tutorial
-
 # Helper to obtain log-likelihood
+#' @keywords internal
+#' @noRd
+
 .log_lik_tsnet <- function(x) {
   rstan::extract(x$stan_fit, pars = "log_lik")$log_lik
 }
 
+# more stable than log(sum(exp(x)))
+#' @keywords internal
+#' @noRd
+.log_sum_exp <- function(x) {
+  max_x <- max(x)
+  max_x + log(sum(exp(x - max_x)))
+}
 
-##' @keywords internal
 ## more stable than log(mean(exp(x)))
+##' @keywords internal
+##' @noRd
 .log_mean_exp <- function(x) {
   .log_sum_exp(x) - log(length(x))
 }
 
-##' @keywords internal
 ## compute log of raw importance ratios
 ## sums over observations *not* over posterior samples
+##' @keywords internal
+##' @noRd
 .sum_log_ratios <- function(ll, ids = NULL) {
   if (!is.null(ids))
     ll <- ll[, ids , drop = FALSE]
   - rowSums(ll)
 }
 
-
-##' @keywords internal
 ##' obtain relative efficiency
+##' @keywords internal
+##' @noRd
 .rel_eff <- function(ll, x) {
   warmup <- x$stan_fit@sim$warmup
   iter <- x$stan_fit@sim$iter

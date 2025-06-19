@@ -13,9 +13,9 @@ data {
   matrix[K,K] prior_Rho_scale;   // scales for priors on partial correlations
   int<lower=1> prior_Eta; // prior for LKJ
   // Forecast
-  int<lower=1> ahead; // forecasted time points
-  array[ahead] vector[K] Y_future; // future responses for loglik computation
+  int<lower=0> ahead; // forecasted time points
   int<lower = 0, upper = 1> compute_log_lik; // compute log likelihood?
+  array[ahead] vector[K] Y_future; // future responses for loglik computation
 
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,12 +91,11 @@ model {
 generated quantities {
   int min_beep = first_beep;
   vector[T + ahead] log_lik;
-  // Initialize log_lik with NaN for the first time point
-  for (t in 1:T) {
-    log_lik[t] = NaN;
+
+  // Initialize log_lik with zero for all time points
+  for (t in 1:(T + ahead)) {
+    log_lik[t] = 0;
   }
-  // Forecast
-  array[ahead] vector[K] Y_forecast; // forecasted responses
 
   // Cholesky decomposition of the covariance matrix
   matrix[K, K] Sigma_chol = diag_pre_multiply(exp(sigma_theta), L_Theta);
@@ -107,16 +106,20 @@ generated quantities {
       log_lik[t] = multi_normal_cholesky_lpdf(Y[t, ] | mu, Sigma_chol);
     }
   }
-  // Forecasting ahead steps
-  // TODO probably need to make this optional, only if ahead is specified or so
-  vector[K] current_Y = Y[T]; // initialize current_Y to the last observed value
-  for (s in 1:ahead) {
-    vector[K] mu = Beta * current_Y; // mu for current step
-    Y_forecast[s] = multi_normal_cholesky_rng(mu, Sigma_chol); // generate forecast
-    current_Y = Y_forecast[s]; // update current_Y to predicted value
-    // forecasted log-likelihood
-    if (compute_log_lik == 1) {
-      log_lik[T + s] = multi_normal_cholesky_lpdf(Y_future[s] | mu, Sigma_chol);
+  if(ahead > 0){
+    // Forecasting ahead steps
+    array[ahead] vector[K] Y_forecast; // forecasted responses
+    vector[K] current_Y = Y[T]; // initialize current_Y to the last observed value
+    for (s in 1:ahead) {
+      vector[K] mu = Beta * current_Y; // mu for current step
+      Y_forecast[s] = multi_normal_cholesky_rng(mu, Sigma_chol); // generate forecast
+      print(Y_forecast[s]);
+      current_Y = Y_forecast[s]; // update current_Y to predicted value
+      // forecasted log-likelihood
+      if (compute_log_lik == 1) {
+        log_lik[T + s] = multi_normal_cholesky_lpdf(Y_future[s] | mu, Sigma_chol);
     }
   }
+  }
+
 }
