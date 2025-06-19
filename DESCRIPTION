@@ -22,13 +22,14 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/bsiepe/tsnet
 BugReports: https://github.com/bsiepe/tsnet/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports:
     cowplot,
     dplyr,
     ggdist,
     ggokabeito,
     ggplot2,
+    loo,
     methods,
     posterior,
     Rcpp (>= 0.12.0),
