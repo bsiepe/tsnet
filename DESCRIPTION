@@ -44,7 +44,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 3.4.0)
+    R (>= 4.1.0)
 Biarch: true
 LinkingTo: 
     BH (>= 1.66.0),
