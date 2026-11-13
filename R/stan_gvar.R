@@ -239,18 +239,19 @@ stan_gvar <- function(data,
   }
 
   # Initialize priors with default values
-  default_priors <- list(
-    prior_Beta_loc = matrix(rep(0, K * K), nrow = K, ncol = K),
-    prior_Beta_scale = matrix(rep(0.5, K * K), nrow = K, ncol = K),
-    prior_Rho_loc = matrix(rep(0.5, K * K), nrow = K, ncol = K),
-    prior_Rho_scale = matrix(rep(sqrt(0.5), K * K), nrow = K, ncol = K),
-    prior_Rho_marginal = 0.25,
-    prior_S = diag(K),
-    prior_Eta = 1
-  )
+  default_priors <- .default_priors(K)
 
   # Update default priors with any custom priors provided by the user
   if (!is.null(priors)) {
+    unknown_priors <- .unknown_priors(priors, K)
+    if (length(unknown_priors) > 0) {
+      warning(
+        "Unknown prior(s) will be ignored: ",
+        paste(unknown_priors, collapse = ", "),
+        ". Possible names are: ",
+        paste(names(default_priors), collapse = ", "), "."
+      )
+    }
     priors <- modifyList(default_priors, priors)
   } else {
     priors <- default_priors
