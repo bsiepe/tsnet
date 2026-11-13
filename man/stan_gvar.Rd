@@ -51,7 +51,7 @@ variational inference). We currently recommend only using MCMC estimation.
 Default: \code{"sampling"}.}
 
 \item{cov_prior}{A string indicating the prior distribution to use for the
-covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"LKJ"}.}
+covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"IW"}.}
 
 \item{rmv_overnight}{A logical indicating whether to remove overnight
 effects. Default is \code{FALSE}. If `TRUE`, the function will remove overnight

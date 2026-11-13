@@ -35,7 +35,7 @@
 #'   variational inference). We currently recommend only using MCMC estimation.
 #'   Default: \code{"sampling"}.
 #' @param cov_prior A string indicating the prior distribution to use for the
-#'   covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"LKJ"}.
+#'   covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"IW"}.
 #' @param rmv_overnight A logical indicating whether to remove overnight
 #'   effects. Default is \code{FALSE}. If `TRUE`, the function will remove overnight
 #'   effects from the last beep of a day to the first beep of the next day.
