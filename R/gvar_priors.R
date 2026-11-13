@@ -65,6 +65,13 @@ gvar_priors <- function(K, ...) {
   setdiff(names(priors), names(.default_priors(K)))
 }
 
+# a beta shape parameter below 1 puts a pole at a partial correlation of -1 or 1
+.unbounded_rho_prior <- function(priors) {
+  loc <- priors$prior_Rho_loc
+  shape <- pmin(loc, 1 - loc) * priors$prior_Rho_scale
+  any(shape[upper.tri(shape)] < 1)
+}
+
 # mirrors the constraints of the stan data blocks and prior densities
 .check_priors <- function(priors, K) {
   mat_names <- c(

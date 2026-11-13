@@ -9,6 +9,8 @@
 * `stan_gvar()` gains the argument `prior_only` to sample from the prior
   distribution without conditioning on the data. `print()` indicates
   prior-only fits and `compare_gvar()` does not accept them.
+  Prior-only fits with `cov_prior = "LKJ"` give a warning if the beta prior
+  on a partial correlation is unbounded, as it is with the default priors.
 * New `simulate()` method for `tsnet_fit` objects for posterior predictive
   simulation, or prior predictive simulation for prior-only fits.
 * New `gvar_priors()` returns the default priors of `stan_gvar()` with

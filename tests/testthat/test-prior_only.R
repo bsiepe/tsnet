@@ -12,6 +12,42 @@ test_that("prior_only is validated before sampling", {
   )
 })
 
+test_that("unbounded beta priors on partial correlations are detected", {
+  expect_true(.unbounded_rho_prior(gvar_priors(3)))
+  expect_false(.unbounded_rho_prior(
+    gvar_priors(3, prior_Rho_scale = matrix(2, 3, 3))
+  ))
+  # only the upper triangle is used by the model
+  scale <- matrix(2, 3, 3)
+  scale[2, 1] <- 0.5
+  expect_false(.unbounded_rho_prior(gvar_priors(3, prior_Rho_scale = scale)))
+  scale[1, 2] <- 0.5
+  expect_true(.unbounded_rho_prior(gvar_priors(3, prior_Rho_scale = scale)))
+  loc <- matrix(0.5, 3, 3)
+  loc[1, 3] <- 0.9
+  expect_true(.unbounded_rho_prior(
+    gvar_priors(3, prior_Rho_loc = loc, prior_Rho_scale = matrix(5, 3, 3))
+  ))
+})
+
+test_that("prior-only LKJ fits with default priors give a warning", {
+  skip_on_cran()
+  data(ts_data)
+
+  # sampler warnings are expected here and not of interest
+  suppressWarnings(expect_warning(
+    stan_gvar(ts_data[1:50, 1:3],
+      cov_prior = "LKJ",
+      n_chains = 1,
+      iter_sampling = 20,
+      iter_warmup = 20,
+      refresh = 0,
+      prior_only = TRUE
+    ),
+    "Prior-only sampling"
+  ))
+})
+
 test_that("prior_only fits sample from the prior", {
   skip_on_cran()
   data(ts_data)

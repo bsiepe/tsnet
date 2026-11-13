@@ -288,6 +288,14 @@ stan_gvar <- function(data,
 
   # Choose model to fit
   if (cov_prior == "LKJ") {
+    if (prior_only && .unbounded_rho_prior(priors)) {
+      warning(
+        "Prior-only sampling with 'cov_prior = \"LKJ\"' is unreliable if the ",
+        "beta prior on a partial correlation is unbounded at -1 or 1, as ",
+        "with the default priors. Consider values of at least 2 for ",
+        "'prior_Rho_scale' (with 'prior_Rho_loc' of 0.5)."
+      )
+    }
     # Stan Data
     stan_data <- list(
       K = K,
