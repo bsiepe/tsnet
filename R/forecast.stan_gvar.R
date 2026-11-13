@@ -133,7 +133,8 @@ forecast.stan_gvar <- function(fitobj,
                     prior_delta = prior_delta,
                     ahead = ahead,
                     Y_future = new_data,
-                    compute_log_lik = compute_log_lik)
+                    compute_log_lik = compute_log_lik,
+                    prior_only = as.integer(isTRUE(m$arguments$prior_only)))
 
   # Obtain model name for sampling
   gqs_model <- .get_gvar_name(m)

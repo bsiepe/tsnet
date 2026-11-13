@@ -18,7 +18,8 @@ stan_gvar(
   center_only = FALSE,
   return_all = TRUE,
   ahead = 0,
-  ...
+  ...,
+  prior_only = FALSE
 )
 }
 \arguments{
@@ -82,6 +83,14 @@ This functionality is experimental and may not work as expected.}
 
 \item{...}{Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
 \code{\link[rstan:vb]{rstan::vb}}  function.}
+
+\item{prior_only}{A logical indicating whether to sample from the prior
+distribution only, ignoring the likelihood of the data. Default is
+\code{FALSE}. The data are still required to determine the number and
+names of the variables. The resulting draws can be used to inspect the
+priors (e.g., with \code{\link{posterior_plot}}) and, together with
+\code{\link{simulate.tsnet_fit}}, for prior predictive simulation. Only
+available for \code{method = "sampling"} and \code{ahead = 0}.}
 }
 \value{
 A \code{tsnet_fit} object in list format. The object contains the

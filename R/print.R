@@ -118,6 +118,12 @@ print.tsnet_fit <- function(x,
         x$arguments$fn_args$cov_prior,
         "covariance prior.")
   }
+  if (isTRUE(x$arguments$prior_only)) {
+    cat(
+      "\nThis is a prior-only fit: the data were ignored,",
+      "so that all summaries describe the prior distribution."
+    )
+  }
   cat("\n")
 
   post_samps <- stan_fit_convert(x, return_params = c("beta", "pcor"))

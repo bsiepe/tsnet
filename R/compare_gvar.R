@@ -128,6 +128,11 @@ compare_gvar <- function(fit_a,
     stop("Error: 'fit_b' must be either a 'var_estimate', 'tsnet_fit', or 'tsnet_samples' object.")
   }
 
+  if ((inherits(fit_a, "tsnet_fit") && isTRUE(fit_a$arguments$prior_only)) ||
+      (inherits(fit_b, "tsnet_fit") && isTRUE(fit_b$arguments$prior_only))) {
+    stop("Error: compare_gvar() cannot be used with prior-only fits.")
+  }
+
   # Check indices
   if (!is.null(indices)) {
     if (!is.list(indices)) {

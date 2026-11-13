@@ -58,6 +58,13 @@
 #'  This functionality is experimental and may not work as expected.
 #' @param ... Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
 #'   \code{\link[rstan:vb]{rstan::vb}}  function.
+#' @param prior_only A logical indicating whether to sample from the prior
+#'   distribution only, ignoring the likelihood of the data. Default is
+#'   \code{FALSE}. The data are still required to determine the number and
+#'   names of the variables. The resulting draws can be used to inspect the
+#'   priors (e.g., with \code{\link{posterior_plot}}) and, together with
+#'   \code{\link{simulate.tsnet_fit}}, for prior predictive simulation. Only
+#'   available for \code{method = "sampling"} and \code{ahead = 0}.
 #'
 #' @details \bold{General Information}
 #'
@@ -199,7 +206,16 @@ stan_gvar <- function(data,
                       center_only = FALSE,
                       return_all = TRUE,
                       ahead = 0,
-                      ...) {
+                      ...,
+                      prior_only = FALSE) {
+  prior_only <- isTRUE(prior_only)
+  if (prior_only && ahead > 0) {
+    stop("'prior_only = TRUE' cannot be combined with 'ahead > 0'.")
+  }
+  if (prior_only && method == "variational") {
+    stop("'prior_only = TRUE' is only available for method = \"sampling\".")
+  }
+
   if (isTRUE(center_only)) {
     Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
   } else {
@@ -265,7 +281,8 @@ stan_gvar <- function(data,
       prior_Eta = priors$prior_Eta,
       ahead = ahead,
       Y_future = matrix(rep(0, K), ncol = K),
-      compute_log_lik = compute_log_lik
+      compute_log_lik = compute_log_lik,
+      prior_only = as.integer(prior_only)
     )
 
     if (isTRUE(rmv_overnight)) {
@@ -289,7 +306,8 @@ stan_gvar <- function(data,
       prior_delta = prior_delta,
       ahead = ahead,
       Y_future = matrix(rep(0, K), ncol = K),
-      compute_log_lik = compute_log_lik
+      compute_log_lik = compute_log_lik,
+      prior_only = as.integer(prior_only)
     )
 
     if (isTRUE(rmv_overnight)) {
@@ -336,7 +354,8 @@ stan_gvar <- function(data,
     args <- list(p = K,
                  n_t = n_t,
                  cnames = cnames,
-                 fn_args = all_args
+                 fn_args = all_args,
+                 prior_only = prior_only
                  )
     if(isTRUE(return_all)){
       args$data <- stan_data$Y
