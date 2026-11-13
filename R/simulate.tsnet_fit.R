@@ -41,8 +41,8 @@
 #'   Non-stationary draws can be frequent, in particular for prior-only fits
 #'   with the default priors and for models with many variables. Draws are
 #'   never reused. If fewer than \code{nsim} usable draws are available, fewer
-#'   data sets are returned with a warning. Draws with a numerically
-#'   non-positive-definite covariance matrix are never used.
+#'   data sets are returned with a warning. Draws with non-finite values or
+#'   a numerically non-positive-definite covariance matrix are never used.
 #'
 #' @return A list of data frames, one per simulated data set, as returned by
 #'   \code{\link{simulate_gvar}}. The parameter draw used for each data set is
@@ -54,9 +54,10 @@
 #'   set, its spectral radius, and whether it is stationary.}
 #'   \item{n_draws}{A named vector with the number of draws in the fit
 #'   (\code{total}), the number of \code{stationary} and
-#'   \code{nonstationary} draws, the number of draws with an invalid
-#'   covariance matrix (\code{invalid_sigma}), and the number of
-#'   \code{requested} and \code{returned} data sets.}
+#'   \code{nonstationary} draws, the number of \code{invalid} draws
+#'   (non-finite values or a covariance matrix that is not positive
+#'   definite), and the number of \code{requested} and \code{returned}
+#'   data sets.}
 #'
 #' @seealso \code{\link{simulate_gvar}}, \code{\link{stan_gvar}}
 #'
@@ -112,13 +113,13 @@ simulate.tsnet_fit <- function(object,
   n_total <- dim(beta_draws)[1]
 
   radius <- .draw_radius(beta_draws)
-  stationary <- radius < 1
   sigma_chol <- lapply(seq_len(n_total), function(s) {
     tryCatch(chol(.symmetrize(sigma_draws[s, , ])), error = \(e) NULL)
   })
-  valid_sigma <- !vapply(sigma_chol, is.null, logical(1))
+  valid <- !is.na(radius) & !vapply(sigma_chol, is.null, logical(1))
+  stationary <- valid & radius < 1
 
-  usable <- which(valid_sigma & (stationary | nonstationary != "drop"))
+  usable <- which(valid & (stationary | nonstationary != "drop"))
   n_use <- min(nsim, length(usable))
   ids <- usable[sample.int(length(usable), n_use)]
 
@@ -160,8 +161,8 @@ simulate.tsnet_fit <- function(object,
   attr(sims, "n_draws") <- c(
     total = n_total,
     stationary = sum(stationary),
-    nonstationary = sum(!stationary),
-    invalid_sigma = sum(!valid_sigma),
+    nonstationary = sum(valid & !stationary),
+    invalid = sum(!valid),
     requested = nsim,
     returned = n_use
   )
@@ -173,8 +174,11 @@ simulate.tsnet_fit <- function(object,
   rstan::extract(fit$stan_fit, pars = par)[[par]]
 }
 
+# NA for draws with non-finite values
 .draw_radius <- function(beta_draws) {
-  apply(beta_draws, 1, .spectral_radius)
+  apply(beta_draws, 1, function(Beta) {
+    if (all(is.finite(Beta))) .spectral_radius(Beta) else NA_real_
+  })
 }
 
 # stan draws of a covariance matrix are only symmetric up to rounding

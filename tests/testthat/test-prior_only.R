@@ -24,7 +24,12 @@ test_that("prior_only fits sample from the prior", {
 
   for (cov_prior in c("IW", "LKJ")) {
     fit <- suppressWarnings(stan_gvar(example_data,
-      priors = list(prior_Beta_loc = loc),
+      # flat beta factor for the LKJ model: with the default, chains can
+      # get stuck at partial correlations of -1 or 1 without data
+      priors = list(
+        prior_Beta_loc = loc,
+        prior_Rho_scale = matrix(2, 3, 3)
+      ),
       cov_prior = cov_prior,
       n_chains = 1,
       iter_sampling = 500,
@@ -38,11 +43,7 @@ test_that("prior_only fits sample from the prior", {
     beta_draws <- rstan::extract(fit$stan_fit, "Beta")$Beta
     # prior sd is 0.5, the data would pull estimates towards much less
     expect_lt(max(abs(apply(beta_draws, c(2, 3), mean) - loc)), 0.12)
-    expect_equal(
-      apply(beta_draws, c(2, 3), sd),
-      matrix(0.5, 3, 3),
-      tolerance = 0.2
-    )
+    expect_lt(max(abs(apply(beta_draws, c(2, 3), sd) - 0.5)), 0.12)
   }
 
   expect_output(print(fit), "prior-only fit")
@@ -99,6 +100,6 @@ test_that("simulated data are recovered in the correct orientation", {
   # stan_fit_convert() returns the transposed matrix
   expect_equal(
     unname(stan_fit_convert(fit, return_params = "beta")$beta_mu),
-    t(beta_mean)
+    unname(t(beta_mean))
   )
 })

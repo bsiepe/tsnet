@@ -45,7 +45,7 @@ test_that("simulate.tsnet_fit simulates one data set per draw", {
   expect_equal(
     attr(sims, "n_draws"),
     c(
-      total = 10, stationary = 6, nonstationary = 4, invalid_sigma = 0,
+      total = 10, stationary = 6, nonstationary = 4, invalid = 0,
       requested = 3, returned = 3
     )
   )
@@ -99,14 +99,19 @@ test_that("simulate.tsnet_fit handles non-stationary draws", {
   )
 })
 
-test_that("simulate.tsnet_fit never uses invalid covariance draws", {
+test_that("simulate.tsnet_fit never uses invalid draws", {
   draws <- fake_draws()
   draws$Sigma[1, , ] <- matrix(1, 3, 3)
+  draws$Beta[2, , ] <- NaN
+  draws$Beta[7, 1, 1] <- NaN
   mock_draws(draws)
 
   expect_warning(sims <- simulate(fake_fit(), nsim = 6, seed = 1))
-  expect_false(1 %in% attr(sims, "draws")$draw)
-  expect_equal(attr(sims, "n_draws")[["invalid_sigma"]], 1)
+  expect_false(any(1:2 %in% attr(sims, "draws")$draw))
+  expect_equal(
+    attr(sims, "n_draws")[c("stationary", "nonstationary", "invalid")],
+    c(stationary = 4, nonstationary = 3, invalid = 3)
+  )
 })
 
 test_that("simulate.tsnet_fit validates its input", {
