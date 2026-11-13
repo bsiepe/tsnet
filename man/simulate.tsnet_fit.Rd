@@ -50,9 +50,10 @@ A list of data frames, one per simulated data set, as returned by
   set, its spectral radius, and whether it is stationary.}
   \item{n_draws}{A named vector with the number of draws in the fit
   (\code{total}), the number of \code{stationary} and
-  \code{nonstationary} draws, the number of draws with an invalid
-  covariance matrix (\code{invalid_sigma}), and the number of
-  \code{requested} and \code{returned} data sets.}
+  \code{nonstationary} draws, the number of \code{invalid} draws
+  (non-finite values or a covariance matrix that is not positive
+  definite), and the number of \code{requested} and \code{returned}
+  data sets.}
 }
 \description{
 Simulates new time series from the draws of a model fitted
@@ -77,8 +78,8 @@ The simulated data are on the scale that was used for fitting:
   Non-stationary draws can be frequent, in particular for prior-only fits
   with the default priors and for models with many variables. Draws are
   never reused. If fewer than \code{nsim} usable draws are available, fewer
-  data sets are returned with a warning. Draws with a numerically
-  non-positive-definite covariance matrix are never used.
+  data sets are returned with a warning. Draws with non-finite values or
+  a numerically non-positive-definite covariance matrix are never used.
 }
 \examples{
 \donttest{
