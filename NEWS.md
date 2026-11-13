@@ -15,6 +15,8 @@
   optional overrides and checks names and dimensions.
 * New `priors_from_fit()` turns the posterior of the temporal coefficients of
   a fitted model into priors for a new model.
+* New `prior_posterior_summary()` reports prior and posterior means and
+  standard deviations as well as the posterior contraction for each edge.
 * `stan_gvar()` now warns if `priors` contains unknown names, which were
   silently ignored before.
 
