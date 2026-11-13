@@ -200,18 +200,24 @@ This function fits a Bayesian GVAR model to the provided data
   used. Additionally, the user can change \eqn{\eta}
   via the \code{prior_Eta} parameter, which has to be a positive integer.
 
-  The Inverse-Wishart prior is a distribution on the innovation covariance
-  matrix \eqn{\Sigma}:
-  \deqn{\Sigma \sim IW(\nu, S)}
-  where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix. We here
-  use the default prior of \deqn{nu = delta + p - 1} for the degrees of freedom,
-  where \eqn{\delta} is defined as \eqn{s_{\rho}^{-1}-1} and \eqn{s_{\rho}} is the
-  standard deviation of the implied marginal beta distribution of the
-  partial correlations. For the scale matrix \eqn{S}, we use the identity matrix
-  \eqn{I_p} of order \eqn{p}.
-  The user can set a prior on the expected standard deviation of the partial
-  correlations by specifying a \code{prior_Rho_marginal} parameter. The default
-  value is 0.25, which has worked well in a simulation study.
+  With \code{cov_prior = "IW"}, an Inverse-Wishart prior is placed on the
+  precision matrix of the innovations, \eqn{\Theta = \Sigma^{-1}}:
+  \deqn{\Theta \sim IW(\nu, S)}
+  where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix.
+  This is equivalent to a Wishart prior on the innovation covariance
+  matrix, \eqn{\Sigma \sim W(\nu, S^{-1})}. The degrees of freedom are
+  \deqn{\nu = \delta + p - 1}
+  where \eqn{\delta} is defined as \eqn{v_{\rho}^{-1}-1} and \eqn{v_{\rho}}
+  is the value of \code{prior_Rho_marginal}. For the scale matrix \eqn{S},
+  we use the identity matrix \eqn{I_p} of order \eqn{p} by default. In this
+  case, the partial correlations marginally follow
+  \eqn{(\rho_{ij}+1)/2 \sim Beta(\delta/2, \delta/2)}, which has a variance
+  of \eqn{1/(\delta+1) = v_{\rho}} on the scale of the partial
+  correlations. \code{prior_Rho_marginal} is therefore the prior variance
+  of the partial correlations, and its square root is their prior standard
+  deviation. The default value of 0.25 (\eqn{\delta = 3}) corresponds to a
+  prior standard deviation of 0.5. Values have to be larger than 0 and at
+  most 0.5.
   Additionally, the user can specify a \code{prior_S} parameter to set a different
   scale matrix.
 
