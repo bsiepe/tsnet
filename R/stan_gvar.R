@@ -133,16 +133,28 @@
 #'   The second part of the prior is a beta prior on each partial correlation
 #'   \eqn{\rho_{ij}} (obtained from the off-diagonal elements of the precision matrix).
 #'   This prior was assigned by transforming the partial correlations to the
-#'   interval of \eqn{[0,1]} and then assigning a proportional (mean-variance
-#'   parameterized) beta prior:
-#'   \deqn{(\rho_{ij}+1)/2 \sim Beta_{prop}(PriorRhoLoc, PriorRhoScale)}
-#'   A beta location parameter of 0.5 translates to an expected correlation of 0.
-#'   The variance parameter of \eqn{\sqrt(0.5)} implies a uniform distribution of
-#'   partial correlations.
+#'   interval of \eqn{[0,1]} and then assigning a beta prior in the
+#'   mean-precision parameterization (\code{beta_proportion} in Stan):
+#'   \deqn{(\rho_{ij}+1)/2 \sim Beta(\mu_{ij} \kappa_{ij},
+#'   (1 - \mu_{ij}) \kappa_{ij})}
+#'   where \eqn{\mu_{ij}} is given by \code{prior_Rho_loc} and
+#'   \eqn{\kappa_{ij}} by \code{prior_Rho_scale}. A location of 0.5 centers
+#'   the beta prior at a partial correlation of 0. Note that
+#'   \code{prior_Rho_scale} is a precision and not a variance or standard
+#'   deviation: larger values lead to a more concentrated prior. A value of
+#'   2 (with a location of 0.5) corresponds to a uniform beta prior, in which
+#'   case the partial correlations marginally follow
+#'   \eqn{(\rho_{ij}+1)/2 \sim Beta(\eta, \eta)}, which is uniform for
+#'   \eqn{\eta = 1}. The default value of \eqn{\sqrt{0.5}} corresponds to a
+#'   \eqn{Beta(0.354, 0.354)} prior, which is U-shaped and favors partial
+#'   correlations close to -1 and 1 over values close to 0. As this density
+#'   is unbounded at -1 and 1, sampling from the default LKJ prior without
+#'   data (\code{prior_only = TRUE}) is unreliable.
 #'   The user can specify a different prior distribution by a matrix
 #'   \code{prior_Rho_loc} and a matrix \code{prior_Rho_scale} with the same dimensions as
-#'   the partial correlation matrix. Additionally, the user can change \eqn{eta}
-#'   via the \code{prior_Eta} parameter.
+#'   the partial correlation matrix, of which only the upper triangle is
+#'   used. Additionally, the user can change \eqn{\eta}
+#'   via the \code{prior_Eta} parameter, which has to be a positive integer.
 #'
 #'   The Inverse-Wishart prior is a distribution on the innovation covariance
 #'   matrix \eqn{\Sigma}:
