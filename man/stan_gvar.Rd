@@ -186,14 +186,18 @@ This function fits a Bayesian GVAR model to the provided data
   the beta prior at a partial correlation of 0. Note that
   \code{prior_Rho_scale} is a precision and not a variance or standard
   deviation: larger values lead to a more concentrated prior. A value of
-  2 (with a location of 0.5) corresponds to a uniform beta prior, in which
-  case the partial correlations marginally follow
-  \eqn{(\rho_{ij}+1)/2 \sim Beta(\eta, \eta)}, which is uniform for
-  \eqn{\eta = 1}. The default value of \eqn{\sqrt{0.5}} corresponds to a
-  \eqn{Beta(0.354, 0.354)} prior, which is U-shaped and favors partial
-  correlations close to -1 and 1 over values close to 0. As this density
-  is unbounded at -1 and 1, sampling from the default LKJ prior without
-  data (\code{prior_only = TRUE}) is unreliable.
+  2 (with a location of 0.5), which is the default, corresponds to a
+  uniform beta prior. In this case the partial correlations marginally
+  follow \eqn{(\rho_{ij}+1)/2 \sim Beta(\eta, \eta)}, which is uniform
+  for the default of \eqn{\eta = 1}. Beta priors with a shape parameter
+  below 1 (i.e., \eqn{\mu_{ij} \kappa_{ij} < 1} or
+  \eqn{(1 - \mu_{ij}) \kappa_{ij} < 1}) are U-shaped and unbounded at
+  partial correlations of -1 or 1. They favor very strong partial
+  correlations, and sampling from such a prior without data
+  (\code{prior_only = TRUE}) is unreliable. Note that versions up to
+  0.2.0 used a default of \eqn{\sqrt{0.5}}, which is such a prior
+  (\eqn{Beta(0.354, 0.354)}); set \code{prior_Rho_scale} to this value
+  to reproduce earlier results.
   The user can specify a different prior distribution by a matrix
   \code{prior_Rho_loc} and a matrix \code{prior_Rho_scale} with the same dimensions as
   the partial correlation matrix, of which only the upper triangle is

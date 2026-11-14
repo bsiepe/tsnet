@@ -54,7 +54,7 @@ gvar_priors <- function(K, ...) {
     prior_Beta_loc = matrix(rep(0, K * K), nrow = K, ncol = K),
     prior_Beta_scale = matrix(rep(0.5, K * K), nrow = K, ncol = K),
     prior_Rho_loc = matrix(rep(0.5, K * K), nrow = K, ncol = K),
-    prior_Rho_scale = matrix(rep(sqrt(0.5), K * K), nrow = K, ncol = K),
+    prior_Rho_scale = matrix(rep(2, K * K), nrow = K, ncol = K),
     prior_Rho_marginal = 0.25,
     prior_S = diag(K),
     prior_Eta = 1

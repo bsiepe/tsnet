@@ -186,8 +186,11 @@ for (eta in c(1, 2)) {
   }
 }
 
-# (c) package defaults: smoke test, no pass/fail
-res_default <- fit_prior(NULL, "LKJ")
+# (c) defaults up to version 0.2.0 (prior_Rho_scale = sqrt(0.5)): smoke test,
+# no pass/fail
+res_default <- fit_prior(
+  list(prior_Rho_scale = matrix(sqrt(0.5), K, K)), "LKJ"
+)
 ref_default <- lkj_reference(
   1, matrix(0.5, K, K), matrix(sqrt(0.5), K, K)
 )

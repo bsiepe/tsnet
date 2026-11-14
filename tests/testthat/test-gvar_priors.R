@@ -1,17 +1,18 @@
 test_that("gvar_priors returns the defaults of stan_gvar", {
   K <- 4
-  # defaults as hard-coded in stan_gvar() up to version 0.2.0
-  old_defaults <- list(
+  # defaults as hard-coded in stan_gvar() up to version 0.2.0, except for
+  # prior_Rho_scale, which was sqrt(0.5)
+  expected <- list(
     prior_Beta_loc = matrix(rep(0, K * K), nrow = K, ncol = K),
     prior_Beta_scale = matrix(rep(0.5, K * K), nrow = K, ncol = K),
     prior_Rho_loc = matrix(rep(0.5, K * K), nrow = K, ncol = K),
-    prior_Rho_scale = matrix(rep(sqrt(0.5), K * K), nrow = K, ncol = K),
+    prior_Rho_scale = matrix(rep(2, K * K), nrow = K, ncol = K),
     prior_Rho_marginal = 0.25,
     prior_S = diag(K),
     prior_Eta = 1
   )
 
-  expect_identical(gvar_priors(K), old_defaults)
+  expect_identical(gvar_priors(K), expected)
 })
 
 test_that("gvar_priors applies overrides", {

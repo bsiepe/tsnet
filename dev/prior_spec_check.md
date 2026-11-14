@@ -12,6 +12,12 @@ Evidence was produced by `dev/prior_spec_check.R` (figures and
 Whether the code or the old documentation reflects the intended prior is a
 decision for the maintainer; the options are listed per issue.
 
+**Update after review of this report.** The maintainer decided to change the
+default of `prior_Rho_scale` to 2 (issue 1, second option). "Default" in
+section 1, in the figures and in `dev/output/*.txt` refers to the default up
+to version 0.2.0, `sqrt(0.5)`; these outputs were produced before the change.
+Issues 2 and 3 remain documentation-only.
+
 ## 1. LKJ model: `prior_Rho_scale` is a precision, the default is U-shaped
 
 **Documentation (0.2.0, l. 128-134).** "a proportional (mean-variance

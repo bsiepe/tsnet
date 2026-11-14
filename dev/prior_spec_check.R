@@ -53,7 +53,7 @@ for (r in seq_len(nrow(lkj_settings))) {
     col = "grey80", border = "white", xlab = "partial correlation",
     main = sprintf(
       "K = %d, kappa = %s%s", lkj_settings$K[r], format(kappa, digits = 3),
-      if (kappa < 1) " (default)" else ""
+      if (kappa < 1) " (default up to 0.2.0)" else " (new default)"
     )
   )
   # beta factor on its own, and the uniform density

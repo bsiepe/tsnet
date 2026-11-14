@@ -13,9 +13,10 @@ test_that("prior_only is validated before sampling", {
 })
 
 test_that("unbounded beta priors on partial correlations are detected", {
-  expect_true(.unbounded_rho_prior(gvar_priors(3)))
-  expect_false(.unbounded_rho_prior(
-    gvar_priors(3, prior_Rho_scale = matrix(2, 3, 3))
+  expect_false(.unbounded_rho_prior(gvar_priors(3)))
+  # default up to version 0.2.0
+  expect_true(.unbounded_rho_prior(
+    gvar_priors(3, prior_Rho_scale = matrix(sqrt(0.5), 3, 3))
   ))
   # only the upper triangle is used by the model
   scale <- matrix(2, 3, 3)
@@ -30,13 +31,14 @@ test_that("unbounded beta priors on partial correlations are detected", {
   ))
 })
 
-test_that("prior-only LKJ fits with default priors give a warning", {
+test_that("prior-only LKJ fits with unbounded beta priors give a warning", {
   skip_on_cran()
   data(ts_data)
 
   # sampler warnings are expected here and not of interest
   suppressWarnings(expect_warning(
     stan_gvar(ts_data[1:50, 1:3],
+      priors = list(prior_Rho_scale = matrix(sqrt(0.5), 3, 3)),
       cov_prior = "LKJ",
       n_chains = 1,
       iter_sampling = 20,
@@ -60,12 +62,7 @@ test_that("prior_only fits sample from the prior", {
 
   for (cov_prior in c("IW", "LKJ")) {
     fit <- suppressWarnings(stan_gvar(example_data,
-      # flat beta factor for the LKJ model: with the default, chains can
-      # get stuck at partial correlations of -1 or 1 without data
-      priors = list(
-        prior_Beta_loc = loc,
-        prior_Rho_scale = matrix(2, 3, 3)
-      ),
+      priors = list(prior_Beta_loc = loc),
       cov_prior = cov_prior,
       n_chains = 1,
       iter_sampling = 500,

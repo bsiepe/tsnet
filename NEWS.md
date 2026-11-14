@@ -1,5 +1,17 @@
 # tsnet (development version)
 
+* The default of `prior_Rho_scale` for `cov_prior = "LKJ"` changed from
+  `sqrt(0.5)` to `2`. `prior_Rho_scale` is the precision of a beta prior on
+  the rescaled partial correlations. The new default is the uniform prior
+  that the documentation described, whereas the previous default was
+  U-shaped and favored partial correlations close to -1 and 1. Results of
+  models with `cov_prior = "LKJ"` and default priors therefore change; pass
+  `priors = list(prior_Rho_scale = matrix(sqrt(0.5), K, K))` to reproduce
+  results of version 0.2.0. Models with `cov_prior = "IW"` are not affected.
+* The documentation of the priors in `stan_gvar()` was corrected: the
+  default of `cov_prior` is `"IW"`, the inverse Wishart prior is placed on
+  the precision matrix, and `prior_Rho_marginal` is the prior variance (not
+  the standard deviation) of the partial correlations.
 * New `simulate_gvar()` simulates data from a GVAR model with known temporal
   coefficients and innovation covariance matrix.
 * New `gvar_stationary()` computes the stationary covariance matrix and the
@@ -10,7 +22,7 @@
   distribution without conditioning on the data. `print()` indicates
   prior-only fits and `compare_gvar()` does not accept them.
   Prior-only fits with `cov_prior = "LKJ"` give a warning if the beta prior
-  on a partial correlation is unbounded, as it is with the default priors.
+  on a partial correlation is unbounded.
 * New `simulate()` method for `tsnet_fit` objects for posterior predictive
   simulation, or prior predictive simulation for prior-only fits.
 * New `gvar_priors()` returns the default priors of `stan_gvar()` with
