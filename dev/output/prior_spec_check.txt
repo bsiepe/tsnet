@@ -1,0 +1,27 @@
+tsnet prior specification check, 2026-11-14 08:31:38 
+
+== Fact 6: LKJ model, pooled partial correlations ==
+beta factor: Beta(0.5 * kappa, 0.5 * kappa) on (rho + 1) / 2
+ K kappa     mean    sd     5%    25%      50%   75%   95% P(|rho|>0.5) P(|rho|>0.9)
+ 3 0.707 -0.32007 0.947 -1.000 -1.000 -1.00000 1.000 1.000        1.000       1.0000
+ 6 0.707  0.10000 0.995 -1.000 -1.000  1.00000 1.000 1.000        1.000       1.0000
+ 3 2.000  0.00206 0.576 -0.900 -0.495  0.00555 0.499 0.900        0.497       0.1005
+ 6 2.000 -0.00411 0.574 -0.899 -0.498 -0.00548 0.489 0.894        0.493       0.0968
+               label draws nonfinite_draws divergent max_treedepth rejection_msgs max_rhat min_n_eff n_warnings
+ LKJ K=3 kappa=0.707  8000             156      2491          5509              0       NA        NA          8
+ LKJ K=6 kappa=0.707  8000               0      1308          6692              0 7.61e+14       NaN          7
+ LKJ K=3 kappa=2.000  8000               0         0             0              0 1.00e+00      7142          0
+ LKJ K=6 kappa=2.000  8000               0         0             0              0 1.00e+00      6165          0
+
+== Fact 7: Wishart model, S = I, K = 3 ==
+ prior_Rho_marginal delta var_rho_draws sd_rho_draws sd_rho_analytic
+               0.10     9         0.099        0.315           0.316
+               0.25     3         0.253        0.503           0.500
+               0.50     1         0.511        0.715           0.707
+            label draws nonfinite_draws divergent max_treedepth rejection_msgs max_rhat min_n_eff n_warnings
+ IW marginal=0.10 20000               0         0             0              0        1     14811          0
+ IW marginal=0.25 20000               0        14             0              0        1     11732          2
+ IW marginal=0.50 20000               0      2418             7              0        1      1434          3
+
+== Fact 8: default of cov_prior ==
+[1] "IW"
