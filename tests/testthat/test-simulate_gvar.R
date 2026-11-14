@@ -61,8 +61,32 @@ test_that("simulate_gvar uses rows of Beta as outcomes", {
   # row i of the estimate holds the regression of variable i on all lags
   est <- t(stats::coef(stats::lm(sim[-1, ] ~ 0 + sim[-n, ])))
 
-  expect_equal(unname(est), Beta, tolerance = 0.03)
+  # the standard error of each coefficient is about 0.007
+  expect_lt(max(abs(unname(est) - Beta)), 0.04)
   expect_gt(max(abs(unname(est) - t(Beta))), 0.3)
+})
+
+test_that("simulate_gvar starts from the stationary distribution", {
+  # close to a unit root: 100 burn-in steps from zero would only reach 87%
+  # of the stationary variance
+  Beta <- matrix(0.99)
+  Sigma <- matrix(1)
+  set.seed(6)
+  first <- replicate(4000, simulate_gvar(Beta, Sigma, n_t = 1)[1, 1])
+
+  expect_equal(var(first), 1 / (1 - 0.99^2), tolerance = 0.08)
+
+  # cross-covariances of the first observation
+  Beta <- asym_beta()
+  set.seed(7)
+  first <- t(replicate(
+    4000, unlist(simulate_gvar(Beta, diag(3), n_t = 1, burn_in = 2))
+  ))
+  expect_equal(
+    unname(cov(first)),
+    gvar_stationary(Beta, diag(3))$cov,
+    tolerance = 0.08
+  )
 })
 
 test_that("simulate_gvar respects process means", {

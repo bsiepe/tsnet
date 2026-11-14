@@ -25,8 +25,8 @@
 #'   these draws are simulated from a starting value of zero without burn-in
 #'   and will typically diverge. \code{"error"} stops if one of the selected
 #'   draws is non-stationary.
-#' @param ... Further arguments passed to \code{\link{simulate_gvar}},
-#'   currently only \code{burn_in}.
+#' @param ... Further arguments passed to \code{\link{simulate_gvar}} for
+#'   stationary draws, currently only \code{burn_in}.
 #'
 #' @details The simulated data are on the scale that was used for fitting:
 #'   \code{\link{stan_gvar}} z-standardizes the data (or only centers them if

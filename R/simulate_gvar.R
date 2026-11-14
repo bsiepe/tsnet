@@ -18,8 +18,8 @@
 #'   covariance matrix.
 #' @param n_t Number of time points to return.
 #' @param burn_in Number of initial time points that are simulated and
-#'   discarded, so that the returned series starts close to the stationary
-#'   distribution. Default: \code{100}.
+#'   discarded. As the series is started from the stationary distribution, a
+#'   burn-in is not required. Default: \code{0}.
 #' @param mu Optional vector of length \eqn{K} with the process means. The
 #'   implied intercept is \eqn{(I - B)\mu}. Default: \code{NULL}, which
 #'   corresponds to means of zero.
@@ -27,6 +27,13 @@
 #' @details The model has to be stationary, i.e., the spectral radius (largest
 #'   absolute eigenvalue) of \code{Beta} has to be smaller than 1. Otherwise,
 #'   an error is returned.
+#'
+#'   The first observation is drawn from the stationary distribution of the
+#'   process (see \code{\link{gvar_stationary}}), so that all time points
+#'   follow this distribution, also for processes that are close to
+#'   non-stationarity. In the rare case that the stationary covariance matrix
+#'   cannot be computed numerically, the series is started at the process
+#'   means instead, with a warning. A burn-in should be used in that case.
 #'
 #'   Note that \code{\link{stan_gvar}} standardizes the data before fitting.
 #'   Parameter estimates are therefore comparable to the standardized
@@ -60,7 +67,7 @@
 simulate_gvar <- function(Beta,
                           Sigma,
                           n_t,
-                          burn_in = 100,
+                          burn_in = 0,
                           mu = NULL) {
   Sigma_chol <- .check_gvar_params(Beta, Sigma)
   K <- nrow(Beta)
@@ -87,7 +94,21 @@ simulate_gvar <- function(Beta,
     )
   }
 
-  Y <- .sim_var(Beta, Sigma_chol, n_t + burn_in)
+  start_chol <- tryCatch(
+    chol(.stationary_cov(Beta, Sigma)),
+    error = \(e) NULL
+  )
+  if (is.null(start_chol)) {
+    warning(
+      "The stationary covariance matrix could not be computed. The series ",
+      "is started at the process means; consider using 'burn_in'."
+    )
+    start <- numeric(K)
+  } else {
+    start <- drop(stats::rnorm(K) %*% start_chol)
+  }
+
+  Y <- .sim_var(Beta, Sigma_chol, n_t + burn_in, start = start)
   Y <- Y[seq_len(n_t) + burn_in, , drop = FALSE]
   Y <- sweep(Y, 2, mu, "+")
 
@@ -131,17 +152,27 @@ simulate_gvar <- function(Beta,
   Sigma_chol
 }
 
-# series starts at zero, without burn-in and without a stationarity check
-.sim_var <- function(Beta, Sigma_chol, n) {
+# start: the first observation; if NULL, the series is started one step after
+# a value of zero. no burn-in and no stationarity check
+.sim_var <- function(Beta, Sigma_chol, n, start = NULL) {
   K <- nrow(Beta)
   innov <- matrix(stats::rnorm(n * K), nrow = n, ncol = K) %*% Sigma_chol
   Y <- matrix(0, nrow = n, ncol = K)
-  prev <- numeric(K)
-  for (t in seq_len(n)) {
+  prev <- if (is.null(start)) innov[1, ] else start
+  Y[1, ] <- prev
+  for (t in seq_len(n)[-1]) {
     prev <- drop(Beta %*% prev) + innov[t, ]
     Y[t, ] <- prev
   }
   Y
+}
+
+# solves G0 = Beta G0 t(Beta) + Sigma
+.stationary_cov <- function(Beta, Sigma) {
+  K <- nrow(Beta)
+  G0 <- solve(diag(K^2) - Beta %x% Beta, as.vector(Sigma)) |>
+    matrix(nrow = K, ncol = K)
+  (G0 + t(G0)) / 2
 }
 
 
@@ -200,9 +231,7 @@ gvar_stationary <- function(Beta, Sigma) {
     )
   }
 
-  G0 <- solve(diag(K^2) - Beta %x% Beta, as.vector(Sigma)) |>
-    matrix(nrow = K, ncol = K)
-  G0 <- (G0 + t(G0)) / 2
+  G0 <- .stationary_cov(Beta, Sigma)
   sds <- sqrt(diag(G0))
 
   Theta <- solve(Sigma)

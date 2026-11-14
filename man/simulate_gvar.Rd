@@ -4,7 +4,7 @@
 \alias{simulate_gvar}
 \title{Simulate Data from a GVAR Model}
 \usage{
-simulate_gvar(Beta, Sigma, n_t, burn_in = 100, mu = NULL)
+simulate_gvar(Beta, Sigma, n_t, burn_in = 0, mu = NULL)
 }
 \arguments{
 \item{Beta}{A \eqn{K \times K} matrix of temporal coefficients. Rows are
@@ -21,8 +21,8 @@ covariance matrix.}
 \item{n_t}{Number of time points to return.}
 
 \item{burn_in}{Number of initial time points that are simulated and
-discarded, so that the returned series starts close to the stationary
-distribution. Default: \code{100}.}
+discarded. As the series is started from the stationary distribution, a
+burn-in is not required. Default: \code{0}.}
 
 \item{mu}{Optional vector of length \eqn{K} with the process means. The
 implied intercept is \eqn{(I - B)\mu}. Default: \code{NULL}, which
@@ -48,6 +48,13 @@ Simulates a multivariate time series from a lag-1 graphical
 The model has to be stationary, i.e., the spectral radius (largest
   absolute eigenvalue) of \code{Beta} has to be smaller than 1. Otherwise,
   an error is returned.
+
+  The first observation is drawn from the stationary distribution of the
+  process (see \code{\link{gvar_stationary}}), so that all time points
+  follow this distribution, also for processes that are close to
+  non-stationarity. In the rare case that the stationary covariance matrix
+  cannot be computed numerically, the series is started at the process
+  means instead, with a warning. A burn-in should be used in that case.
 
   Note that \code{\link{stan_gvar}} standardizes the data before fitting.
   Parameter estimates are therefore comparable to the standardized
