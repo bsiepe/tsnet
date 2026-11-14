@@ -10,6 +10,9 @@ test_that("prior_only is validated before sampling", {
     stan_gvar(example_data, prior_only = TRUE, method = "variational"),
     "sampling"
   )
+  # isTRUE(1) is FALSE, which would silently give a regular fit
+  expect_error(stan_gvar(example_data, prior_only = 1), "TRUE or FALSE")
+  expect_error(stan_gvar(example_data, prior_only = NA), "TRUE or FALSE")
 })
 
 test_that("unbounded beta priors on partial correlations are detected", {

@@ -28,12 +28,24 @@ test_that("gvar_priors rejects invalid input", {
   expect_error(gvar_priors(3, prior_s = diag(3)), "Unknown prior")
   expect_error(gvar_priors(3, diag(3)), "named")
   expect_error(gvar_priors(3, prior_Beta_loc = diag(2)), "3 x 3")
-  expect_error(gvar_priors(3, prior_Beta_scale = diag(3)), "positive")
+  expect_error(gvar_priors(3, prior_Beta_scale = -diag(3)), "negative")
+  expect_error(gvar_priors(3, prior_Beta_loc = diag(Inf, 3)), "finite")
   expect_error(gvar_priors(3, prior_Rho_loc = diag(3)), "between 0 and 1")
+  expect_error(gvar_priors(3, prior_Rho_scale = matrix(0, 3, 3)), "positive")
   expect_error(gvar_priors(3, prior_Rho_marginal = 0.6), "at most 0.5")
   expect_error(gvar_priors(3, prior_Eta = 1.5), "integer")
   expect_error(gvar_priors(3, prior_S = matrix(1, 3, 3)), "positive definite")
   expect_error(gvar_priors(0), "K")
+})
+
+test_that("gvar_priors only checks what the models use", {
+  # a scale of zero fixes a coefficient
+  expect_no_error(gvar_priors(3, prior_Beta_scale = diag(3)))
+  # diagonal and lower triangle of the Rho matrices are not used
+  loc <- matrix(0, 3, 3)
+  loc[upper.tri(loc)] <- 0.6
+  expect_no_error(gvar_priors(3, prior_Rho_loc = loc, prior_Rho_scale = loc))
+  expect_no_error(gvar_priors(1))
 })
 
 test_that("stan_gvar warns about unknown priors", {
@@ -51,6 +63,17 @@ test_that("stan_gvar warns about unknown priors", {
       refresh = 0
     ),
     "Unknown prior"
+  )
+  expect_warning(
+    stan_gvar(example_data,
+      priors = list(diag(3)),
+      cov_prior = "IW",
+      n_chains = 1,
+      iter_sampling = 50,
+      iter_warmup = 50,
+      refresh = 0
+    ),
+    "named list"
   )
 })
 

@@ -230,7 +230,10 @@ stan_gvar <- function(data,
                       ahead = 0,
                       ...,
                       prior_only = FALSE) {
-  prior_only <- isTRUE(prior_only)
+  if (!is.logical(prior_only) || length(prior_only) != 1 ||
+    is.na(prior_only)) {
+    stop("'prior_only' must be either TRUE or FALSE.")
+  }
   if (prior_only && ahead > 0) {
     stop("'prior_only = TRUE' cannot be combined with 'ahead > 0'.")
   }
@@ -265,6 +268,9 @@ stan_gvar <- function(data,
 
   # Update default priors with any custom priors provided by the user
   if (!is.null(priors)) {
+    if (is.null(names(priors)) || any(names(priors) == "")) {
+      warning("'priors' must be a named list. Unnamed entries are ignored.")
+    }
     unknown_priors <- .unknown_priors(priors, K)
     if (length(unknown_priors) > 0) {
       warning(

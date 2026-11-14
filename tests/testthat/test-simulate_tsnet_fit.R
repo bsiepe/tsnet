@@ -104,14 +104,31 @@ test_that("simulate.tsnet_fit never uses invalid draws", {
   draws$Sigma[1, , ] <- matrix(1, 3, 3)
   draws$Beta[2, , ] <- NaN
   draws$Beta[7, 1, 1] <- NaN
+  # chol() does not fail for infinite variances
+  draws$Sigma[3, 1, 1] <- Inf
   mock_draws(draws)
 
   expect_warning(sims <- simulate(fake_fit(), nsim = 6, seed = 1))
-  expect_false(any(1:2 %in% attr(sims, "draws")$draw))
+  expect_false(any(1:3 %in% attr(sims, "draws")$draw))
   expect_equal(
     attr(sims, "n_draws")[c("stationary", "nonstationary", "invalid")],
-    c(stationary = 4, nonstationary = 3, invalid = 3)
+    c(stationary = 3, nonstationary = 3, invalid = 4)
   )
+  expect_true(all(vapply(sims, \(x) all(is.finite(as.matrix(x))), logical(1))))
+})
+
+test_that("simulate.tsnet_fit works for a single variable", {
+  draws <- list(
+    Beta = array(c(0.2, 0.5, 1.1), c(3, 1, 1)),
+    Sigma = array(1, c(3, 1, 1))
+  )
+  mock_draws(draws)
+  sims <- simulate(fake_fit(cnames = "a"), nsim = 2, seed = 1)
+
+  expect_length(sims, 2)
+  expect_equal(dim(sims[[1]]), c(40, 1))
+  expect_named(sims[[1]], "a")
+  expect_equal(attr(sims, "n_draws")[["nonstationary"]], 1)
 })
 
 test_that("simulate.tsnet_fit validates its input", {

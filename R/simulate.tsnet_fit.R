@@ -51,7 +51,9 @@
 #'   \item{seed}{The state of the random number generator, as in other
 #'   \code{\link[stats]{simulate}} methods.}
 #'   \item{draws}{A data frame with the index of the draw used for each data
-#'   set, its spectral radius, and whether it is stationary.}
+#'   set, its spectral radius, and whether it is stationary. The index refers
+#'   to the (permuted) order of draws returned by
+#'   \code{\link[rstan:extract]{rstan::extract}}.}
 #'   \item{n_draws}{A named vector with the number of draws in the fit
 #'   (\code{total}), the number of \code{stationary} and
 #'   \code{nonstationary} draws, the number of \code{invalid} draws
@@ -114,7 +116,11 @@ simulate.tsnet_fit <- function(object,
 
   radius <- .draw_radius(beta_draws)
   sigma_chol <- lapply(seq_len(n_total), function(s) {
-    tryCatch(chol(.symmetrize(sigma_draws[s, , ])), error = \(e) NULL)
+    Sigma <- .draw_matrix(sigma_draws, s)
+    if (!all(is.finite(Sigma))) {
+      return(NULL)
+    }
+    tryCatch(chol(.symmetrize(Sigma)), error = \(e) NULL)
   })
   valid <- !is.na(radius) & !vapply(sigma_chol, is.null, logical(1))
   stationary <- valid & radius < 1
@@ -138,8 +144,8 @@ simulate.tsnet_fit <- function(object,
 
   cnames <- object$arguments$cnames
   sims <- lapply(ids, function(s) {
-    Beta <- beta_draws[s, , ]
-    Sigma <- .symmetrize(sigma_draws[s, , ])
+    Beta <- .draw_matrix(beta_draws, s)
+    Sigma <- .symmetrize(.draw_matrix(sigma_draws, s))
     dimnames(Beta) <- dimnames(Sigma) <- list(cnames, cnames)
     if (stationary[s]) {
       return(simulate_gvar(Beta, Sigma, n_t = n_t, ...))
@@ -176,9 +182,16 @@ simulate.tsnet_fit <- function(object,
 
 # NA for draws with non-finite values
 .draw_radius <- function(beta_draws) {
-  apply(beta_draws, 1, function(Beta) {
+  vapply(seq_len(dim(beta_draws)[1]), function(s) {
+    Beta <- .draw_matrix(beta_draws, s)
     if (all(is.finite(Beta))) .spectral_radius(Beta) else NA_real_
-  })
+  }, numeric(1))
+}
+
+# keeps the matrix structure for models with a single variable
+.draw_matrix <- function(draws, s) {
+  K <- dim(draws)[2]
+  matrix(draws[s, , ], nrow = K, ncol = K)
 }
 
 # stan draws of a covariance matrix are only symmetric up to rounding

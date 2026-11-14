@@ -62,7 +62,7 @@ gvar_priors <- function(K, ...) {
 }
 
 .unknown_priors <- function(priors, K) {
-  setdiff(names(priors), names(.default_priors(K)))
+  setdiff(names(priors), c(names(.default_priors(K)), ""))
 }
 
 # a beta shape parameter below 1 puts a pole at a partial correlation of -1 or 1
@@ -80,8 +80,9 @@ gvar_priors <- function(K, ...) {
   )
   for (nm in mat_names) {
     x <- priors[[nm]]
-    if (!is.matrix(x) || !is.numeric(x) || !all(dim(x) == K) || anyNA(x)) {
-      stop("'", nm, "' must be a numeric ", K, " x ", K, " matrix.")
+    if (!is.matrix(x) || !is.numeric(x) || !all(dim(x) == K) ||
+      !all(is.finite(x))) {
+      stop("'", nm, "' must be a finite numeric ", K, " x ", K, " matrix.")
     }
   }
   for (nm in c("prior_Rho_marginal", "prior_Eta")) {
@@ -90,10 +91,17 @@ gvar_priors <- function(K, ...) {
       stop("'", nm, "' must be a single number.")
     }
   }
-  if (any(priors$prior_Beta_scale <= 0) || any(priors$prior_Rho_scale <= 0)) {
-    stop("'prior_Beta_scale' and 'prior_Rho_scale' must be positive.")
+  # a scale of zero fixes a temporal coefficient at its location
+  if (any(priors$prior_Beta_scale < 0)) {
+    stop("'prior_Beta_scale' must not be negative.")
   }
-  if (any(priors$prior_Rho_loc <= 0 | priors$prior_Rho_loc >= 1)) {
+  # the models only use the upper triangle of the matrices for Rho
+  upper <- upper.tri(diag(K))
+  if (any(priors$prior_Rho_scale[upper] <= 0)) {
+    stop("'prior_Rho_scale' must be positive.")
+  }
+  rho_loc <- priors$prior_Rho_loc[upper]
+  if (any(rho_loc <= 0 | rho_loc >= 1)) {
     stop("'prior_Rho_loc' must be between 0 and 1.")
   }
   if (priors$prior_Rho_marginal <= 0 || priors$prior_Rho_marginal > 0.5) {

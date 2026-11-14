@@ -75,12 +75,14 @@ prior_posterior_summary <- function(fit, prior_fit = NULL) {
 
   upper <- upper.tri(diag(K))
   rho_draws <- .extract_draws(fit, "Rho")
+  # no contemporaneous edges for a single variable
+  n_pcor <- sum(upper)
   contemporaneous <- data.frame(
-    type = "contemporaneous",
+    type = rep("contemporaneous", n_pcor),
     from = cnames[row(diag(K))[upper]],
     to = cnames[col(diag(K))[upper]],
-    prior_mean = NA_real_,
-    prior_sd = NA_real_,
+    prior_mean = rep(NA_real_, n_pcor),
+    prior_sd = rep(NA_real_, n_pcor),
     post_mean = apply(rho_draws, c(2, 3), mean)[upper],
     post_sd = apply(rho_draws, c(2, 3), stats::sd)[upper]
   )

@@ -147,7 +147,7 @@ Beta(delta / 2, delta / 2) and partial correlations computed from
 `solve(rWishart(1, nu, solve(prior_S))[, , 1])` used as precision matrix,
 including one non-identity `prior_S` (105 quantile comparisons, none with
 abs(z) > 3, max 2.2). `log(Theta[1, 1])` matches the same reference (21
-comparisons, max abs(z) = 1.7), which confirms that the inverse Wishart is
+comparisons, max abs(z) = 1.75), which confirms that the inverse Wishart is
 on the precision matrix.
 
 Two side observations: `prior_delta` is declared `real<lower=1>`, so

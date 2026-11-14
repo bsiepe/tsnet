@@ -74,7 +74,7 @@ simulate_gvar <- function(Beta,
   if (is.null(mu)) {
     mu <- rep(0, K)
   }
-  if (!is.numeric(mu) || length(mu) != K || anyNA(mu)) {
+  if (!is.numeric(mu) || length(mu) != K || !all(is.finite(mu))) {
     stop("'mu' must be a numeric vector with one element per variable.")
   }
 
@@ -118,8 +118,8 @@ simulate_gvar <- function(Beta,
   if (!is.matrix(Sigma) || !is.numeric(Sigma) || !all(dim(Sigma) == K)) {
     stop("'Sigma' must be a numeric matrix with the same dimensions as 'Beta'.")
   }
-  if (anyNA(Beta) || anyNA(Sigma)) {
-    stop("'Beta' and 'Sigma' must not contain missing values.")
+  if (!all(is.finite(Beta)) || !all(is.finite(Sigma))) {
+    stop("'Beta' and 'Sigma' must not contain missing or infinite values.")
   }
   if (!isSymmetric(unname(Sigma))) {
     stop("'Sigma' must be symmetric.")

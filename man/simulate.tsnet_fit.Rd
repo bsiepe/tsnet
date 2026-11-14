@@ -47,7 +47,9 @@ A list of data frames, one per simulated data set, as returned by
   \item{seed}{The state of the random number generator, as in other
   \code{\link[stats]{simulate}} methods.}
   \item{draws}{A data frame with the index of the draw used for each data
-  set, its spectral radius, and whether it is stationary.}
+  set, its spectral radius, and whether it is stationary. The index refers
+  to the (permuted) order of draws returned by
+  \code{\link[rstan:extract]{rstan::extract}}.}
   \item{n_draws}{A named vector with the number of draws in the fit
   (\code{total}), the number of \code{stationary} and
   \code{nonstationary} draws, the number of \code{invalid} draws

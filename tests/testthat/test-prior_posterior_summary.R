@@ -67,6 +67,19 @@ test_that("prior_posterior_summary works without a prior-only fit", {
   expect_false(anyNA(res[res$type == "temporal", ]))
 })
 
+test_that("prior_posterior_summary works for a single variable", {
+  fit <- summary_fit(priors = gvar_priors(1))
+  fit$arguments$p <- 1
+  fit$arguments$cnames <- "a"
+  local_mocked_bindings(
+    .extract_draws = function(fit, par) array(rnorm(100, sd = 0.1), c(100, 1, 1))
+  )
+  res <- prior_posterior_summary(fit)
+
+  expect_equal(nrow(res), 1)
+  expect_equal(res$type, "temporal")
+})
+
 test_that("prior_posterior_summary validates its input", {
   local_mocked_bindings(
     .extract_draws = summary_draws,
