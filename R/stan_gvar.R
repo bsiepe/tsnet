@@ -241,7 +241,9 @@ stan_gvar <- function(data,
     stop("'prior_only = TRUE' is only available for method = \"sampling\".")
   }
 
-  if (isTRUE(center_only)) {
+  if (prior_only) {
+    Y <- matrix(0, nrow(data), ncol(data), dimnames = dimnames(data))
+  } else if (isTRUE(center_only)) {
     Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
   } else {
     Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = TRUE)
