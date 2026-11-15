@@ -18,7 +18,8 @@ stan_gvar(
   center_only = FALSE,
   return_all = TRUE,
   ahead = 0,
-  ...
+  ...,
+  prior_only = FALSE
 )
 }
 \arguments{
@@ -50,7 +51,7 @@ variational inference). We currently recommend only using MCMC estimation.
 Default: \code{"sampling"}.}
 
 \item{cov_prior}{A string indicating the prior distribution to use for the
-covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"LKJ"}.}
+covariance matrix. Options are "LKJ" or "IW" (Inverse-Wishart). Default: \code{"IW"}.}
 
 \item{rmv_overnight}{A logical indicating whether to remove overnight
 effects. Default is \code{FALSE}. If `TRUE`, the function will remove overnight
@@ -82,6 +83,14 @@ This functionality is experimental and may not work as expected.}
 
 \item{...}{Additional arguments passed to the \code{\link[rstan:sampling]{rstan::sampling}} or
 \code{\link[rstan:vb]{rstan::vb}}  function.}
+
+\item{prior_only}{A logical indicating whether to sample from the prior
+distribution only, ignoring the likelihood of the data. Default is
+\code{FALSE}. The data are still required to determine the number and
+names of the variables. The resulting draws can be used to inspect the
+priors (e.g., with \code{\link{posterior_plot}}) and, together with
+\code{\link{simulate.tsnet_fit}}, for prior predictive simulation. Only
+available for \code{method = "sampling"} and \code{ahead = 0}.}
 }
 \value{
 A \code{tsnet_fit} object in list format. The object contains the
@@ -168,29 +177,51 @@ This function fits a Bayesian GVAR model to the provided data
   The second part of the prior is a beta prior on each partial correlation
   \eqn{\rho_{ij}} (obtained from the off-diagonal elements of the precision matrix).
   This prior was assigned by transforming the partial correlations to the
-  interval of \eqn{[0,1]} and then assigning a proportional (mean-variance
-  parameterized) beta prior:
-  \deqn{(\rho_{ij}+1)/2 \sim Beta_{prop}(PriorRhoLoc, PriorRhoScale)}
-  A beta location parameter of 0.5 translates to an expected correlation of 0.
-  The variance parameter of \eqn{\sqrt(0.5)} implies a uniform distribution of
-  partial correlations.
+  interval of \eqn{[0,1]} and then assigning a beta prior in the
+  mean-precision parameterization (\code{beta_proportion} in Stan):
+  \deqn{(\rho_{ij}+1)/2 \sim Beta(\mu_{ij} \kappa_{ij},
+  (1 - \mu_{ij}) \kappa_{ij})}
+  where \eqn{\mu_{ij}} is given by \code{prior_Rho_loc} and
+  \eqn{\kappa_{ij}} by \code{prior_Rho_scale}. A location of 0.5 centers
+  the beta prior at a partial correlation of 0. Note that
+  \code{prior_Rho_scale} is a precision and not a variance or standard
+  deviation: larger values lead to a more concentrated prior. A value of
+  2 (with a location of 0.5), which is the default, corresponds to a
+  uniform beta prior. In this case the partial correlations marginally
+  follow \eqn{(\rho_{ij}+1)/2 \sim Beta(\eta, \eta)}, which is uniform
+  for the default of \eqn{\eta = 1}. Beta priors with a shape parameter
+  below 1 (i.e., \eqn{\mu_{ij} \kappa_{ij} < 1} or
+  \eqn{(1 - \mu_{ij}) \kappa_{ij} < 1}) are U-shaped and unbounded at
+  partial correlations of -1 or 1. They favor very strong partial
+  correlations, and sampling from such a prior without data
+  (\code{prior_only = TRUE}) is unreliable. Note that versions up to
+  0.2.0 used a default of \eqn{\sqrt{0.5}}, which is such a prior
+  (\eqn{Beta(0.354, 0.354)}); set \code{prior_Rho_scale} to this value
+  to reproduce earlier results.
   The user can specify a different prior distribution by a matrix
   \code{prior_Rho_loc} and a matrix \code{prior_Rho_scale} with the same dimensions as
-  the partial correlation matrix. Additionally, the user can change \eqn{eta}
-  via the \code{prior_Eta} parameter.
+  the partial correlation matrix, of which only the upper triangle is
+  used. Additionally, the user can change \eqn{\eta}
+  via the \code{prior_Eta} parameter, which has to be a positive integer.
 
-  The Inverse-Wishart prior is a distribution on the innovation covariance
-  matrix \eqn{\Sigma}:
-  \deqn{\Sigma \sim IW(\nu, S)}
-  where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix. We here
-  use the default prior of \deqn{nu = delta + p - 1} for the degrees of freedom,
-  where \eqn{\delta} is defined as \eqn{s_{\rho}^{-1}-1} and \eqn{s_{\rho}} is the
-  standard deviation of the implied marginal beta distribution of the
-  partial correlations. For the scale matrix \eqn{S}, we use the identity matrix
-  \eqn{I_p} of order \eqn{p}.
-  The user can set a prior on the expected standard deviation of the partial
-  correlations by specifying a \code{prior_Rho_marginal} parameter. The default
-  value is 0.25, which has worked well in a simulation study.
+  With \code{cov_prior = "IW"}, an Inverse-Wishart prior is placed on the
+  precision matrix of the innovations, \eqn{\Theta = \Sigma^{-1}}:
+  \deqn{\Theta \sim IW(\nu, S)}
+  where \eqn{\nu} is the degrees of freedom and \eqn{S} is the scale matrix.
+  This is equivalent to a Wishart prior on the innovation covariance
+  matrix, \eqn{\Sigma \sim W(\nu, S^{-1})}. The degrees of freedom are
+  \deqn{\nu = \delta + p - 1}
+  where \eqn{\delta} is defined as \eqn{v_{\rho}^{-1}-1} and \eqn{v_{\rho}}
+  is the value of \code{prior_Rho_marginal}. For the scale matrix \eqn{S},
+  we use the identity matrix \eqn{I_p} of order \eqn{p} by default. In this
+  case, the partial correlations marginally follow
+  \eqn{(\rho_{ij}+1)/2 \sim Beta(\delta/2, \delta/2)}, which has a variance
+  of \eqn{1/(\delta+1) = v_{\rho}} on the scale of the partial
+  correlations. \code{prior_Rho_marginal} is therefore the prior variance
+  of the partial correlations, and its square root is their prior standard
+  deviation. The default value of 0.25 (\eqn{\delta = 3}) corresponds to a
+  prior standard deviation of 0.5. Values have to be larger than 0 and at
+  most 0.5.
   Additionally, the user can specify a \code{prior_S} parameter to set a different
   scale matrix.
 
