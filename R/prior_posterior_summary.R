@@ -101,6 +101,9 @@ prior_posterior_summary <- function(fit, prior_fit = NULL) {
     if (dim(prior_rho)[2] != K) {
       stop("'fit' and 'prior_fit' differ in the number of variables.")
     }
+    if (!identical(prior_fit$arguments$cnames, fit$arguments$cnames)) {
+      stop("'fit' and 'prior_fit' must use the same variables in the same order.")
+    }
     contemporaneous$prior_mean <-
       apply(prior_rho, c(2, 3), mean, na.rm = TRUE)[upper]
     contemporaneous$prior_sd <-
