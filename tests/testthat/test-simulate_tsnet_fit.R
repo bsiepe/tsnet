@@ -26,12 +26,18 @@ mock_draws <- function(draws = fake_draws(), env = parent.frame()) {
 
 test_that("simulate.tsnet_fit simulates one data set per draw", {
   mock_draws()
-  sims <- simulate(fake_fit(), nsim = 3, seed = 1)
+  expect_message(
+    sims <- simulate(fake_fit(), nsim = 3, seed = 1),
+    "4 of 10 draws are non-stationary"
+  )
 
   expect_length(sims, 3)
   expect_equal(dim(sims[[1]]), c(40, 3))
   expect_named(sims[[1]], c("a", "b", "c"))
-  expect_equal(dim(simulate(fake_fit(), n_t = 15)[[1]]), c(15, 3))
+  expect_equal(
+    dim(suppressMessages(simulate(fake_fit(), n_t = 15))[[1]]),
+    c(15, 3)
+  )
 
   draw_info <- attr(sims, "draws")
   expect_equal(anyDuplicated(draw_info$draw), 0)
@@ -55,14 +61,14 @@ test_that("simulate.tsnet_fit follows the seed conventions of simulate", {
   mock_draws()
   set.seed(10)
   state <- .Random.seed
-  sims_a <- simulate(fake_fit(), nsim = 2, seed = 123)
+  sims_a <- suppressMessages(simulate(fake_fit(), nsim = 2, seed = 123))
   expect_identical(.Random.seed, state)
-  sims_b <- simulate(fake_fit(), nsim = 2, seed = 123)
+  sims_b <- suppressMessages(simulate(fake_fit(), nsim = 2, seed = 123))
 
   expect_identical(sims_a, sims_b)
   expect_equal(attr(sims_a, "seed")[1], 123)
 
-  sims_c <- simulate(fake_fit(), nsim = 2)
+  sims_c <- suppressMessages(simulate(fake_fit(), nsim = 2))
   expect_false(identical(.Random.seed, state))
   expect_false(identical(sims_a[[1]], sims_c[[1]]))
 })
@@ -71,16 +77,18 @@ test_that("simulate.tsnet_fit handles non-stationary draws", {
   mock_draws()
 
   expect_warning(
-    sims <- simulate(fake_fit(), nsim = 8, seed = 1),
+    sims <- suppressMessages(simulate(fake_fit(), nsim = 8, seed = 1)),
     "Only 6 usable draws"
   )
   expect_length(sims, 6)
   expect_true(all(attr(sims, "draws")$draw <= 6))
   expect_equal(attr(sims, "n_draws")[["returned"]], 6)
 
-  kept <- simulate(fake_fit(),
-    nsim = 10, seed = 1,
-    nonstationary = "keep_flagged"
+  expect_no_message(
+    kept <- simulate(fake_fit(),
+      nsim = 10, seed = 1,
+      nonstationary = "keep_flagged"
+    )
   )
   expect_length(kept, 10)
   expect_equal(sum(!attr(kept, "draws")$stationary), 4)
@@ -108,7 +116,10 @@ test_that("simulate.tsnet_fit never uses invalid draws", {
   draws$Sigma[3, 1, 1] <- Inf
   mock_draws(draws)
 
-  expect_warning(sims <- simulate(fake_fit(), nsim = 6, seed = 1))
+  expect_message(
+    expect_warning(sims <- simulate(fake_fit(), nsim = 6, seed = 1)),
+    "3 of 6 draws"
+  )
   expect_false(any(1:3 %in% attr(sims, "draws")$draw))
   expect_equal(
     attr(sims, "n_draws")[c("stationary", "nonstationary", "invalid")],
@@ -123,7 +134,9 @@ test_that("simulate.tsnet_fit works for a single variable", {
     Sigma = array(1, c(3, 1, 1))
   )
   mock_draws(draws)
-  sims <- simulate(fake_fit(cnames = "a"), nsim = 2, seed = 1)
+  sims <- suppressMessages(
+    simulate(fake_fit(cnames = "a"), nsim = 2, seed = 1)
+  )
 
   expect_length(sims, 2)
   expect_equal(dim(sims[[1]]), c(40, 1))

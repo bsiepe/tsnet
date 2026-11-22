@@ -20,7 +20,9 @@
 #'   number of time points of the data used for fitting.
 #' @param nonstationary How to treat draws with non-stationary temporal
 #'   coefficients (spectral radius of at least 1). \code{"drop"} (default)
-#'   only uses stationary draws. \code{"keep_flagged"} uses all draws and
+#'   only uses stationary draws, so that the simulated data are conditional on
+#'   stationarity; a message reports how many draws were not used.
+#'   \code{"keep_flagged"} uses all draws and
 #'   flags the non-stationary ones in the \code{"draws"} attribute; data for
 #'   these draws are simulated from a starting value of zero without burn-in
 #'   and will typically diverge. \code{"error"} stops if one of the selected
@@ -125,6 +127,15 @@ simulate.tsnet_fit <- function(object,
   valid <- !is.na(radius) & !vapply(sigma_chol, is.null, logical(1))
   stationary <- valid & radius < 1
 
+  n_nonstationary <- sum(valid & !stationary)
+  if (nonstationary == "drop" && n_nonstationary > 0) {
+    message(
+      n_nonstationary, " of ", sum(valid), " draws are non-stationary and ",
+      "are not used, so the simulated data are conditional on stationarity. ",
+      "Use nonstationary = \"keep_flagged\" to include them."
+    )
+  }
+
   usable <- which(valid & (stationary | nonstationary != "drop"))
   n_use <- min(nsim, length(usable))
   ids <- usable[sample.int(length(usable), n_use)]
@@ -167,7 +178,7 @@ simulate.tsnet_fit <- function(object,
   attr(sims, "n_draws") <- c(
     total = n_total,
     stationary = sum(stationary),
-    nonstationary = sum(valid & !stationary),
+    nonstationary = n_nonstationary,
     invalid = sum(!valid),
     requested = nsim,
     returned = n_use

@@ -30,7 +30,9 @@ number of time points of the data used for fitting.}
 
 \item{nonstationary}{How to treat draws with non-stationary temporal
 coefficients (spectral radius of at least 1). \code{"drop"} (default)
-only uses stationary draws. \code{"keep_flagged"} uses all draws and
+only uses stationary draws, so that the simulated data are conditional on
+stationarity; a message reports how many draws were not used.
+\code{"keep_flagged"} uses all draws and
 flags the non-stationary ones in the \code{"draws"} attribute; data for
 these draws are simulated from a starting value of zero without burn-in
 and will typically diverge. \code{"error"} stops if one of the selected
