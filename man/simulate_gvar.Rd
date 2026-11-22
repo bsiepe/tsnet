@@ -10,10 +10,13 @@ simulate_gvar(Beta, Sigma, n_t, burn_in = 0, mu = NULL)
 \item{Beta}{A \eqn{K \times K} matrix of temporal coefficients. Rows are
 outcomes and columns are lagged predictors, so that
 \code{Beta[i, j]} is the effect of variable \code{j} at time \eqn{t-1}
-on variable \code{i} at time \eqn{t}. This is the orientation of the
-\code{Beta} parameter in the Stan models and of \code{prior_Beta_loc} in
-\code{\link{stan_gvar}}. It is the transpose of the \code{beta_mu} matrix
-returned by \code{\link{stan_fit_convert}}.}
+on variable \code{i} at time \eqn{t}. This is the orientation of
+\code{prior_Beta_loc} in \code{\link{stan_gvar}} and of the \code{Beta}
+draws in the fitted Stan model. Note that \code{\link{stan_fit_convert}}
+returns the temporal coefficients the other way around (\code{beta_mu}
+has the lagged predictors in rows), so its estimates have to be
+transposed before they are passed here: \code{t(fit_converted$beta_mu)}.
+See the examples of \code{\link{simulate_gvar}}.}
 
 \item{Sigma}{A \eqn{K \times K} symmetric positive definite innovation
 covariance matrix.}
@@ -24,15 +27,18 @@ covariance matrix.}
 discarded. As the series is started from the stationary distribution, a
 burn-in is not required. Default: \code{0}.}
 
-\item{mu}{Optional vector of length \eqn{K} with the process means. The
-implied intercept is \eqn{(I - B)\mu}. Default: \code{NULL}, which
-corresponds to means of zero.}
+\item{mu}{Optional vector of length \eqn{K} with the process means, i.e.,
+the long-run means around which the series fluctuate. These are not the
+intercepts of the regression of \eqn{Y_t} on \eqn{Y_{t-1}}: written with
+an intercept \eqn{c}, the model is \eqn{Y_t = c + B Y_{t-1} + \zeta_t}
+with \eqn{c = (I - B)\mu}. Default: \code{NULL}, which corresponds to
+means of zero.}
 }
 \value{
 A data frame with \code{n_t} rows and \eqn{K} columns that can be
   passed to \code{\link{stan_gvar}}. Column names are taken from
-  \code{colnames(Beta)} if available and are \code{V1}, \code{V2}, ...
-  otherwise. The data-generating parameters are attached as attribute
+  \code{colnames(Sigma)} or, if these are missing, from
+  \code{colnames(Beta)}, and are \code{V1}, \code{V2}, ... otherwise. The data-generating parameters are attached as attribute
   \code{"truth"}, a list with elements \code{Beta}, \code{Sigma}, and
   \code{mu}.
 }
@@ -56,10 +62,12 @@ The model has to be stationary, i.e., the spectral radius (largest
   cannot be computed numerically, the series is started at the process
   means instead, with a warning. A burn-in should be used in that case.
 
-  Note that \code{\link{stan_gvar}} standardizes the data before fitting.
-  Parameter estimates are therefore comparable to the standardized
+  By default, \code{\link{stan_gvar}} z-standardizes the data before
+  fitting. Parameter estimates are then comparable to the standardized
   parameters returned by \code{\link{gvar_stationary}}, not necessarily to
-  \code{Beta} and \code{Sigma} themselves.
+  \code{Beta} and \code{Sigma} themselves. With \code{center_only = TRUE},
+  the data are only centered, and estimates are comparable to \code{Beta}
+  and \code{Sigma}. Partial correlations are not affected by the scaling.
 }
 \examples{
 Beta <- matrix(c(
@@ -74,6 +82,17 @@ set.seed(1)
 sim_data <- simulate_gvar(Beta, Sigma, n_t = 200)
 head(sim_data)
 attr(sim_data, "truth")$Beta
+
+\donttest{
+# simulate new data from the posterior means of a fitted model
+fit <- stan_gvar(sim_data, n_chains = 2)
+fit_converted <- stan_fit_convert(fit)
+sim_new <- simulate_gvar(
+  Beta = t(fit_converted$beta_mu),
+  Sigma = fit_converted$sigma_mu,
+  n_t = 200
+)
+}
 
 }
 \seealso{

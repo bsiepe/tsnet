@@ -10,10 +10,13 @@ gvar_stationary(Beta, Sigma)
 \item{Beta}{A \eqn{K \times K} matrix of temporal coefficients. Rows are
 outcomes and columns are lagged predictors, so that
 \code{Beta[i, j]} is the effect of variable \code{j} at time \eqn{t-1}
-on variable \code{i} at time \eqn{t}. This is the orientation of the
-\code{Beta} parameter in the Stan models and of \code{prior_Beta_loc} in
-\code{\link{stan_gvar}}. It is the transpose of the \code{beta_mu} matrix
-returned by \code{\link{stan_fit_convert}}.}
+on variable \code{i} at time \eqn{t}. This is the orientation of
+\code{prior_Beta_loc} in \code{\link{stan_gvar}} and of the \code{Beta}
+draws in the fitted Stan model. Note that \code{\link{stan_fit_convert}}
+returns the temporal coefficients the other way around (\code{beta_mu}
+has the lagged predictors in rows), so its estimates have to be
+transposed before they are passed here: \code{t(fit_converted$beta_mu)}.
+See the examples of \code{\link{simulate_gvar}}.}
 
 \item{Sigma}{A \eqn{K \times K} symmetric positive definite innovation
 covariance matrix.}

@@ -22,6 +22,10 @@ test_that("simulate_gvar returns a data frame with the truth attached", {
 
   colnames(Beta) <- c("a", "b", "c")
   expect_named(simulate_gvar(Beta, Sigma, n_t = 5), c("a", "b", "c"))
+  # names of Sigma win, e.g. for a transposed beta_mu with ".l1" suffixes
+  colnames(Beta) <- c("a.l1", "b.l1", "c.l1")
+  dimnames(Sigma) <- list(c("a", "b", "c"), c("a", "b", "c"))
+  expect_named(simulate_gvar(Beta, Sigma, n_t = 5), c("a", "b", "c"))
 })
 
 test_that("simulate_gvar uses the session RNG", {
