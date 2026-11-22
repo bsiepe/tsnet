@@ -106,4 +106,10 @@ test_that("prior_posterior_summary validates its input", {
     prior_posterior_summary(summary_fit(), other_priors),
     "same priors"
   )
+  reordered <- summary_fit(prior_only = TRUE)
+  reordered$arguments$cnames <- c("b", "a", "c")
+  expect_error(
+    prior_posterior_summary(summary_fit(), reordered),
+    "same order"
+  )
 })
