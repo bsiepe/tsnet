@@ -72,7 +72,10 @@ iterations is calculated as \code{iter_sampling}*\code{n_chains}.}
 computation. Default is \code{1}. \code{rstan} is used for parallel computation.}
 
 \item{center_only}{A logical indicating whether to only center (and not
-scale) the data. Default is \code{FALSE}.}
+scale) the data. Default is \code{FALSE}, which z-standardizes each
+variable with its sample mean and standard deviation, so that the
+temporal coefficients are standardized coefficients. The default priors
+are specified for standardized data.}
 
 \item{return_all}{A logical indicating whether to return all model inputs, including
 the data and prior objects. Default is \code{TRUE}.}
@@ -87,7 +90,10 @@ This functionality is experimental and may not work as expected.}
 \item{prior_only}{A logical indicating whether to sample from the prior
 distribution only, ignoring the likelihood of the data. Default is
 \code{FALSE}. The data are still required to determine the number and
-names of the variables. The resulting draws can be used to inspect the
+names of the variables and the number of time points, but their values
+are not used, so that placeholder data such as
+\code{matrix(0, 100, 3)} can be passed. The resulting draws can be used
+to inspect the
 priors (e.g., with \code{\link{posterior_plot}}) and, together with
 \code{\link{simulate.tsnet_fit}}, for prior predictive simulation. Only
 available for \code{method = "sampling"} and \code{ahead = 0}.}
@@ -96,7 +102,7 @@ available for \code{method = "sampling"} and \code{ahead = 0}.}
 A \code{tsnet_fit} object in list format. The object contains the
  following elements:
  \item{fit}{A stanfit object containing the fitted model.}
- \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
+ \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call. "center" and "scale" contain the sample means and standard deviations used to standardize the data (standard deviations of 1 if \code{center_only = TRUE}, both \code{NULL} for prior-only fits).}
 }
 \description{
 This function fits a Bayesian GVAR model to the provided data

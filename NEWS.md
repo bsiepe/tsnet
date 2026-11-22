@@ -20,11 +20,15 @@
   standardized data.
 * `stan_gvar()` gains the argument `prior_only` to sample from the prior
   distribution without conditioning on the data. `print()` indicates
-  prior-only fits and `compare_gvar()` does not accept them.
+  prior-only fits and `compare_gvar()` does not accept them. The values of
+  the data are not used for prior-only fits, so placeholder data can be
+  passed.
   Prior-only fits with `cov_prior = "LKJ"` give a warning if the beta prior
   on a partial correlation is unbounded.
 * New `simulate()` method for `tsnet_fit` objects for posterior predictive
-  simulation, or prior predictive simulation for prior-only fits.
+  simulation, or prior predictive simulation for prior-only fits. By
+  default, non-stationary draws are not used, and a message reports how
+  many were dropped.
 * New `gvar_priors()` returns the default priors of `stan_gvar()` with
   optional overrides and checks names and dimensions.
 * New `priors_from_fit()` turns the posterior of the temporal coefficients of
@@ -33,6 +37,8 @@
   standard deviations as well as the posterior contraction for each edge.
 * `stan_gvar()` now warns if `priors` contains unknown names, which were
   silently ignored before.
+* `stan_gvar()` now stores the sample means and standard deviations used to
+  standardize the data in `arguments$center` and `arguments$scale`.
 
 # tsnet 0.2.0
 * Fixed documentation issues (e.g., wrong display of LaTex equations).

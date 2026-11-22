@@ -50,7 +50,10 @@
 #' @param n_cores An integer specifying the number of cores to use for parallel
 #'   computation. Default is \code{1}. \code{rstan} is used for parallel computation.
 #' @param center_only A logical indicating whether to only center (and not
-#'   scale) the data. Default is \code{FALSE}.
+#'   scale) the data. Default is \code{FALSE}, which z-standardizes each
+#'   variable with its sample mean and standard deviation, so that the
+#'   temporal coefficients are standardized coefficients. The default priors
+#'   are specified for standardized data.
 #' @param return_all A logical indicating whether to return all model inputs, including
 #' the data and prior objects. Default is \code{TRUE}.
 #' @param ahead An integer specifying the forecast horizon. Default is \code{0}. If `ahead` is
@@ -61,7 +64,10 @@
 #' @param prior_only A logical indicating whether to sample from the prior
 #'   distribution only, ignoring the likelihood of the data. Default is
 #'   \code{FALSE}. The data are still required to determine the number and
-#'   names of the variables. The resulting draws can be used to inspect the
+#'   names of the variables and the number of time points, but their values
+#'   are not used, so that placeholder data such as
+#'   \code{matrix(0, 100, 3)} can be passed. The resulting draws can be used
+#'   to inspect the
 #'   priors (e.g., with \code{\link{posterior_plot}}) and, together with
 #'   \code{\link{simulate.tsnet_fit}}, for prior predictive simulation. Only
 #'   available for \code{method = "sampling"} and \code{ahead = 0}.
@@ -196,7 +202,7 @@
 #' @return A \code{tsnet_fit} object in list format. The object contains the
 #'  following elements:
 #'  \item{fit}{A stanfit object containing the fitted model.}
-#'  \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call.}
+#'  \item{arguments}{The number of variables "p", the number of time points "n_t", the column names "cnames", and the arguments used in the function call. "center" and "scale" contain the sample means and standard deviations used to standardize the data (standard deviations of 1 if \code{center_only = TRUE}, both \code{NULL} for prior-only fits).}
 #'
 #' @importFrom rstan sampling vb
 #' @importFrom utils modifyList
@@ -242,11 +248,19 @@ stan_gvar <- function(data,
   }
 
   if (prior_only) {
+    # the likelihood is skipped, so only the dimensions of the data matter.
+    # this also allows constant placeholder data
     Y <- matrix(0, nrow(data), ncol(data), dimnames = dimnames(data))
+    data_center <- NULL
+    data_scale <- NULL
   } else if (isTRUE(center_only)) {
     Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = FALSE)
+    data_center <- colMeans(data)
+    data_scale <- rep(1, ncol(data))
   } else {
     Y <- apply(data, MARGIN = 2, scale, center = TRUE, scale = TRUE)
+    data_center <- colMeans(data)
+    data_scale <- apply(data, MARGIN = 2, stats::sd)
   }
 
   K <- ncol(data)
@@ -395,7 +409,9 @@ stan_gvar <- function(data,
                  n_t = n_t,
                  cnames = cnames,
                  fn_args = all_args,
-                 prior_only = prior_only
+                 prior_only = prior_only,
+                 center = data_center,
+                 scale = data_scale
                  )
     if(isTRUE(return_all)){
       args$data <- stan_data$Y

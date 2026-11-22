@@ -88,9 +88,29 @@ test_that("prior_only fits sample from the prior", {
   expect_no_error(suppressMessages(check_eigen(fit)))
   expect_no_error(suppressWarnings(posterior_plot(fit)))
 
-  sims <- suppressWarnings(simulate(fit, nsim = 20, seed = 1))
+  sims <- suppressMessages(suppressWarnings(
+    simulate(fit, nsim = 20, seed = 1)
+  ))
   expect_true(all(attr(sims, "draws")$stationary))
   expect_named(sims[[1]], colnames(example_data))
+  expect_null(fit$arguments$center)
+  expect_null(fit$arguments$scale)
+})
+
+test_that("prior_only fits accept constant placeholder data", {
+  skip_on_cran()
+  placeholder <- matrix(0, nrow = 30, ncol = 3)
+  fit <- suppressWarnings(stan_gvar(placeholder,
+    n_chains = 1,
+    iter_sampling = 50,
+    iter_warmup = 50,
+    refresh = 0,
+    prior_only = TRUE
+  ))
+
+  beta_draws <- rstan::extract(fit$stan_fit, "Beta")$Beta
+  expect_true(all(is.finite(beta_draws)))
+  expect_equal(fit$arguments$n_t, 30)
 })
 
 test_that("regular fits are not flagged as prior-only", {
@@ -107,6 +127,8 @@ test_that("regular fits are not flagged as prior-only", {
 
   expect_false(fit$arguments$prior_only)
   expect_false(any(grepl("prior-only", capture.output(print(fit)))))
+  expect_equal(fit$arguments$center, colMeans(example_data))
+  expect_equal(fit$arguments$scale, sapply(example_data, stats::sd))
 })
 
 test_that("simulated data are recovered in the correct orientation", {
