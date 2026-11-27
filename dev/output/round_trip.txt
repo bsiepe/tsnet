@@ -1,0 +1,65 @@
+tsnet orientation round trip, 2026-11-14 00:36:52 
+n_t = 5000, K = 3, 2 chains x 500 draws
+
+true Beta (row = outcome):
+     [,1] [,2] [,3]
+[1,]  0.3  0.5  0.0
+[2,]  0.0  0.2  0.0
+[3,]  0.0 -0.3  0.4
+
+== equal innovation variances, LKJ ==
+standardized truth:
+     [,1]   [,2] [,3]
+[1,]  0.3  0.428  0.0
+[2,]  0.0  0.200  0.0
+[3,]  0.0 -0.266  0.4
+posterior mean of Stan's Beta:
+      
+         [,1]   [,2]     [,3]
+  [1,] 0.2997  0.417 -0.00584
+  [2,] 0.0225  0.217 -0.01840
+  [3,] 0.0252 -0.281  0.40587
+               max_abs_error     max_abs_error_transposed 
+                      0.0252                       0.4167 
+max_abs_error_unstandardized           max_abs_error_pcor 
+                      0.0833                       0.0360 
+        convert_is_transpose 
+                      1.0000 
+
+== equal innovation variances, IW ==
+standardized truth:
+     [,1]   [,2] [,3]
+[1,]  0.3  0.428  0.0
+[2,]  0.0  0.200  0.0
+[3,]  0.0 -0.266  0.4
+posterior mean of Stan's Beta:
+      
+         [,1]   [,2]     [,3]
+  [1,] 0.3009  0.430  0.00298
+  [2,] 0.0133  0.206 -0.00193
+  [3,] 0.0279 -0.261  0.40320
+               max_abs_error     max_abs_error_transposed 
+                      0.0279                       0.4303 
+max_abs_error_unstandardized           max_abs_error_pcor 
+                      0.0697                       0.0144 
+        convert_is_transpose 
+                      1.0000 
+
+== unequal innovation variances, IW ==
+standardized truth:
+     [,1]   [,2] [,3]
+[1,]  0.3  0.625  0.0
+[2,]  0.0  0.200  0.0
+[3,]  0.0 -0.676  0.4
+posterior mean of Stan's Beta:
+      
+            [,1]   [,2]      [,3]
+  [1,]  0.303271  0.624 -0.000149
+  [2,]  0.000623  0.219 -0.001146
+  [3,] -0.014204 -0.667  0.397112
+               max_abs_error     max_abs_error_transposed 
+                      0.0192                       0.6744 
+max_abs_error_unstandardized           max_abs_error_pcor 
+                      0.3671                       0.0158 
+        convert_is_transpose 
+                      1.0000 

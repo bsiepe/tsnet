@@ -27,6 +27,9 @@ jobs:
           needs: coverage
 
       - name: Test coverage
+        env:
+          # covr::codecov() reads the upload token from CODECOV_TOKEN
+          CODECOV_TOKEN: ${{ secrets.CODECOV }}
         run: |
           covr::codecov(
             quiet = FALSE,

@@ -11,6 +11,7 @@ data {
   matrix[K,K] prior_Beta_scale; // scales for priors on Beta matrix
   matrix[K,K] prior_S; // prior for scale matrix
   real<lower=1> prior_delta; // prior for partial corr: marginal beta parameter
+  int<lower=0, upper=1> prior_only; // skip the likelihood?
 }
 ////////////////////////////////////////////////////////////////////////////////
 transformed data{
@@ -55,7 +56,7 @@ model {
   //target+= student_t_lpdf(mu_Beta | 3,0,2);
   //target+= student_t_lpdf(sigma_Beta | 3,0,2);
   target+=   inv_wishart_lpdf(Theta | prior_delta + K - 1, prior_S);  // prior on precision matrix
-  {
+  if(prior_only == 0){
     for(t in 2:T){
       if(beep[t] > first_beep){
         vector[K] mu = Beta * Y[t-1,];

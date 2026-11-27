@@ -12,6 +12,7 @@ data {
   matrix[K,K] prior_Rho_loc;  // locations for priors on partial correlations
   matrix[K,K] prior_Rho_scale;   // scales for priors on partial correlations
   int<lower=1> prior_Eta; // prior for LKJ
+  int<lower=0, upper=1> prior_only; // skip the likelihood?
   // Forecast
   int<lower=0> ahead; // forecasted time points
   int<lower = 0, upper = 1> compute_log_lik; // compute log likelihood?
@@ -76,7 +77,7 @@ model {
         }
       }
     }
-  {
+  if(prior_only == 0){
     // Cholesky decomposition of the covariance matrix
     matrix[K, K] Sigma_chol = diag_pre_multiply(exp(sigma_theta), L_Theta);
     for(t in 2:T){
